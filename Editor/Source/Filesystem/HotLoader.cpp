@@ -238,43 +238,37 @@ void HotLoader::UpdateShadersAssets()
 
 void HotLoader::ProduceRenderProgramHandles()
 {
-  //// Find dirty render shader names
-  //std::set<std::string> dirtyShaderList;
-  //mWorld->CollectDirtyHandleNamesByType<VertexShader>(dirtyShaderList);
-  //mWorld->CollectDirtyHandleNamesByType<FragmentShader>(dirtyShaderList);
-  //// Find non dirty render shader names
-  //std::set<std::string> nonDirtyShaderList;
-  //mWorld->CollectNonDirtyHandleNamesByType<VertexShader>(nonDirtyShaderList);
-  //mWorld->CollectNonDirtyHandleNamesByType<FragmentShader>(nonDirtyShaderList);
-  //// Push new render program handle
-  //for (auto const& name : nonDirtyShaderList)
-  //{
-  //  VertexShader* vertexShader = mWorld->GetFirstNonDirtyHandleByName<VertexShader>(name);
-  //  FragmentShader* fragmentShader = mWorld->GetFirstNonDirtyHandleByName<FragmentShader>(name);
-  //  if (vertexShader && fragmentShader)
-  //  {
-  //    if (mWorld->MountHandle<RenderProgram>(name)->Link(vertexShader, fragmentShader))
-  //    {
-  //      std::printf("Exchange VertexShader & FragmentShader for RenderProgram\n");
-  //      //mWorld->DestroyHandle<VertexShader>(name);
-  //      //mWorld->DestroyHandle<FragmentShader>(name);
-  //    }
-  //  }
-  //}
-  //// Erase dirty render shaders
-  //for (auto const& name : dirtyShaderList)
-  //{
-  //  //mWorld->DestroyHandle<VertexShader>(name);
-  //  //mWorld->DestroyHandle<FragmentShader>(name);
-  //}
-  //// Find dirty render program names
-  //std::set<std::string> dirtyProgramList;
-  //mWorld->CollectDirtyHandleNamesByType<RenderProgram>(dirtyProgramList);
-  //// Erase dirty render program handles
-  //for (auto const& name : dirtyProgramList)
-  //{
-  //  //mWorld->DestroyHandle<RenderProgram>(name);
-  //}
+  // Find non dirty render shader names
+  std::set<std::string> nonDirtyShaderList;
+  mWorld->ConsumeNonDirtyHandleNames<VertexShader>(nonDirtyShaderList);
+  mWorld->ConsumeNonDirtyHandleNames<FragmentShader>(nonDirtyShaderList);
+  // Push new render program handles
+  for (auto const& name : nonDirtyShaderList)
+  {
+    HotRef<VertexShader>& vertexShaderRef = mWorld->GetHandle<VertexShader>(name);
+    HotRef<FragmentShader>& fragmentShaderRef = mWorld->GetHandle<FragmentShader>(name);
+    if (vertexShaderRef.Get() && fragmentShaderRef.Get())
+    {
+      HotRef<RenderProgram>& programRef = mWorld->GetHandle<RenderProgram>(name);
+      if (programRef.Get())
+      {
+        // Compare old values and decide if it has been changed at all
+      }
+      else
+      {
+        RenderProgram* programHandle = new RenderProgram{ name };
+        if (programHandle->Link(vertexShaderRef.Get(), fragmentShaderRef.Get()))
+        {
+          programHandle->AddReference(this);
+          programRef.Set(programHandle);
+        }
+        else
+        {
+          delete programHandle;
+        }
+      }
+    }
+  }
 }
 void HotLoader::ProduceComputeProgramHandles()
 {
@@ -358,26 +352,26 @@ void HotLoader::ProduceMeshHandles()
   // Push new mesh handles
   for (auto const& name : nonDirtyBufferList)
   {
-    HotRef<VertexBuffer<Vertex>>& vertexBuffer = mWorld->GetHandle<VertexBuffer<Vertex>>(name);
-    HotRef<ElementBuffer<U32>>& elementBuffer = mWorld->GetHandle<ElementBuffer<U32>>(name);
-    if (vertexBuffer.Get() && elementBuffer.Get())
+    HotRef<VertexBuffer<Vertex>>& vertexBufferRef = mWorld->GetHandle<VertexBuffer<Vertex>>(name);
+    HotRef<ElementBuffer<U32>>& elementBufferRef = mWorld->GetHandle<ElementBuffer<U32>>(name);
+    if (vertexBufferRef.Get() && elementBufferRef.Get())
     {
-      HotRef<DefaultMesh>& hotRef = mWorld->GetHandle<DefaultMesh>(name);
-      if (hotRef.Get())
+      HotRef<DefaultMesh>& meshRef = mWorld->GetHandle<DefaultMesh>(name);
+      if (meshRef.Get())
       {
         // Compare old values and decide if it has been changed at all
       }
       else
       {
-        DefaultMesh* mesh = new DefaultMesh{ name };
-        if (mesh->Link(vertexBuffer.Get(), elementBuffer.Get()))
+        DefaultMesh* meshHandle = new DefaultMesh{ name };
+        if (meshHandle->Link(vertexBufferRef.Get(), elementBufferRef.Get()))
         {
-          mesh->AddReference(this);
-          hotRef.Set(mesh);
+          meshHandle->AddReference(this);
+          meshRef.Set(meshHandle);
         }
         else
         {
-          delete mesh;
+          delete meshHandle;
         }
       }
     }

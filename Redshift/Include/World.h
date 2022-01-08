@@ -72,7 +72,7 @@ public:
   requires std::is_base_of_v<Resource, R>
   R* MountResource(std::string const& resourceName, Args &&... args)
   {
-    Resource*& resource = mResources[resourceName];
+    Resource*& resource = mResources[resourceName + typeid(R).name()];
     // Probe if resource already exists
     if (!resource)
     {
@@ -91,7 +91,7 @@ public:
   requires std::is_base_of_v<Resource, R>
   void UnMountResource(std::string const& resourceName)
   {
-    Resource*& resource = mResources[resourceName];
+    Resource*& resource = mResources[resourceName + typeid(R).name()];
     // Check if resource exists, if so, destroy it
     if (resource)
     {
