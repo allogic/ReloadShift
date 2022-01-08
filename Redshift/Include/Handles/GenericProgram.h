@@ -11,7 +11,7 @@ class GenericProgram : public Handle
 public:
 
   GenericProgram(std::string const& name)
-    : Handle(typeid(GenericProgram).name(), name)
+    : Handle(name)
   {
     mID = glCreateProgram();
   }
@@ -19,6 +19,10 @@ public:
   {
     glDeleteProgram(mID);
   }
+
+public:
+
+  virtual inline std::string GetType() const override { return "Program"; }
 
 public:
 

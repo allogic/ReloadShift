@@ -12,7 +12,7 @@ class GenericMesh : public Handle
 public:
 
   GenericMesh(std::string const& name)
-    : Handle(typeid(GenericMesh).name(), name)
+    : Handle(name)
   {
     glGenVertexArrays(1, &mID);
   }
@@ -20,6 +20,10 @@ public:
   {
     glDeleteVertexArrays(1, &mID);
   }
+
+public:
+
+  virtual inline std::string GetType() const override { return "Mesh"; }
 
 public:
 

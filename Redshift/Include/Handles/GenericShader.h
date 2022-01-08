@@ -11,7 +11,7 @@ public:
   GenericShader(
     std::string const& name,
     U32 ID)
-    : Handle(typeid(GenericShader).name(), name)
+    : Handle(name)
     , mID{ ID }
   {
 
@@ -20,6 +20,10 @@ public:
   {
     glDeleteShader(mID);
   }
+
+public:
+
+  virtual inline std::string GetType() const override { return "Shader"; }
 
 public:
 

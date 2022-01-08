@@ -1,5 +1,8 @@
 #pragma once
 
+#include <map>
+#include <string>
+
 ////////////////////////////////////////////////////////
 // Primitive types
 ////////////////////////////////////////////////////////
@@ -18,7 +21,7 @@ using R32 = float;
 using R64 = double;
 
 ////////////////////////////////////////////////////////
-// Tensor types
+// Math operators
 ////////////////////////////////////////////////////////
 
 using R32V2 = glm::fvec2;
@@ -36,7 +39,7 @@ using R32Q = glm::fquat;
 
 namespace EShaderType
 {
-  enum Type : GLenum
+  enum Type : U32
   {
     Vertex = GL_VERTEX_SHADER,
     Fragment = GL_FRAGMENT_SHADER,
@@ -50,7 +53,7 @@ namespace EShaderType
 
 namespace EProgramType
 {
-  enum Type : GLenum
+  enum Type : U32
   {
     Render,
     Compute,

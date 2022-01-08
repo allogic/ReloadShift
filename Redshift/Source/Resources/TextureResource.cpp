@@ -39,17 +39,37 @@ bool TextureResource::ProduceHandles()
   {
     case 3:
     {
-      //mWorld->MarkHandlesAsDirtyByName<Texture2DR32RGB>(GetName());
-      //mWorld->MountHandle<Texture2DR32RGB>(GetName(), mWidth, mHeight, ETextureWrap::ClampToEdge, ETextureFilter::Nearest);
-      //mDirty = false;
-      //return true;
+      HotRef<Texture2DR32RGB>& hotRef = mWorld->GetHandle<Texture2DR32RGB>(GetName());
+      if (hotRef.Get())
+      {
+        // Compare old values and decide if it has been changed at all
+      }
+      else
+      {
+        // Create new texture handle
+        Texture2DR32RGB* texture = new Texture2DR32RGB{ GetName(), mWidth, mHeight, ETextureWrap::ClampToEdge, ETextureFilter::Nearest };
+        texture->AddReference(this);
+        hotRef.Set(texture);
+      }
+      mDirty = false;
+      return true;
     }
     case 4:
     {
-      //mWorld->MarkHandlesAsDirtyByName<Texture2DR32RGBA>(GetName());
-      //mWorld->MountHandle<Texture2DR32RGBA>(GetName(), mWidth, mHeight, ETextureWrap::ClampToEdge, ETextureFilter::Nearest);
-      //mDirty = false;
-      //return true;
+      HotRef<Texture2DR32RGBA>& hotRef = mWorld->GetHandle<Texture2DR32RGBA>(GetName());
+      if (hotRef.Get())
+      {
+        // Compare old values and decide if it has been changed at all
+      }
+      else
+      {
+        // Create new texture handle
+        Texture2DR32RGBA* texture = new Texture2DR32RGBA{ GetName(), mWidth, mHeight, ETextureWrap::ClampToEdge, ETextureFilter::Nearest };
+        texture->AddReference(this);
+        hotRef.Set(texture);
+      }
+      mDirty = false;
+      return true;
     }
   }
   return false;

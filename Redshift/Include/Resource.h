@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Core.h>
+#include <Types.h>
 
 class World;
 
@@ -28,6 +29,10 @@ public:
 
 public:
 
+  virtual inline std::string GetType() const { return ""; }
+
+public:
+
   inline std::string const& GetName() const { return mName; }
   inline std::filesystem::path GetFilePath() const { return mFilePath; }
   inline U8 const* GetBytes() const { return mBytes; }
@@ -46,7 +51,9 @@ public:
 protected:
 
   World* mWorld;
+
   std::string mName;
+
   std::filesystem::path mFilePath;
 
   U8* mBytes = nullptr;

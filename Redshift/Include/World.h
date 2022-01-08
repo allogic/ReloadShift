@@ -7,9 +7,9 @@
 #include <HotRef.h>
 #include <Utility.h>
 #include <Component.h>
+#include <Resource.h>
 
 class HotLoader;
-class Resource;
 class ActorProxy;
 
 class World
@@ -20,8 +20,8 @@ public:
   // Primitives
   ////////////////////////////////////////////////////////
 
-  using ModulesByName = std::unordered_map<std::string, ModuleProxy*>;
-  using ResourcesByName = std::unordered_map<std::string, Resource*>;
+  using ModulesByName = std::map<std::string, ModuleProxy*>;
+  using ResourcesByName = std::map<std::string, Resource*>;
   using ActorsByName = std::unordered_multimap<std::string, ActorProxy*>;
 
   using HandlesByName = std::unordered_map<std::string, HotRef<Handle>>;
@@ -72,35 +72,30 @@ public:
   requires std::is_base_of_v<Resource, R>
   R* MountResource(std::string const& resourceName, Args &&... args)
   {
-    // Compute keys
-    std::string resourceKey = std::string{ typeid(R).name() } + ':' + resourceName;
-    // Check if resource exists, if not, insert new resource
-    auto const resourceIt = mResources.find(resourceKey);
-    if (resourceIt == mResources.end())
+    Resource*& resource = mResources[resourceName];
+    // Probe if resource already exists
+    if (!resource)
     {
-      auto const& [emplaceIt, _] = mResources.emplace(resourceKey, new R{ this, resourceName, std::forward<Args>(args) ... });
+      resource = new R{ this, resourceName, std::forward<Args>(args) ... };
       // Enable auto load file and produce handles
-      if (emplaceIt->second->LoadFile())
+      if (resource->LoadFile())
       {
-        emplaceIt->second->ProduceHandles();
+        resource->ProduceHandles();
       }
-      return (R*)emplaceIt->second;
+      return (R*)resource;
     }
-    return (R*)resourceIt->second;
+    return (R*)resource;
   }
 
   template<typename R>
   requires std::is_base_of_v<Resource, R>
   void UnMountResource(std::string const& resourceName)
   {
-    // Compute keys
-    std::string resourceKey = std::string{ typeid(R).name() } + ':' + resourceName;
-    // Destroy resource
-    auto const resourceIt = mResources.find(resourceKey);
-    if (resourceIt != mResources.end())
+    Resource*& resource = mResources[resourceName];
+    // Check if resource exists, if so, destroy it
+    if (resource)
     {
-      delete resourceIt->second;
-      mResources.erase(resourceIt);
+      delete resource; resource = nullptr;
     }
   }
 
@@ -112,7 +107,7 @@ public:
 
   template<typename H>
   requires std::is_base_of_v<Handle, H>
-  void ConsumeDirtyHandleNames(std::set<std::string>& handleNames) const noexcept
+  void ConsumeDirtyHandleNames(std::set<std::string>& handleNames) noexcept
   {
     for (auto const& [name, hotRef] : mHandles[typeid(H).hash_code()])
     {
@@ -125,7 +120,7 @@ public:
 
   template<typename H>
   requires std::is_base_of_v<Handle, H>
-  void ConsumeNonDirtyHandleNames(std::set<std::string>& handleNames) const noexcept
+  void ConsumeNonDirtyHandleNames(std::set<std::string>& handleNames) noexcept
   {
     for (auto const& [name, hotRef] : mHandles[typeid(H).hash_code()])
     {
@@ -144,10 +139,10 @@ public:
 
   template<typename H, typename ... Args>
   requires std::is_base_of_v<Handle, H>
-  HotRef<H> const& LinkHandle(std::string const& handleName, Args &&... args)
+  HotRef<H>& LinkHandle(std::string const& handleName, Args &&... args)
   {
     HotRef<H>& hotRef = (HotRef<H>&)mHandles[typeid(H).hash_code()][handleName];
-    // Probe if reference is valid
+    // Probe if reference already exists
     if (!hotRef.Get())
     {
       // Create new handle
@@ -156,11 +151,29 @@ public:
     return hotRef;
   }
 
-  template<typename H>
+  template<typename H, typename ... Args>
   requires std::is_base_of_v<Handle, H>
-  H* GetHandleUnsafe(std::string const& handleName)
+  HotRef<H>& GetHandle(std::string const& handleName)
   {
-    return (H*)mHandles[typeid(H).hash_code()][handleName].Get();
+    return (HotRef<H>&)mHandles[typeid(H).hash_code()][handleName];
+  }
+
+  template<typename H, typename ... Args>
+  requires std::is_base_of_v<Handle, H>
+  void TrySetDirty(std::string const& handleName)
+  {
+    auto const outerIt = mHandles.find(typeid(H).hash_code());
+    if (outerIt != mHandles.end())
+    {
+      auto const innerIt = outerIt->second.find(handleName);
+      if (innerIt != outerIt->second.end())
+      {
+        if (innerIt->second.Get())
+        {
+          innerIt->second.Get()->SetDirty(true);
+        }
+      }
+    }
   }
 
 public:

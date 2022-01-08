@@ -14,7 +14,7 @@ public:
     U32 height,
     ETextureWrap::Type wrap,
     ETextureFilter::Type filter)
-    : Handle(typeid(GenericTexture).name(), name)
+    : Handle(name)
     , mWidth{ width }
     , mHeight{ height }
     , mWrap{ wrap }
@@ -33,6 +33,10 @@ public:
   {
     glDeleteTextures(1, &mID);
   }
+
+public:
+
+  virtual inline std::string GetType() const override { return "Texture"; }
 
 public:
 

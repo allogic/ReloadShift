@@ -15,6 +15,10 @@ public:
 
 public:
 
+  virtual inline std::string GetType() const override { return "Mesh"; }
+
+public:
+
   virtual bool LoadFile() override;
   virtual bool ProduceHandles() override;
 

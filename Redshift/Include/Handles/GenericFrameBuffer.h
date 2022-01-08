@@ -32,7 +32,7 @@ public:
     U32 height,
     DepthStencilTexture* depthStencilTexture,
     ColorTextures* ... colorTextures)
-    : Handle(typeid(GenericFrameBuffer).name(), name)
+    : Handle(name)
     , mWidth{ width }
     , mHeight{ height }
     , mDepthStencilTexture{ depthStencilTexture }
@@ -56,6 +56,10 @@ public:
   {
     glDeleteFramebuffers(1, &mID);
   }
+
+public:
+
+  virtual inline std::string GetType() const override { return "FrameBuffer"; }
 
 public:
 

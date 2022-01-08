@@ -8,10 +8,8 @@ class GenericBuffer : public Handle
 {
 public:
 
-  GenericBuffer(
-    std::string const& name,
-    U32 size)
-    : Handle(typeid(GenericBuffer).name(), name)
+  GenericBuffer(std::string const& name, U32 size)
+    : Handle(name)
     , mSize{ size }
   {
     glGenBuffers(1, &mID);
@@ -23,6 +21,10 @@ public:
   {
     glDeleteBuffers(1, &mID);
   }
+
+public:
+
+  virtual inline std::string GetType() const override { return "Buffer"; }
 
 public:
 

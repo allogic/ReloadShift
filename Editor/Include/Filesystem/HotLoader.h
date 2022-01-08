@@ -2,6 +2,7 @@
 
 #include <Core.h>
 #include <Module.h>
+#include <HotRef.h>
 
 #include <Resources/MeshResource.h>
 #include <Resources/ShaderResource.h>
@@ -48,13 +49,10 @@ private:
   // Handle specific
   ////////////////////////////////////////////////////////
 
-  void ReMountRenderProgramHandles();
-  void ReMountComputeProgramHandles();
-  void ReMountTextureHandles();
-  void ReMountMeshHandles();
-
-  void CreateMeshHandles();
-  void MergeMeshHandles();
+  void ProduceRenderProgramHandles();
+  void ProduceComputeProgramHandles();
+  void ProduceTextureHandles();
+  void ProduceMeshHandles();
 
 private:
 

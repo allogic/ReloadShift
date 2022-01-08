@@ -40,6 +40,6 @@ private:
   std::string mMeshName;
   std::string mProgramName;
 
-  HotRef<DefaultMesh> const& mMesh = mWorld->LinkHandle<DefaultMesh>(mMeshName);
-  HotRef<RenderProgram> const& mProgram = mWorld->LinkHandle<RenderProgram>(mProgramName);
+  HotRef<DefaultMesh> const& mMesh = mWorld->GetHandle<DefaultMesh>(mMeshName);
+  HotRef<RenderProgram> const& mProgram = mWorld->GetHandle<RenderProgram>(mProgramName);
 };

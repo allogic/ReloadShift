@@ -37,17 +37,42 @@ bool MeshResource::ProduceHandles()
 {
   if (ParseScene())
   {
-    //mWorld->MarkHandlesAsDirtyByName<VertexBuffer<Vertex>>(GetName());
-    //VertexBuffer<Vertex>* vertexBufferHandle = mWorld->MountHandle<VertexBuffer<Vertex>>(GetName(), (U32)mVertices.size());
-    //vertexBufferHandle->Bind();
-    //vertexBufferHandle->Set(mVertices.data());
-    //vertexBufferHandle->UnBind();
-    //mWorld->MarkHandlesAsDirtyByName<ElementBuffer<U32>>(GetName());
-    //ElementBuffer<U32>* elementBufferHandle = mWorld->MountHandle<ElementBuffer<U32>>(GetName(), (U32)mElements.size());
-    //elementBufferHandle->Bind();
-    //elementBufferHandle->Set(mElements.data());
-    //elementBufferHandle->UnBind();
-    //mDirty = false;
+    {
+      HotRef<VertexBuffer<Vertex>>& hotRef = mWorld->GetHandle<VertexBuffer<Vertex>>(GetName());
+      if (hotRef.Get())
+      {
+        // Compare old values and decide if it has been changed at all
+      }
+      else
+      {
+        VertexBuffer<Vertex>* vertexBuffer = new VertexBuffer<Vertex>{ GetName(), (U32)mVertices.size() };
+        vertexBuffer->AddReference(this);
+        vertexBuffer->Bind();
+        vertexBuffer->Set(mVertices.data());
+        vertexBuffer->UnBind();
+        hotRef.Set(vertexBuffer);
+      }
+    }
+
+    {
+      HotRef<ElementBuffer<U32>>& hotRef = mWorld->GetHandle<ElementBuffer<U32>>(GetName());
+      if (hotRef.Get())
+      {
+        // Compare old values and decide if it has been changed at all
+      }
+      else
+      {
+        ElementBuffer<U32>* elementBuffer = new ElementBuffer<U32>{ GetName(), (U32)mElements.size() };
+        elementBuffer->AddReference(this);
+        elementBuffer->Bind();
+        elementBuffer->Set(mElements.data());
+        elementBuffer->UnBind();
+        hotRef.Set(elementBuffer);
+      }
+    }
+    
+    mDirty = false;
+    return true;
   }
   return false;
 }

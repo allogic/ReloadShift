@@ -134,6 +134,7 @@ private:
 private:
 
   HotRef<UniformBuffer<Projection>> const& mUniformProjection = mWorld->LinkHandle<UniformBuffer<Projection>>("Projection", 1u);
+
   HotRef<Texture2DU24U8DS> const& mDeferredDepthStencil = mWorld->LinkHandle<Texture2DU24U8DS>("DeferredDepthStencil", 1280u, 720u, ETextureWrap::ClampToEdge, ETextureFilter::Nearest);
   HotRef<Texture2DR32RGBA> const& mDeferredPosition = mWorld->LinkHandle<Texture2DR32RGBA>("DeferredPosition", 1280u, 720u, ETextureWrap::ClampToEdge, ETextureFilter::Nearest);
   HotRef<Texture2DR32RGBA> const& mDeferredAlbedo = mWorld->LinkHandle<Texture2DR32RGBA>("DeferredAlbedo", 1280u, 720u, ETextureWrap::ClampToEdge, ETextureFilter::Nearest);
@@ -142,7 +143,8 @@ private:
   HotRef<Texture2DR32RGBA> const& mDeferredHeight = mWorld->LinkHandle<Texture2DR32RGBA>("DeferredHeight", 1280u, 720u, ETextureWrap::ClampToEdge, ETextureFilter::Nearest);
   HotRef<Texture2DR32RGBA> const& mDeferredMetallic = mWorld->LinkHandle<Texture2DR32RGBA>("DeferredMetallic", 1280u, 720u, ETextureWrap::ClampToEdge, ETextureFilter::Nearest);
   HotRef<Texture2DR32RGBA> const& mDeferredRoughness = mWorld->LinkHandle<Texture2DR32RGBA>("DeferredRoughness", 1280u, 720u, ETextureWrap::ClampToEdge, ETextureFilter::Nearest);
-  HotRef<DeferredFrameBuffer> const& mFrameBuffer = mWorld->LinkHandle<DeferredFrameBuffer>("Deferred", 1280u, 720u, mDeferredDepthStencil.Get(), mDeferredPosition.Get(), mDeferredAlbedo.Get(), mDeferredNormal.Get(), mDeferredSpecular.Get(), mDeferredHeight.Get(), mDeferredMetallic.Get(), mDeferredRoughness.Get());
+
+  HotRef<DeferredFrameBuffer> const& mFrameBuffer = mWorld->LinkHandle<DeferredFrameBuffer>("DeferredFrameBuffer", 1280u, 720u, mDeferredDepthStencil.Get(), mDeferredPosition.Get(), mDeferredAlbedo.Get(), mDeferredNormal.Get(), mDeferredSpecular.Get(), mDeferredHeight.Get(), mDeferredMetallic.Get(), mDeferredRoughness.Get());
 
   Projection mProjection = {};
 };

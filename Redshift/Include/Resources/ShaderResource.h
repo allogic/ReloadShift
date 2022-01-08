@@ -23,6 +23,10 @@ public:
 
 public:
 
+  virtual inline std::string GetType() const override { return "Shader"; }
+
+public:
+
   virtual bool LoadFile() override
   {
     if (!mBytes)
@@ -53,9 +57,18 @@ public:
     glGetShaderiv(SID, GL_COMPILE_STATUS, &compileStatus);
     if (compileStatus)
     {
-      //mWorld->MarkHandlesAsDirtyByName<GenericShader<Type>>(GetName());
-      //mWorld->MountHandle<GenericShader<Type>>(GetName(), SID);
-      //mDirty = false;
+      HotRef<GenericShader<Type>>& hotRef = mWorld->GetHandle<GenericShader<Type>>(GetName());
+      if (hotRef.Get())
+      {
+        // Compare old values and decide if it has been changed at all
+      }
+      else
+      {
+        GenericShader<Type>* shader = new GenericShader<Type>{ GetName(), SID };
+        shader->AddReference(this);
+        hotRef.Set(shader);
+      }
+      mDirty = false;
     }
     else
     {

@@ -14,6 +14,10 @@ public:
 
 public:
 
+  virtual inline std::string GetType() const override { return "Texture"; }
+
+public:
+
   virtual bool LoadFile() override;
   virtual bool ProduceHandles() override;
 

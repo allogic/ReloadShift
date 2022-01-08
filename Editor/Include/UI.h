@@ -22,9 +22,10 @@ private:
   {
     static bool opened = true;
     ImGui::Begin("Resources", &opened);
-    if (ImGui::BeginTable("Resources", 6))
+    if (ImGui::BeginTable("Resources", 7))
     {
       ImGui::TableNextColumn(); ImGui::Text("Type");
+      ImGui::TableNextColumn(); ImGui::Text("Name");
       ImGui::TableNextColumn(); ImGui::Text("Address");
       ImGui::TableNextColumn(); ImGui::Text("Bytes");
       ImGui::TableNextColumn(); ImGui::Text("BytesSize");
@@ -32,12 +33,16 @@ private:
       ImGui::TableNextColumn(); ImGui::Text("FilePath");
       for (auto& [name, resource] : world->GetResources())
       {
-        ImGui::TableNextColumn(); ImGui::Text(name.c_str());
-        ImGui::TableNextColumn(); ImGui::Text("%p", resource);
-        ImGui::TableNextColumn(); ImGui::Text("%p", resource->GetBytes());
-        ImGui::TableNextColumn(); ImGui::Text("%u", resource->GetBytesSize());
-        ImGui::TableNextColumn(); ImGui::Text("%u", resource->GetDirty());
-        ImGui::TableNextColumn(); ImGui::Text(resource->GetFilePath().string().c_str());
+        if (resource)
+        {
+          ImGui::TableNextColumn(); ImGui::Text("%s", resource->GetType().c_str());
+          ImGui::TableNextColumn(); ImGui::Text(resource->GetName().c_str());
+          ImGui::TableNextColumn(); ImGui::Text("%p", resource);
+          ImGui::TableNextColumn(); ImGui::Text("%p", resource->GetBytes());
+          ImGui::TableNextColumn(); ImGui::Text("%u", resource->GetBytesSize());
+          ImGui::TableNextColumn(); ImGui::Text("%u", resource->GetDirty());
+          ImGui::TableNextColumn(); ImGui::Text(resource->GetFilePath().string().c_str());
+        }
       }
       ImGui::EndTable();
     }
@@ -68,8 +73,9 @@ private:
   {
     static bool opened = true;
     ImGui::Begin("Handles", &opened);
-    if (ImGui::BeginTable("Handles", 4))
+    if (ImGui::BeginTable("Handles", 5))
     {
+      ImGui::TableNextColumn(); ImGui::Text("Type");
       ImGui::TableNextColumn(); ImGui::Text("Name");
       ImGui::TableNextColumn(); ImGui::Text("Address");
       ImGui::TableNextColumn(); ImGui::Text("Dirty");
@@ -78,10 +84,11 @@ private:
       {
         for (auto const& [name, hotRef] : handlesByName)
         {
+          ImGui::TableNextColumn(); ImGui::Text(hotRef.Get() ? hotRef.Get()->GetType().c_str() : "");
           ImGui::TableNextColumn(); ImGui::Text(name.c_str());
           ImGui::TableNextColumn(); ImGui::Text("%p", hotRef.Get());
-          ImGui::TableNextColumn(); ImGui::Text("%u", hotRef.Get() ? hotRef.Get()->GetDirty() : 0);
-          ImGui::TableNextColumn(); ImGui::Text("%u", hotRef.Get() ? hotRef.Get()->GetReferenceCount() : 0);
+          ImGui::TableNextColumn(); ImGui::Text("%u", hotRef.Get() ? hotRef.Get()->GetDirty() : 666);
+          ImGui::TableNextColumn(); ImGui::Text("%u", hotRef.Get() ? hotRef.Get()->GetReferenceCount() : 666);
         }
       }
       ImGui::EndTable();

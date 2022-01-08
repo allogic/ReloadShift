@@ -2,17 +2,12 @@
 
 #include <Core.h>
 
-class Actor;
-
 class Handle
 {
 public:
 
-  Handle(
-    std::string const& type,
-    std::string const& name)
-    : mType{ type }
-    , mName{ name }
+  Handle(std::string const& name)
+    : mName{ name }
   {
 
   }
@@ -20,20 +15,23 @@ public:
 
 public:
 
-  inline std::string const& GetType() const { return mType; }
-  inline std::string const& GetName() const { return mName; }
-  inline bool GetDirty() const { return mDirty; }
-  inline U32 GetReferenceCount() const { return (U32)mActorReferences.size(); }
+  virtual inline std::string GetType() const { return ""; }
 
 public:
 
-  inline void AddReference(Actor* actor)
+  inline std::string const& GetName() const { return mName; }
+  inline bool GetDirty() const { return mDirty; }
+  inline U32 GetReferenceCount() const { return (U32)mReferences.size(); }
+
+public:
+
+  inline void AddReference(void* actor)
   {
-    mActorReferences.emplace(actor);
+    mReferences.emplace(actor);
   }
-  inline void RemoveReference(Actor* actor)
+  inline void RemoveReference(void* actor)
   {
-    mActorReferences.erase(mActorReferences.find(actor));
+    mReferences.erase(mReferences.find(actor));
   }
 
 public:
@@ -42,12 +40,11 @@ public:
 
 protected:
 
-  std::string mType;
   std::string mName;
 
-  bool mDirty = true;
+  bool mDirty = false;
 
   U32 mReferenceCount = 0;
 
-  std::set<Actor*> mActorReferences = {};
+  std::set<void*> mReferences = {};
 };
