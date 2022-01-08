@@ -53,9 +53,9 @@ public:
     glGetShaderiv(SID, GL_COMPILE_STATUS, &compileStatus);
     if (compileStatus)
     {
-      mWorld->MarkHandlesAsDirtyByName<GenericShader<Type>>(GetName());
-      mWorld->MountHandle<GenericShader<Type>>(GetName(), SID);
-      mDirty = false;
+      //mWorld->MarkHandlesAsDirtyByName<GenericShader<Type>>(GetName());
+      //mWorld->MountHandle<GenericShader<Type>>(GetName(), SID);
+      //mDirty = false;
     }
     else
     {

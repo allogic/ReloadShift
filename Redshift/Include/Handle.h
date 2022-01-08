@@ -2,6 +2,8 @@
 
 #include <Core.h>
 
+class Actor;
+
 class Handle
 {
 public:
@@ -21,29 +23,31 @@ public:
   inline std::string const& GetType() const { return mType; }
   inline std::string const& GetName() const { return mName; }
   inline bool GetDirty() const { return mDirty; }
-  inline U32 GetReferenceCount() const { return mReferenceCount; }
+  inline U32 GetReferenceCount() const { return (U32)mActorReferences.size(); }
 
 public:
 
-  inline void IncReferenceCount() { mReferenceCount++; }
-  inline void DecReferenceCount() { mReferenceCount--; }
+  inline void AddReference(Actor* actor)
+  {
+    mActorReferences.emplace(actor);
+  }
+  inline void RemoveReference(Actor* actor)
+  {
+    mActorReferences.erase(mActorReferences.find(actor));
+  }
 
 public:
 
   inline void SetDirty(bool value) { mDirty = value; }
-  inline void SetReferenceCount(U32 value) { mReferenceCount = value; }
-
-public:
-
-  virtual void Create() = 0;
-  virtual void Destroy() = 0;
 
 protected:
 
   std::string mType;
   std::string mName;
 
-  bool mDirty = false;
+  bool mDirty = true;
 
   U32 mReferenceCount = 0;
+
+  std::set<Actor*> mActorReferences = {};
 };

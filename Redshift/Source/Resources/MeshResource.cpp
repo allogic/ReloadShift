@@ -37,17 +37,17 @@ bool MeshResource::ProduceHandles()
 {
   if (ParseScene())
   {
-    mWorld->MarkHandlesAsDirtyByName<VertexBuffer<Vertex>>(GetName());
-    VertexBuffer<Vertex>* vertexBufferHandle = mWorld->MountHandle<VertexBuffer<Vertex>>(GetName(), (U32)mVertices.size());
-    vertexBufferHandle->Bind();
-    vertexBufferHandle->Set(mVertices.data());
-    vertexBufferHandle->UnBind();
-    mWorld->MarkHandlesAsDirtyByName<ElementBuffer<U32>>(GetName());
-    ElementBuffer<U32>* elementBufferHandle = mWorld->MountHandle<ElementBuffer<U32>>(GetName(), (U32)mElements.size());
-    elementBufferHandle->Bind();
-    elementBufferHandle->Set(mElements.data());
-    elementBufferHandle->UnBind();
-    mDirty = false;
+    //mWorld->MarkHandlesAsDirtyByName<VertexBuffer<Vertex>>(GetName());
+    //VertexBuffer<Vertex>* vertexBufferHandle = mWorld->MountHandle<VertexBuffer<Vertex>>(GetName(), (U32)mVertices.size());
+    //vertexBufferHandle->Bind();
+    //vertexBufferHandle->Set(mVertices.data());
+    //vertexBufferHandle->UnBind();
+    //mWorld->MarkHandlesAsDirtyByName<ElementBuffer<U32>>(GetName());
+    //ElementBuffer<U32>* elementBufferHandle = mWorld->MountHandle<ElementBuffer<U32>>(GetName(), (U32)mElements.size());
+    //elementBufferHandle->Bind();
+    //elementBufferHandle->Set(mElements.data());
+    //elementBufferHandle->UnBind();
+    //mDirty = false;
   }
   return false;
 }

@@ -38,17 +38,6 @@ public:
     , mDepthStencilTexture{ depthStencilTexture }
     , mColorTextures{ colorTextures ... }
   {
-
-  }
-
-public:
-
-  inline U32 GetID() const { return mID; }
-
-public:
-
-  virtual void Create() override
-  {
     glGenFramebuffers(1, &mID);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mID);
     U32 colorTextureIndex = 0;
@@ -63,10 +52,14 @@ public:
     glDrawBuffers(1, bufferAttachments);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
   }
-  virtual void Destroy() override
+  virtual ~GenericFrameBuffer()
   {
     glDeleteFramebuffers(1, &mID);
   }
+
+public:
+
+  inline U32 GetID() const { return mID; }
 
 public:
 

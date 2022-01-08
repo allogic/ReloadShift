@@ -16,21 +16,14 @@ public:
   {
 
   }
+  virtual ~GenericShader()
+  {
+    glDeleteShader(mID);
+  }
 
 public:
 
   inline U32 GetID() const { return mID; }
-
-public:
-
-  virtual void Create() override
-  {
-
-  }
-  virtual void Destroy() override
-  {
-    glDeleteShader(mID);
-  }
 
 private:
 

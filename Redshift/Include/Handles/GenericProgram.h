@@ -13,16 +13,9 @@ public:
   GenericProgram(std::string const& name)
     : Handle(typeid(GenericProgram).name(), name)
   {
-
-  }
-
-public:
-
-  virtual void Create() override
-  {
     mID = glCreateProgram();
   }
-  virtual void Destroy() override
+  virtual ~GenericProgram()
   {
     glDeleteProgram(mID);
   }

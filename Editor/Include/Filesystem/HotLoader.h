@@ -53,19 +53,14 @@ private:
   void ReMountTextureHandles();
   void ReMountMeshHandles();
 
-private:
-
-  ////////////////////////////////////////////////////////
-  // Hotswapping
-  ////////////////////////////////////////////////////////
-
-  void HotswapShaders();
-  void HotswapPrograms();
+  void CreateMeshHandles();
+  void MergeMeshHandles();
 
 private:
 
   GLFWwindow* mWindow;
   World* mWorld;
+
   std::filesystem::path mTempFolder;
 
   Watchdog mWatchdogModule;

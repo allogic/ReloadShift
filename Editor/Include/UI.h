@@ -53,7 +53,7 @@ private:
       ImGui::TableNextColumn(); ImGui::Text("Address");
       ImGui::TableNextColumn(); ImGui::Text("Hash");
       ImGui::TableNextColumn(); ImGui::Text("ComponentCount");
-      for (auto const& proxy : world->GetActors())
+      for (auto const& [name, proxy] : world->GetActors())
       {
         ImGui::TableNextColumn(); ImGui::Text(proxy->GetActor()->GetName().c_str());
         ImGui::TableNextColumn(); ImGui::Text("%p", proxy->GetActor());
@@ -74,12 +74,15 @@ private:
       ImGui::TableNextColumn(); ImGui::Text("Address");
       ImGui::TableNextColumn(); ImGui::Text("Dirty");
       ImGui::TableNextColumn(); ImGui::Text("ReferenceCount");
-      for (auto const& [name, handle] : world->GetHandles())
+      for (auto const& [type, handlesByName] : world->GetHandles())
       {
-        ImGui::TableNextColumn(); ImGui::Text(name.c_str());
-        ImGui::TableNextColumn(); ImGui::Text("%p", handle);
-        ImGui::TableNextColumn(); ImGui::Text("%u", handle->GetDirty());
-        ImGui::TableNextColumn(); ImGui::Text("%u", handle->GetReferenceCount());
+        for (auto const& [name, hotRef] : handlesByName)
+        {
+          ImGui::TableNextColumn(); ImGui::Text(name.c_str());
+          ImGui::TableNextColumn(); ImGui::Text("%p", hotRef.Get());
+          ImGui::TableNextColumn(); ImGui::Text("%u", hotRef.Get() ? hotRef.Get()->GetDirty() : 0);
+          ImGui::TableNextColumn(); ImGui::Text("%u", hotRef.Get() ? hotRef.Get()->GetReferenceCount() : 0);
+        }
       }
       ImGui::EndTable();
     }

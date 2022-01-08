@@ -14,26 +14,19 @@ public:
     : Handle(typeid(GenericBuffer).name(), name)
     , mSize{ size }
   {
-
-  }
-
-public:
-
-  inline U32 GetSize() const { return mSize; }
-
-public:
-
-  virtual void Create() override
-  {
     glGenBuffers(1, &mID);
     glBindBuffer(Type, mID);
     glBufferStorage(Type, mSize * sizeof(Value), nullptr, GL_DYNAMIC_STORAGE_BIT | GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT);
     glBindBuffer(Type, 0);
   }
-  virtual void Destroy() override
+  virtual ~GenericBuffer()
   {
     glDeleteBuffers(1, &mID);
   }
+
+public:
+
+  inline U32 GetSize() const { return mSize; }
 
 public:
 

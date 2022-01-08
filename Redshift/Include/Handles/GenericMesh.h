@@ -14,16 +14,9 @@ public:
   GenericMesh(std::string const& name)
     : Handle(typeid(GenericMesh).name(), name)
   {
-
-  }
-
-public:
-
-  virtual void Create() override
-  {
     glGenVertexArrays(1, &mID);
   }
-  virtual void Destroy() override
+  virtual ~GenericMesh()
   {
     glDeleteVertexArrays(1, &mID);
   }

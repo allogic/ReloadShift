@@ -3,6 +3,7 @@
 #include <Core.h>
 #include <Component.h>
 #include <World.h>
+#include <HotRef.h>
 
 #include <Handles/GenericMesh.h>
 #include <Handles/GenericProgram.h>
@@ -21,32 +22,16 @@ public:
     , mMeshName{ meshName }
     , mProgramName{ programName }
   {
-    MountHandles();
+
   }
 
 public:
 
-  virtual void MountHandles() override
+  void SubmitRenderTask(Transform* transform, std::queue<RenderTask>& renderQueue)
   {
-    mMesh = mWorld->GetFirstNonDirtyHandleByName<DefaultMesh>(mMeshName);
-    mProgram = mWorld->GetFirstNonDirtyHandleByName<RenderProgram>(mProgramName);
-
-    if (mMesh) mMesh->IncReferenceCount();
-    if (mProgram) mProgram->IncReferenceCount();
-  }
-  virtual void UnMountHandles() override
-  {
-    if (mMesh) mMesh->DecReferenceCount(); mMesh = nullptr;
-    if (mProgram) mProgram->DecReferenceCount(); mProgram = nullptr;
-  }
-
-public:
-
-  void SubmitDrawCall(Transform* transform, std::queue<RenderTask>& renderQueue)
-  {
-    if (transform && mMesh && mProgram)
+    if (mMesh.Get() && mProgram.Get())
     {
-      renderQueue.emplace(RenderTask{ transform, mMesh, mProgram });
+      renderQueue.emplace(RenderTask{ transform, mMesh.Get(), mProgram.Get() });
     }
   }
 
@@ -55,6 +40,6 @@ private:
   std::string mMeshName;
   std::string mProgramName;
 
-  DefaultMesh* mMesh = nullptr;
-  RenderProgram* mProgram = nullptr;
+  HotRef<DefaultMesh> const& mMesh = mWorld->LinkHandle<DefaultMesh>(mMeshName);
+  HotRef<RenderProgram> const& mProgram = mWorld->LinkHandle<RenderProgram>(mProgramName);
 };

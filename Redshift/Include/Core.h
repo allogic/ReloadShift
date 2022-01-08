@@ -105,6 +105,8 @@
 #include <fstream>
 
 #include <type_traits>
+#include <typeinfo>
+
 #include <functional>
 #include <utility>
 #include <algorithm>

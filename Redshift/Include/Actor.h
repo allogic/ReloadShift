@@ -14,9 +14,13 @@ public:
 
 public:
 
-  Actor(World* world, ActorProxy* proxy)
+  Actor(
+    World* world,
+    ActorProxy* proxy,
+    std::string const& name)
     : mWorld{ world }
     , mProxy{ proxy }
+    , mName{ name }
   {
 
   }
@@ -47,11 +51,6 @@ public:
     mProxy->mComponents[componentHash] = value;
     return (C*)value;
   }
-
-public:
-
-  inline void SetCurrentHash(U64 value) { mCurrentHash = value; }
-  inline void SetName(std::string const& value) { mName = value; }
 
 private:
 

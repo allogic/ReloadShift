@@ -4,6 +4,7 @@
 #include <Actor.h>
 #include <Handle.h>
 #include <ModuleProxy.h>
+#include <HotRef.h>
 #include <Utility.h>
 #include <Component.h>
 
@@ -16,12 +17,31 @@ class World
 public:
 
   ////////////////////////////////////////////////////////
+  // Primitives
+  ////////////////////////////////////////////////////////
+
+  using ModulesByName = std::unordered_map<std::string, ModuleProxy*>;
+  using ResourcesByName = std::unordered_map<std::string, Resource*>;
+  using ActorsByName = std::unordered_multimap<std::string, ActorProxy*>;
+
+  using HandlesByName = std::unordered_map<std::string, HotRef<Handle>>;
+  using HandlesByNameByType = std::unordered_map<U64, HandlesByName>;
+
+  using PermutationTable = std::unordered_map<U64, std::set<ActorProxy*>>;
+
+public:
+
+  ////////////////////////////////////////////////////////
   // Singleton
   ////////////////////////////////////////////////////////
 
   static inline World& Instance() { static World world; return world; }
 
 public:
+
+  ////////////////////////////////////////////////////////
+  // Constructor
+  ////////////////////////////////////////////////////////
 
   World();
 
@@ -34,10 +54,13 @@ public:
   inline GladGLContext* GetGladContext() const { return mGladContext; }
   inline ImGuiContext* GetImGuiContext() const { return mImGuiContext; }
 
-  inline std::map<std::string, ModuleProxy*>& GetModules() { return mModules; }
-  inline std::map<std::string, Resource*>& GetResources() { return mResources; }
-  inline std::multimap<std::string, Handle*>& GetHandles() { return mHandles; }
-  inline std::vector<ActorProxy*> GetActors() { return mActors; }
+  inline ModulesByName& GetModules() { return mModules; }
+  inline ResourcesByName& GetResources() { return mResources; }
+  inline ActorsByName GetActors() { return mActors; }
+
+  inline HandlesByNameByType& GetHandles() { return mHandles; }
+
+  inline PermutationTable& GetPermutationTable() { return mPermutationTable; }
 
 public:
 
@@ -89,77 +112,27 @@ public:
 
   template<typename H>
   requires std::is_base_of_v<Handle, H>
-  void CollectDirtyHandleNamesByType(std::set<std::string>& handleNames)
+  void ConsumeDirtyHandleNames(std::set<std::string>& handleNames) const noexcept
   {
-    for (auto it = mHandles.begin(); it != mHandles.end(); ++it)
+    for (auto const& [name, hotRef] : mHandles[typeid(H).hash_code()])
     {
-      if (it->second->GetType() == typeid(H).name())
+      if (hotRef.Get() && hotRef.Get()->GetDirty())
       {
-        if (it->second->GetDirty())
-        {
-          handleNames.emplace(it->second->GetName());
-        }
+        handleNames.emplace(name);
       }
     }
   }
 
   template<typename H>
   requires std::is_base_of_v<Handle, H>
-  void CollectNonDirtyHandleNamesByType(std::set<std::string>& handleNames)
+  void ConsumeNonDirtyHandleNames(std::set<std::string>& handleNames) const noexcept
   {
-    for (auto it = mHandles.begin(); it != mHandles.end(); ++it)
+    for (auto const& [name, hotRef] : mHandles[typeid(H).hash_code()])
     {
-      if (it->second->GetType() == typeid(H).name())
+      if (hotRef.Get() && !hotRef.Get()->GetDirty())
       {
-        if (!it->second->GetDirty())
-        {
-          handleNames.emplace(it->second->GetName());
-        }
+        handleNames.emplace(name);
       }
-    }
-  }
-
-  template<typename H>
-  requires std::is_base_of_v<Handle, H>
-  H* GetFirstDirtyHandleByName(std::string const& name)
-  {
-    std::string handleKey = std::string{ typeid(H).name() } + ':' + name;
-    auto const handleIt = mHandles.equal_range(handleKey);
-    for (auto it = handleIt.first; it != handleIt.second; ++it)
-    {
-      if (it->second->GetDirty())
-      {
-        return (H*)it->second;
-      }
-    }
-    return nullptr;
-  }
-
-  template<typename H>
-  requires std::is_base_of_v<Handle, H>
-  H* GetFirstNonDirtyHandleByName(std::string const& name)
-  {
-    std::string handleKey = std::string{ typeid(H).name() } + ':' + name;
-    auto const handleIt = mHandles.equal_range(handleKey);
-    for (auto it = handleIt.first; it != handleIt.second; ++it)
-    {
-      if (!it->second->GetDirty())
-      {
-        return (H*)it->second;
-      }
-    }
-    return nullptr;
-  }
-
-  template<typename H>
-  requires std::is_base_of_v<Handle, H>
-  void MarkHandlesAsDirtyByName(std::string const& name)
-  {
-    std::string handleKey = std::string{ typeid(H).name() } + ':' + name;
-    auto const handleIt = mHandles.equal_range(handleKey);
-    for (auto it = handleIt.first; it != handleIt.second; ++it)
-    {
-      it->second->SetDirty(true);
     }
   }
 
@@ -171,42 +144,23 @@ public:
 
   template<typename H, typename ... Args>
   requires std::is_base_of_v<Handle, H>
-  H* MountHandle(std::string const& handleName, Args &&... args)
+  HotRef<H> const& LinkHandle(std::string const& handleName, Args &&... args)
   {
-    // Compute keys
-    std::string handleKey = std::string{ typeid(H).name() } + ':' + handleName;
-    // Check if existing handles exist
-    auto const handleIt = mHandles.equal_range(handleKey);
-    if (handleIt.first == handleIt.second)
+    HotRef<H>& hotRef = (HotRef<H>&)mHandles[typeid(H).hash_code()][handleName];
+    // Probe if reference is valid
+    if (!hotRef.Get())
     {
-      // Insert new handle
-      auto const& emplaceIt = mHandles.emplace(handleKey, new H{ handleName, std::forward<Args>(args) ... });
-      emplaceIt->second->Create();
-      return (H*)emplaceIt->second;
+      // Create new handle
+      hotRef.Set(new H{ handleName, std::forward<Args>(args) ... });
     }
-    else
-    {
-      // Return first non dirty handle
-      return GetFirstNonDirtyHandleByName<H>(handleName);
-    }
+    return hotRef;
   }
 
   template<typename H>
   requires std::is_base_of_v<Handle, H>
-  void DestroyHandle(std::string const& handleName)
+  H* GetHandleUnsafe(std::string const& handleName)
   {
-    // Compute keys
-    std::string handleKey = std::string{ typeid(H).name() } + ':' + handleName;
-    // Erase and destroy handle
-    for (auto it = mHandles.begin(); it != mHandles.end(); ++it)
-    {
-      if (it->second->GetType() == typeid(H).name() && it->second->GetName() == handleName)
-      {
-        it->second->Destroy();
-        delete it->second;
-        it = mHandles.erase(it);
-      }
-    }
+    return (H*)mHandles[typeid(H).hash_code()][handleName].Get();
   }
 
 public:
@@ -224,13 +178,12 @@ public:
     if (!component)
     {
       // Update actor
-      //actor->SetHash(actorHash);
       component = actor->CreateComponent<C>(new C{ this, std::forward<Args>(args) ... });
       // Register proxy for all single types
       auto permutations = actor->GetInOrderComponentHashes();
       for (auto const& typHash : permutations)
       {
-        mTypeBuckets[typHash].emplace(actor->GetProxy());
+        mPermutationTable[typHash].emplace(actor->GetProxy());
       }
       // Complete transaction by computing all type permutations
       // and insert the proxy in their respective buckets
@@ -243,7 +196,7 @@ public:
           for (U32 j = i; j < permutations.size(); ++j)
           {
             permutationHash ^= permutations[j];
-            mTypeBuckets[permutationHash].emplace(actor->GetProxy());
+            mPermutationTable[permutationHash].emplace(actor->GetProxy());
           }
         }
       } while (std::next_permutation(permutations.begin(), permutations.end()));
@@ -257,14 +210,10 @@ public:
   {
     // Create actor proxy
     ActorProxy* proxy = new ActorProxy{};
+    mActors.emplace(actorName, proxy);
     // Create actor after proxy in order to initialize components inside the constructor
-    A* actor = new A{ this, proxy, std::forward<Args>(args) ... };
-    actor->SetName(actorName);
+    A* actor = new A{ this, proxy, actorName, std::forward<Args>(args) ... };
     proxy->SetActor(actor);
-    // Add proxy to actor list
-    mActors.emplace_back(proxy);
-    // Add proxy to empty component bucket
-    mTypeBuckets[actor->GetCurrentHash()].emplace(proxy);
     return actor;
   }
 
@@ -301,12 +250,13 @@ public:
   //}
 
   template<typename ... Cs>
+  requires (std::is_base_of_v<Component, typename TypeProxy<Cs>::Type> && ...)
   void DispatchFor(std::function<void(typename TypeProxy<Cs>::Ptr ...)>&& predicate)
   {
     // Compute hash
     U64 bucketHash = ((U64)0 ^ ... ^ typeid(Cs).hash_code());
     // Execute predicate over actors in bucket
-    for (auto const& proxy : mTypeBuckets[bucketHash])
+    for (auto const& proxy : mPermutationTable[bucketHash])
     {
       predicate
       (
@@ -327,45 +277,14 @@ public:
 
 private:
 
-  ////////////////////////////////////////////////////////
-  // Context state
-  ////////////////////////////////////////////////////////
-
   GladGLContext* mGladContext = nullptr;
   ImGuiContext* mImGuiContext = nullptr;
 
-private:
+  ModulesByName mModules = {};
+  ResourcesByName mResources = {};
+  ActorsByName mActors = {};
 
-  ////////////////////////////////////////////////////////
-  // Modules
-  ////////////////////////////////////////////////////////
+  HandlesByNameByType mHandles = {};
 
-  std::map<std::string, ModuleProxy*> mModules = {};
-
-private:
-
-  ////////////////////////////////////////////////////////
-  // Resources
-  ////////////////////////////////////////////////////////
-
-  std::map<std::string, Resource*> mResources = {};
-
-private:
-
-  ////////////////////////////////////////////////////////
-  // Handles
-  ////////////////////////////////////////////////////////
-
-  std::multimap<std::string, Handle*> mHandles = {};
-
-private:
-
-  ////////////////////////////////////////////////////////
-  // Actor/Components
-  ////////////////////////////////////////////////////////
-
-  std::map<U64, std::set<ActorProxy*>> mTypeBuckets = {};
-  std::vector<ActorProxy*> mActors = {};
-  U32 mUniqueComponentCount = 0;
-  std::map<U64, U32> mIdentities = {};
+  PermutationTable mPermutationTable = {};
 };

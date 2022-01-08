@@ -20,17 +20,6 @@ public:
     , mWrap{ wrap }
     , mFilter{ filter }
   {
-
-  }
-
-public:
-
-  inline U32 GetID() const { return mID; }
-
-public:
-
-  virtual void Create() override
-  {
     glGenTextures(1, &mID);
     glBindTexture(Type, mID);
     glTextureParameteri(mID, GL_TEXTURE_WRAP_S, (I32)mWrap);
@@ -40,10 +29,14 @@ public:
     glTexImage2D(Type, 0, FormatInternal, mWidth, mHeight, 0, Format, Layout, nullptr);
     glBindTexture(Type, 0);
   }
-  virtual void Destroy() override
+  virtual ~GenericTexture()
   {
     glDeleteTextures(1, &mID);
   }
+
+public:
+
+  inline U32 GetID() const { return mID; }
 
 public:
 

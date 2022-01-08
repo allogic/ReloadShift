@@ -31,5 +31,5 @@ protected:
   World* mWorld;
 
   std::queue<RenderTask> mRenderQueue = {};
-  std::map<RenderProgram*, std::multiset<RenderTask>> mDrawCalls = {};
+  std::unordered_map<RenderProgram*, std::multiset<RenderTask>> mDrawCalls = {};
 };

@@ -3,6 +3,7 @@
 #include <Core.h>
 #include <Types.h>
 #include <Utility.h>
+#include <HotRef.h>
 #include <Handle.h>
 #include <Resource.h>
 #include <Module.h>

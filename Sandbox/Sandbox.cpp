@@ -1,68 +1,10 @@
 #define REDSHIFT_IMPLEMENTATION
 #include <Redshift.h>
 
+#include <Actors/Enemy.h>
+#include <Actors/Player.h>
+
 #include <Renderer/DeferredRenderer.h>
-
-class Brain : public Component
-{
-public:
-
-  Brain(World* world)
-    : Component(world)
-  {
-
-  }
-};
-
-class Player : public Actor
-{
-public:
-
-  Player(World* world, ActorProxy* proxy)
-    : Actor(world, proxy)
-    , mTransform{ world->AttachComponent<Transform>(this, R32V3{ 0.0f, 0.0f, -30.0f }, R32V3{ 0.0f }, R32V3{ 1.0f }) }
-    , mCamera{ world->AttachComponent<Camera>(this, 45.0f, 0.001f, 1000.0f) }
-  {
-    
-  }
-
-public:
-
-  inline Transform* GetTransform() const { return mTransform; }
-  inline Renderable* GetRenderable() const { return mRenderable; }
-  inline Camera* GetCamera() const { return mCamera; }
-
-private:
-
-  Transform* mTransform;
-  Renderable* mRenderable;
-  Camera* mCamera;
-};
-class Enemy : public Actor
-{
-public:
-
-  Enemy(World* world, ActorProxy* proxy)
-    : Actor(world, proxy)
-    , mTransform{ world->AttachComponent<Transform>(this, R32V3{ 0.0f }, R32V3{ 0.0f }, R32V3{ 0.03f }) }
-    , mRenderable{ world->AttachComponent<Renderable>(this, "Puker", "Lit") }
-    , mBrain{ world->AttachComponent<Brain>(this) }
-  {
-
-  }
-
-public:
-
-  inline Transform* GetTransform() const { return mTransform; }
-  inline Renderable* GetRenderable() const { return mRenderable; }
-  inline Brain* GetBrain() const { return mBrain; }
-
-private:
-
-  Transform* mTransform;
-  Renderable* mRenderable;
-  Brain* mBrain;
-};
 
 class Sandbox : public Module
 {

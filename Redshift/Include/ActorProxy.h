@@ -28,6 +28,6 @@ public:
 private:
 
   Actor* mActor = nullptr;
-  std::map<U64, Component*> mComponents = {};
+  std::unordered_map<U64, Component*> mComponents = {};
   U32 mComponentCount = 0;
 };

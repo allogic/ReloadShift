@@ -45,9 +45,6 @@ void HotLoader::Update()
   UpdateTexturesAssets();
   UpdateMesheAssets();
   UpdateShadersAssets();
-
-  //HotswapShaders();
-  //HotswapPrograms();
 }
 
 void HotLoader::UpdateModules()
@@ -95,41 +92,31 @@ void HotLoader::UpdateTexturesAssets()
   for (auto const& file : mWatchdogTexture.FilesToDelete())
   {
     std::string assetName = file.stem().string();
-
     mWorld->UnMountResource<TextureResource>(assetName);
-
-    mWorld->MarkHandlesAsDirtyByName<Texture2DU8RGB>(assetName);
-    mWorld->MarkHandlesAsDirtyByName<Texture2DU8RGBA>(assetName);
-    mWorld->MarkHandlesAsDirtyByName<Texture2DR32RGB>(assetName);
-    mWorld->MarkHandlesAsDirtyByName<Texture2DR32RGBA>(assetName);
-
+    if (Texture2DU8RGB* texture = mWorld->GetHandleUnsafe<Texture2DU8RGB>(assetName)) texture->SetDirty(true);
+    if (Texture2DU8RGBA* texture = mWorld->GetHandleUnsafe<Texture2DU8RGBA>(assetName)) texture->SetDirty(true);
+    if (Texture2DR32RGB* texture = mWorld->GetHandleUnsafe<Texture2DR32RGB>(assetName)) texture->SetDirty(true);
+    if (Texture2DR32RGBA* texture = mWorld->GetHandleUnsafe<Texture2DR32RGBA>(assetName)) texture->SetDirty(true);
     ReMountTextureHandles();
   }
 
   for (auto const& file : mWatchdogTexture.FilesToChange())
   {
     std::string assetName = file.stem().string();
-
     mWorld->UnMountResource<TextureResource>(assetName);
-
-    mWorld->MarkHandlesAsDirtyByName<Texture2DU8RGB>(assetName);
-    mWorld->MarkHandlesAsDirtyByName<Texture2DU8RGBA>(assetName);
-    mWorld->MarkHandlesAsDirtyByName<Texture2DR32RGB>(assetName);
-    mWorld->MarkHandlesAsDirtyByName<Texture2DR32RGBA>(assetName);
-
+    if (Texture2DU8RGB* texture = mWorld->GetHandleUnsafe<Texture2DU8RGB>(assetName)) texture->SetDirty(true);
+    if (Texture2DU8RGBA* texture = mWorld->GetHandleUnsafe<Texture2DU8RGBA>(assetName)) texture->SetDirty(true);
+    if (Texture2DR32RGB* texture = mWorld->GetHandleUnsafe<Texture2DR32RGB>(assetName)) texture->SetDirty(true);
+    if (Texture2DR32RGBA* texture = mWorld->GetHandleUnsafe<Texture2DR32RGBA>(assetName)) texture->SetDirty(true);
     ReMountTextureHandles();
-
     mWorld->MountResource<TextureResource>(assetName, file);
-
     ReMountTextureHandles();
   }
 
   for (auto const& file : mWatchdogTexture.FilesToCreate())
   {
     std::string assetName = file.stem().string();
-
     mWorld->MountResource<TextureResource>(assetName, file);
-
     ReMountTextureHandles();
   }
 }
@@ -140,39 +127,29 @@ void HotLoader::UpdateMesheAssets()
   for (auto const& file : mWatchdogMesh.FilesToDelete())
   {
     std::string assetName = file.stem().string();
-
     mWorld->UnMountResource<MeshResource>(assetName);
-
-    mWorld->MarkHandlesAsDirtyByName<VertexBuffer<Vertex>>(assetName);
-    mWorld->MarkHandlesAsDirtyByName<ElementBuffer<U32>>(assetName);
-    mWorld->MarkHandlesAsDirtyByName<DefaultMesh>(assetName);
-
+    if (VertexBuffer<Vertex>* vertexBuffer = mWorld->GetHandleUnsafe<VertexBuffer<Vertex>>(assetName)) vertexBuffer->SetDirty(true);
+    if (ElementBuffer<U32>* elementBuffer = mWorld->GetHandleUnsafe<ElementBuffer<U32>>(assetName)) elementBuffer->SetDirty(true);
+    if (DefaultMesh* mesh = mWorld->GetHandleUnsafe<DefaultMesh>(assetName)) mesh->SetDirty(true);
     ReMountMeshHandles();
   }
 
   for (auto const& file : mWatchdogMesh.FilesToChange())
   {
     std::string assetName = file.stem().string();
-
     mWorld->UnMountResource<MeshResource>(assetName);
-
-    mWorld->MarkHandlesAsDirtyByName<VertexBuffer<Vertex>>(assetName);
-    mWorld->MarkHandlesAsDirtyByName<ElementBuffer<U32>>(assetName);
-    mWorld->MarkHandlesAsDirtyByName<DefaultMesh>(assetName);
-
+    if (VertexBuffer<Vertex>* vertexBuffer = mWorld->GetHandleUnsafe<VertexBuffer<Vertex>>(assetName)) vertexBuffer->SetDirty(true);
+    if (ElementBuffer<U32>* elementBuffer = mWorld->GetHandleUnsafe<ElementBuffer<U32>>(assetName)) elementBuffer->SetDirty(true);
+    if (DefaultMesh* mesh = mWorld->GetHandleUnsafe<DefaultMesh>(assetName)) mesh->SetDirty(true);
     ReMountMeshHandles();
-
     mWorld->MountResource<MeshResource>(assetName, file);
-
     ReMountMeshHandles();
   }
 
   for (auto const& file : mWatchdogMesh.FilesToCreate())
   {
     std::string assetName = file.stem().string();
-
     mWorld->MountResource<MeshResource>(assetName, file);
-
     ReMountMeshHandles();
   }
 }
@@ -185,268 +162,252 @@ void HotLoader::UpdateShadersAssets()
   for (auto const& file : mWatchdogVertexShader.FilesToDelete())
   {
     std::string assetName = file.stem().string();
-
     mWorld->UnMountResource<ShaderResource<EShaderType::Vertex>>(assetName);
-
-    mWorld->MarkHandlesAsDirtyByName<VertexShader>(assetName);
-    mWorld->MarkHandlesAsDirtyByName<RenderProgram>(assetName);
-
+    if (VertexShader* vertexShader = mWorld->GetHandleUnsafe<VertexShader>(assetName)) vertexShader->SetDirty(true);
+    if (RenderProgram* renderProgram = mWorld->GetHandleUnsafe<RenderProgram>(assetName)) renderProgram->SetDirty(true);
     ReMountRenderProgramHandles();
   }
   for (auto const& file : mWatchdogFragmentShader.FilesToDelete())
   {
     std::string assetName = file.stem().string();
-
     mWorld->UnMountResource<ShaderResource<EShaderType::Fragment>>(assetName);
-
-    mWorld->MarkHandlesAsDirtyByName<FragmentShader>(assetName);
-    mWorld->MarkHandlesAsDirtyByName<RenderProgram>(assetName);
-
+    if (FragmentShader* fragmentShader = mWorld->GetHandleUnsafe<FragmentShader>(assetName)) fragmentShader->SetDirty(true);
+    if (RenderProgram* renderProgram = mWorld->GetHandleUnsafe<RenderProgram>(assetName)) renderProgram->SetDirty(true);
     ReMountRenderProgramHandles();
   }
   for (auto const& file : mWatchdogComputeShader.FilesToDelete())
   {
     std::string assetName = file.stem().string();
-
     mWorld->UnMountResource<ShaderResource<EShaderType::Compute>>(assetName);
-
-    mWorld->MarkHandlesAsDirtyByName<ComputeShader>(assetName);
-    mWorld->MarkHandlesAsDirtyByName<ComputeProgram>(assetName);
-
+    if (ComputeShader* computeShader = mWorld->GetHandleUnsafe<ComputeShader>(assetName)) computeShader->SetDirty(true);
+    if (ComputeProgram* computeProgram = mWorld->GetHandleUnsafe<ComputeProgram>(assetName)) computeProgram->SetDirty(true);
     ReMountComputeProgramHandles();
   }
 
   for (auto const& file : mWatchdogVertexShader.FilesToChange())
   {
     std::string assetName = file.stem().string();
-
     mWorld->UnMountResource<ShaderResource<EShaderType::Vertex>>(assetName);
-
-    mWorld->MarkHandlesAsDirtyByName<VertexShader>(assetName);
-    mWorld->MarkHandlesAsDirtyByName<RenderProgram>(assetName);
-
+    if (VertexShader* vertexShader = mWorld->GetHandleUnsafe<VertexShader>(assetName)) vertexShader->SetDirty(true);
+    if (RenderProgram* renderProgram = mWorld->GetHandleUnsafe<RenderProgram>(assetName)) renderProgram->SetDirty(true);
     ReMountRenderProgramHandles();
-
     mWorld->MountResource<ShaderResource<EShaderType::Vertex>>(assetName, file);
-
     ReMountRenderProgramHandles();
   }
   for (auto const& file : mWatchdogFragmentShader.FilesToChange())
   {
     std::string assetName = file.stem().string();
-
     mWorld->UnMountResource<ShaderResource<EShaderType::Fragment>>(assetName);
-
-    mWorld->MarkHandlesAsDirtyByName<FragmentShader>(assetName);
-    mWorld->MarkHandlesAsDirtyByName<RenderProgram>(assetName);
-
+    if (FragmentShader* fragmentShader = mWorld->GetHandleUnsafe<FragmentShader>(assetName)) fragmentShader->SetDirty(true);
+    if (RenderProgram* renderProgram = mWorld->GetHandleUnsafe<RenderProgram>(assetName)) renderProgram->SetDirty(true);
     ReMountRenderProgramHandles();
-
     mWorld->MountResource<ShaderResource<EShaderType::Fragment>>(assetName, file);
-
     ReMountRenderProgramHandles();
   }
   for (auto const& file : mWatchdogComputeShader.FilesToChange())
   {
     std::string assetName = file.stem().string();
-
     mWorld->UnMountResource<ShaderResource<EShaderType::Compute>>(assetName);
-
-    mWorld->MarkHandlesAsDirtyByName<ComputeShader>(assetName);
-    mWorld->MarkHandlesAsDirtyByName<ComputeProgram>(assetName);
-
+    if (ComputeShader* computeShader = mWorld->GetHandleUnsafe<ComputeShader>(assetName)) computeShader->SetDirty(true);
+    if (ComputeProgram* computeProgram = mWorld->GetHandleUnsafe<ComputeProgram>(assetName)) computeProgram->SetDirty(true);
     ReMountComputeProgramHandles();
-
     mWorld->MountResource<ShaderResource<EShaderType::Compute>>(assetName, file);
-
     ReMountComputeProgramHandles();
   }
 
   for (auto const& file : mWatchdogVertexShader.FilesToCreate())
   {
     std::string assetName = file.stem().string();
-
     mWorld->MountResource<ShaderResource<EShaderType::Vertex>>(assetName, file);
-
     ReMountRenderProgramHandles();
   }
   for (auto const& file : mWatchdogFragmentShader.FilesToCreate())
   {
     std::string assetName = file.stem().string();
-
     mWorld->MountResource<ShaderResource<EShaderType::Fragment>>(assetName, file);
-
     ReMountRenderProgramHandles();
   }
   for (auto const& file : mWatchdogComputeShader.FilesToCreate())
   {
     std::string assetName = file.stem().string();
-
     mWorld->MountResource<ShaderResource<EShaderType::Compute>>(assetName, file);
-
     ReMountComputeProgramHandles();
   }
 }
 
 void HotLoader::ReMountRenderProgramHandles()
 {
-  // Find dirty render shader names
-  std::set<std::string> dirtyShaderList;
-  mWorld->CollectDirtyHandleNamesByType<VertexShader>(dirtyShaderList);
-  mWorld->CollectDirtyHandleNamesByType<FragmentShader>(dirtyShaderList);
-  // Find non dirty render shader names
-  std::set<std::string> nonDirtyShaderList;
-  mWorld->CollectNonDirtyHandleNamesByType<VertexShader>(nonDirtyShaderList);
-  mWorld->CollectNonDirtyHandleNamesByType<FragmentShader>(nonDirtyShaderList);
-  // Push new render program handle
-  for (auto const& name : nonDirtyShaderList)
-  {
-    VertexShader* vertexShader = mWorld->GetFirstNonDirtyHandleByName<VertexShader>(name);
-    FragmentShader* fragmentShader = mWorld->GetFirstNonDirtyHandleByName<FragmentShader>(name);
-    if (vertexShader && fragmentShader)
-    {
-      if (mWorld->MountHandle<RenderProgram>(name)->Link(vertexShader, fragmentShader))
-      {
-        std::printf("Exchange VertexShader & FragmentShader for RenderProgram\n");
-        //mWorld->DestroyHandle<VertexShader>(name);
-        //mWorld->DestroyHandle<FragmentShader>(name);
-      }
-    }
-  }
-  // Erase dirty render shaders
-  for (auto const& name : dirtyShaderList)
-  {
-    //mWorld->DestroyHandle<VertexShader>(name);
-    //mWorld->DestroyHandle<FragmentShader>(name);
-  }
-  // Find dirty render program names
-  std::set<std::string> dirtyProgramList;
-  mWorld->CollectDirtyHandleNamesByType<RenderProgram>(dirtyProgramList);
-  // Erase dirty render program handles
-  for (auto const& name : dirtyProgramList)
-  {
-    //mWorld->DestroyHandle<RenderProgram>(name);
-  }
+  //// Find dirty render shader names
+  //std::set<std::string> dirtyShaderList;
+  //mWorld->CollectDirtyHandleNamesByType<VertexShader>(dirtyShaderList);
+  //mWorld->CollectDirtyHandleNamesByType<FragmentShader>(dirtyShaderList);
+  //// Find non dirty render shader names
+  //std::set<std::string> nonDirtyShaderList;
+  //mWorld->CollectNonDirtyHandleNamesByType<VertexShader>(nonDirtyShaderList);
+  //mWorld->CollectNonDirtyHandleNamesByType<FragmentShader>(nonDirtyShaderList);
+  //// Push new render program handle
+  //for (auto const& name : nonDirtyShaderList)
+  //{
+  //  VertexShader* vertexShader = mWorld->GetFirstNonDirtyHandleByName<VertexShader>(name);
+  //  FragmentShader* fragmentShader = mWorld->GetFirstNonDirtyHandleByName<FragmentShader>(name);
+  //  if (vertexShader && fragmentShader)
+  //  {
+  //    if (mWorld->MountHandle<RenderProgram>(name)->Link(vertexShader, fragmentShader))
+  //    {
+  //      std::printf("Exchange VertexShader & FragmentShader for RenderProgram\n");
+  //      //mWorld->DestroyHandle<VertexShader>(name);
+  //      //mWorld->DestroyHandle<FragmentShader>(name);
+  //    }
+  //  }
+  //}
+  //// Erase dirty render shaders
+  //for (auto const& name : dirtyShaderList)
+  //{
+  //  //mWorld->DestroyHandle<VertexShader>(name);
+  //  //mWorld->DestroyHandle<FragmentShader>(name);
+  //}
+  //// Find dirty render program names
+  //std::set<std::string> dirtyProgramList;
+  //mWorld->CollectDirtyHandleNamesByType<RenderProgram>(dirtyProgramList);
+  //// Erase dirty render program handles
+  //for (auto const& name : dirtyProgramList)
+  //{
+  //  //mWorld->DestroyHandle<RenderProgram>(name);
+  //}
 }
 void HotLoader::ReMountComputeProgramHandles()
 {
-  // Find dirty compute shader names
-  std::set<std::string> dirtyComputeList;
-  mWorld->CollectDirtyHandleNamesByType<ComputeShader>(dirtyComputeList);
-  // Find non dirty compute shader names
-  std::set<std::string> nonDirtyComputeList;
-  mWorld->CollectNonDirtyHandleNamesByType<ComputeShader>(nonDirtyComputeList);
-  // Push new compute program handle
-  for (auto const& name : nonDirtyComputeList)
-  {
-    ComputeShader* computeShader = mWorld->GetFirstNonDirtyHandleByName<ComputeShader>(name);
-    if (computeShader)
-    {
-      if (mWorld->MountHandle<ComputeProgram>(name)->Link(computeShader))
-      {
-        std::printf("Exchange ComputeShader for ComputeProgram\n");
-        //mWorld->DestroyHandle<ComputeShader>(name);
-      }
-    }
-  }
-  // Erase dirty compute shaders
-  for (auto const& name : dirtyComputeList)
-  {
-    //mWorld->DestroyHandle<ComputeShader>(name);
-  }
-  // Find dirty compute program names
-  std::set<std::string> dirtyProgramList;
-  mWorld->CollectDirtyHandleNamesByType<ComputeProgram>(dirtyProgramList);
-  // Erase dirty compute program handles
-  for (auto const& name : dirtyProgramList)
-  {
-    //mWorld->DestroyHandle<ComputeProgram>(name);
-  }
+  //// Find dirty compute shader names
+  //std::set<std::string> dirtyComputeList;
+  //mWorld->CollectDirtyHandleNamesByType<ComputeShader>(dirtyComputeList);
+  //// Find non dirty compute shader names
+  //std::set<std::string> nonDirtyComputeList;
+  //mWorld->CollectNonDirtyHandleNamesByType<ComputeShader>(nonDirtyComputeList);
+  //// Push new compute program handle
+  //for (auto const& name : nonDirtyComputeList)
+  //{
+  //  ComputeShader* computeShader = mWorld->GetFirstNonDirtyHandleByName<ComputeShader>(name);
+  //  if (computeShader)
+  //  {
+  //    if (mWorld->MountHandle<ComputeProgram>(name)->Link(computeShader))
+  //    {
+  //      std::printf("Exchange ComputeShader for ComputeProgram\n");
+  //      //mWorld->DestroyHandle<ComputeShader>(name);
+  //    }
+  //  }
+  //}
+  //// Erase dirty compute shaders
+  //for (auto const& name : dirtyComputeList)
+  //{
+  //  //mWorld->DestroyHandle<ComputeShader>(name);
+  //}
+  //// Find dirty compute program names
+  //std::set<std::string> dirtyProgramList;
+  //mWorld->CollectDirtyHandleNamesByType<ComputeProgram>(dirtyProgramList);
+  //// Erase dirty compute program handles
+  //for (auto const& name : dirtyProgramList)
+  //{
+  //  //mWorld->DestroyHandle<ComputeProgram>(name);
+  //}
 }
 void HotLoader::ReMountTextureHandles()
 {
-  // Find dirty texture names
-  std::set<std::string> dirtyTexture2DU8RGBList;
-  std::set<std::string> dirtyTexture2DU8RGBAList;
-  std::set<std::string> dirtyTexture2DR32RGBList;
-  std::set<std::string> dirtyTexture2DR32RGBAList;
-  mWorld->CollectDirtyHandleNamesByType<Texture2DU8RGB>(dirtyTexture2DU8RGBList);
-  mWorld->CollectDirtyHandleNamesByType<Texture2DU8RGBA>(dirtyTexture2DU8RGBAList);
-  mWorld->CollectDirtyHandleNamesByType<Texture2DR32RGB>(dirtyTexture2DR32RGBList);
-  mWorld->CollectDirtyHandleNamesByType<Texture2DR32RGBA>(dirtyTexture2DR32RGBAList);
-  // Find non texture names
-  std::set<std::string> nonDirtyTexture2DU8RGBList;
-  std::set<std::string> nonDirtyTexture2DU8RGBAList;
-  std::set<std::string> nonDirtyTexture2DR32RGBList;
-  std::set<std::string> nonDirtyTexture2DR32RGBAList;
-  mWorld->CollectDirtyHandleNamesByType<Texture2DU8RGB>(nonDirtyTexture2DU8RGBList);
-  mWorld->CollectDirtyHandleNamesByType<Texture2DU8RGBA>(nonDirtyTexture2DU8RGBAList);
-  mWorld->CollectDirtyHandleNamesByType<Texture2DR32RGB>(nonDirtyTexture2DR32RGBList);
-  mWorld->CollectDirtyHandleNamesByType<Texture2DR32RGBA>(nonDirtyTexture2DR32RGBAList);
-  // Erase dirty textures
-  for (auto const& name : dirtyTexture2DU8RGBList)
-  {
-    //mWorld->DestroyHandle<Texture2DU8RGB>(name);
-  }
-  for (auto const& name : dirtyTexture2DU8RGBAList)
-  {
-    //mWorld->DestroyHandle<Texture2DU8RGBA>(name);
-  }
-  for (auto const& name : dirtyTexture2DR32RGBList)
-  {
-    //mWorld->DestroyHandle<Texture2DR32RGB>(name);
-  }
-  for (auto const& name : dirtyTexture2DR32RGBAList)
-  {
-    //mWorld->DestroyHandle<Texture2DR32RGBA>(name);
-  }
+  //// Find dirty texture names
+  //std::set<std::string> dirtyTexture2DU8RGBList;
+  //std::set<std::string> dirtyTexture2DU8RGBAList;
+  //std::set<std::string> dirtyTexture2DR32RGBList;
+  //std::set<std::string> dirtyTexture2DR32RGBAList;
+  //mWorld->CollectDirtyHandleNamesByType<Texture2DU8RGB>(dirtyTexture2DU8RGBList);
+  //mWorld->CollectDirtyHandleNamesByType<Texture2DU8RGBA>(dirtyTexture2DU8RGBAList);
+  //mWorld->CollectDirtyHandleNamesByType<Texture2DR32RGB>(dirtyTexture2DR32RGBList);
+  //mWorld->CollectDirtyHandleNamesByType<Texture2DR32RGBA>(dirtyTexture2DR32RGBAList);
+  //// Find non texture names
+  //std::set<std::string> nonDirtyTexture2DU8RGBList;
+  //std::set<std::string> nonDirtyTexture2DU8RGBAList;
+  //std::set<std::string> nonDirtyTexture2DR32RGBList;
+  //std::set<std::string> nonDirtyTexture2DR32RGBAList;
+  //mWorld->CollectDirtyHandleNamesByType<Texture2DU8RGB>(nonDirtyTexture2DU8RGBList);
+  //mWorld->CollectDirtyHandleNamesByType<Texture2DU8RGBA>(nonDirtyTexture2DU8RGBAList);
+  //mWorld->CollectDirtyHandleNamesByType<Texture2DR32RGB>(nonDirtyTexture2DR32RGBList);
+  //mWorld->CollectDirtyHandleNamesByType<Texture2DR32RGBA>(nonDirtyTexture2DR32RGBAList);
+  //// Erase dirty textures
+  //for (auto const& name : dirtyTexture2DU8RGBList)
+  //{
+  //  //mWorld->DestroyHandle<Texture2DU8RGB>(name);
+  //}
+  //for (auto const& name : dirtyTexture2DU8RGBAList)
+  //{
+  //  //mWorld->DestroyHandle<Texture2DU8RGBA>(name);
+  //}
+  //for (auto const& name : dirtyTexture2DR32RGBList)
+  //{
+  //  //mWorld->DestroyHandle<Texture2DR32RGB>(name);
+  //}
+  //for (auto const& name : dirtyTexture2DR32RGBAList)
+  //{
+  //  //mWorld->DestroyHandle<Texture2DR32RGBA>(name);
+  //}
 }
 void HotLoader::ReMountMeshHandles()
 {
-  // Find dirty buffer names
-  std::set<std::string> dirtyBufferList;
-  mWorld->CollectDirtyHandleNamesByType<VertexBuffer<Vertex>>(dirtyBufferList);
-  mWorld->CollectDirtyHandleNamesByType<ElementBuffer<U32>>(dirtyBufferList);
-  // Find non dirty buffer names
-  std::set<std::string> nonDirtyBufferList;
-  mWorld->CollectNonDirtyHandleNamesByType<VertexBuffer<Vertex>>(nonDirtyBufferList);
-  mWorld->CollectNonDirtyHandleNamesByType<ElementBuffer<U32>>(nonDirtyBufferList);
-  // Push new mesh handle
-  for (auto const& name : nonDirtyBufferList)
-  {
-    VertexBuffer<Vertex>* vertexBuffer = mWorld->GetFirstNonDirtyHandleByName<VertexBuffer<Vertex>>(name);
-    ElementBuffer<U32>* elementBuffer = mWorld->GetFirstNonDirtyHandleByName<ElementBuffer<U32>>(name);
-    if (vertexBuffer && elementBuffer)
-    {
-      if (mWorld->MountHandle<DefaultMesh>(name)->Link(vertexBuffer, elementBuffer))
-      {
-        std::printf("Exchange VertexBuffer & ElementBuffer for DefaultMesh\n");
-        //mWorld->DestroyHandle<VertexBuffer<Vertex>>(name);
-        //mWorld->DestroyHandle<ElementBuffer<U32>>(name);
-      }
-    }
-  }
-  // Erase dirty buffers
-  for (auto const& name : nonDirtyBufferList)
-  {
-    //mWorld->DestroyHandle<VertexBuffer<Vertex>>(name);
-    //mWorld->DestroyHandle<ElementBuffer<U32>>(name);
-  }
-  // Find dirty mesh names
-  std::set<std::string> dirtyMeshList;
-  mWorld->CollectDirtyHandleNamesByType<DefaultMesh>(dirtyMeshList);
-  // Erase dirty mesh handles
-  for (auto const& name : dirtyMeshList)
-  {
-    //mWorld->DestroyHandle<DefaultMesh>(name);
-  }
+  CreateMeshHandles();
+  MergeMeshHandles();
 }
 
-void HotLoader::HotswapShaders()
+void HotLoader::CreateMeshHandles()
 {
-
+  //// Find non dirty buffer names
+  //std::set<std::string> nonDirtyBufferList;
+  //mWorld->CollectNonDirtyHandleNamesByType<VertexBuffer<Vertex>>(nonDirtyBufferList);
+  //mWorld->CollectNonDirtyHandleNamesByType<ElementBuffer<U32>>(nonDirtyBufferList);
+  //// Push new mesh handles
+  //for (auto const& name : nonDirtyBufferList)
+  //{
+  //  VertexBuffer<Vertex>* vertexBuffer = mWorld->GetFirstNonDirtyHandleByName<VertexBuffer<Vertex>>(name);
+  //  ElementBuffer<U32>* elementBuffer = mWorld->GetFirstNonDirtyHandleByName<ElementBuffer<U32>>(name);
+  //  if (vertexBuffer && elementBuffer)
+  //  {
+  //    // Create new handle and link VBO/EBO to VAO
+  //    DefaultMesh* newMesh = mWorld->MountHandle<DefaultMesh>(name);
+  //    if (newMesh->Link(vertexBuffer, elementBuffer))
+  //    {
+  //      newMesh->SetDirty(false);
+  //      vertexBuffer->SetDirty(true);
+  //      elementBuffer->SetDirty(true);
+  //    }
+  //  }
+  //}
 }
-void HotLoader::HotswapPrograms()
+void HotLoader::MergeMeshHandles()
 {
-
+  //// Find dirty buffer names
+  //std::set<std::string> dirtyBufferList;
+  //mWorld->CollectNonDirtyHandleNamesByType<VertexBuffer<Vertex>>(dirtyBufferList);
+  //mWorld->CollectNonDirtyHandleNamesByType<ElementBuffer<U32>>(dirtyBufferList);
+  //// Erase dirty buffers
+  //for (auto const& name : dirtyBufferList)
+  //{
+  //  mWorld->DestroyHandle<VertexBuffer<Vertex>>(name);
+  //  mWorld->DestroyHandle<ElementBuffer<U32>>(name);
+  //}
+  //// Find dirty mesh names
+  //std::set<std::string> dirtyMeshList;
+  //mWorld->CollectDirtyHandleNamesByType<DefaultMesh>(dirtyMeshList);
+  //// Erase dirty mesh handles
+  //for (auto const& name : dirtyMeshList)
+  //{
+  //  // When new mesh is available rewire old references to new one
+  //  DefaultMesh* newMesh = mWorld->GetFirstNonDirtyHandleByName<DefaultMesh>(name);
+  //  if (newMesh)
+  //  {
+  //    while (DefaultMesh* oldMesh = mWorld->GetFirstDirtyHandleByName<DefaultMesh>(name))
+  //    {
+  //      //oldMesh->GetActors()
+  //      if (oldMesh->GetReferenceCount() > 0)
+  //      {
+  //
+  //      }
+  //    }
+  //  }
+  //}
 }
