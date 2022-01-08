@@ -46,10 +46,15 @@ public:
       stride += Vertex::Strides[i];
     }
     elementBuffer->Bind();
+    mNumElements = elementBuffer->GetSize();
     glBindVertexArray(0);
     vertexBuffer->UnBind();
     elementBuffer->UnBind();
     return true;
+  }
+  void Draw()
+  {
+    glDrawElements(GL_TRIANGLES, mNumElements, GL_UNSIGNED_INT, nullptr);
   }
   void UnBind()
   {
@@ -57,6 +62,7 @@ public:
   }
 
   U32 mID = 0;
+  U32 mNumElements = 0;
 };
 
 using DefaultMesh = GenericMesh<Vertex, U32>;

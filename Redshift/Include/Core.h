@@ -27,6 +27,8 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/random.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 ////////////////////////////////////////////////////////
 // GLAD
@@ -45,6 +47,11 @@
 ////////////////////////////////////////////////////////
 
 #include <imgui.h>
+
+#ifdef REDSHIFT_IMPLEMENTATION
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
+#endif
 
 ////////////////////////////////////////////////////////
 // STB image
@@ -65,6 +72,12 @@
 #include <ofbx/ofbx.h>
 
 ////////////////////////////////////////////////////////
+// Optick
+////////////////////////////////////////////////////////
+
+#include <optick/optick.h>
+
+////////////////////////////////////////////////////////
 // Redshift
 ////////////////////////////////////////////////////////
 
@@ -82,6 +95,8 @@
 #include <map>
 #include <set>
 #include <bitset>
+#include <queue>
+#include <tuple>
 
 #include <string>
 #include <sstream>
@@ -91,3 +106,7 @@
 
 #include <type_traits>
 #include <functional>
+#include <utility>
+#include <algorithm>
+
+#include <cmath>

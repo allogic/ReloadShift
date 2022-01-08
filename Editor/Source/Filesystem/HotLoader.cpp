@@ -43,7 +43,7 @@ void HotLoader::Update()
   UpdateModules();
 
   UpdateTexturesAssets();
-  UpdateMeshesAssets();
+  UpdateMesheAssets();
   UpdateShadersAssets();
 
   //HotswapShaders();
@@ -133,7 +133,7 @@ void HotLoader::UpdateTexturesAssets()
     ReMountTextureHandles();
   }
 }
-void HotLoader::UpdateMeshesAssets()
+void HotLoader::UpdateMesheAssets()
 {
   mWatchdogMesh.Update();
 
@@ -305,7 +305,7 @@ void HotLoader::ReMountRenderProgramHandles()
     FragmentShader* fragmentShader = mWorld->GetFirstNonDirtyHandleByName<FragmentShader>(name);
     if (vertexShader && fragmentShader)
     {
-      if (mWorld->CreateHandle<RenderProgram>(name)->Link(vertexShader, fragmentShader))
+      if (mWorld->MountHandle<RenderProgram>(name)->Link(vertexShader, fragmentShader))
       {
         std::printf("Exchange VertexShader & FragmentShader for RenderProgram\n");
         //mWorld->DestroyHandle<VertexShader>(name);
@@ -342,7 +342,7 @@ void HotLoader::ReMountComputeProgramHandles()
     ComputeShader* computeShader = mWorld->GetFirstNonDirtyHandleByName<ComputeShader>(name);
     if (computeShader)
     {
-      if (mWorld->CreateHandle<ComputeProgram>(name)->Link(computeShader))
+      if (mWorld->MountHandle<ComputeProgram>(name)->Link(computeShader))
       {
         std::printf("Exchange ComputeShader for ComputeProgram\n");
         //mWorld->DestroyHandle<ComputeShader>(name);
@@ -418,7 +418,7 @@ void HotLoader::ReMountMeshHandles()
     ElementBuffer<U32>* elementBuffer = mWorld->GetFirstNonDirtyHandleByName<ElementBuffer<U32>>(name);
     if (vertexBuffer && elementBuffer)
     {
-      if (mWorld->CreateHandle<DefaultMesh>(name)->Link(vertexBuffer, elementBuffer))
+      if (mWorld->MountHandle<DefaultMesh>(name)->Link(vertexBuffer, elementBuffer))
       {
         std::printf("Exchange VertexBuffer & ElementBuffer for DefaultMesh\n");
         //mWorld->DestroyHandle<VertexBuffer<Vertex>>(name);

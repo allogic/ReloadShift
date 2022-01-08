@@ -7,6 +7,6 @@ struct Projection
 {
   R32M4 Projection;
   R32M4 View;
-  R32M4 Transform;
+  R32M4 Model;
 };
 #pragma pack(pop)

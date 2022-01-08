@@ -27,12 +27,6 @@
     <ClCompile Include="Source\Filesystem\FileBrowser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\UI\UI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Platform\Window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Filesystem\HotLoader.h">
@@ -44,10 +38,7 @@
     <ClInclude Include="Include\Filesystem\FileBrowser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\UI\UI.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Platform\Window.h">
+    <ClInclude Include="Include\UI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

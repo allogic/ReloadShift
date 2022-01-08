@@ -25,8 +25,7 @@ layout (location = 6) out vec4 oRoughness;
 
 void main()
 {
-  oPosition = vec4(1.0f, 0.0f, 0.0f, 1.0f);
-  //oPosition = vec4(fragIn.position, 1.0f);
+  oPosition = vec4(fragIn.position, 1.0f);
   oAlbedo = texture(uAlbedo, fragIn.uv);
   oNormal = texture(uNormal, fragIn.uv);
   oSpecular = texture(uSpecular, fragIn.uv);

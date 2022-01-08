@@ -125,7 +125,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;ImGui.lib;Redshift.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;ImGui.lib;Redshift.lib;OptickCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -143,7 +143,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;ImGui.lib;Redshift.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;ImGui.lib;Redshift.lib;OptickCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -151,15 +151,12 @@
     <ClCompile Include="Source\Filesystem\FileBrowser.cpp" />
     <ClCompile Include="Source\Filesystem\HotLoader.cpp" />
     <ClCompile Include="Source\Filesystem\Watchdog.cpp" />
-    <ClCompile Include="Source\Platform\Window.cpp" />
-    <ClCompile Include="Source\UI\UI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Filesystem\FileBrowser.h" />
     <ClInclude Include="Include\Filesystem\HotLoader.h" />
     <ClInclude Include="Include\Filesystem\Watchdog.h" />
-    <ClInclude Include="Include\Platform\Window.h" />
-    <ClInclude Include="Include\UI\UI.h" />
+    <ClInclude Include="Include\UI.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

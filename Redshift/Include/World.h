@@ -37,7 +37,7 @@ public:
   inline std::map<std::string, ModuleProxy*>& GetModules() { return mModules; }
   inline std::map<std::string, Resource*>& GetResources() { return mResources; }
   inline std::multimap<std::string, Handle*>& GetHandles() { return mHandles; }
-  inline std::multimap<U64, ActorProxy*>& GetActors() { return mActors; }
+  inline std::vector<ActorProxy*> GetActors() { return mActors; }
 
 public:
 
@@ -171,21 +171,24 @@ public:
 
   template<typename H, typename ... Args>
   requires std::is_base_of_v<Handle, H>
-  H* CreateHandle(std::string const& handleName, Args &&... args)
+  H* MountHandle(std::string const& handleName, Args &&... args)
   {
     // Compute keys
     std::string handleKey = std::string{ typeid(H).name() } + ':' + handleName;
-    // Mark all existing handles as dirty
+    // Check if existing handles exist
     auto const handleIt = mHandles.equal_range(handleKey);
-    for (auto it = handleIt.first; it != handleIt.second; ++it)
+    if (handleIt.first == handleIt.second)
     {
-      it->second->SetDirty(true);
+      // Insert new handle
+      auto const& emplaceIt = mHandles.emplace(handleKey, new H{ handleName, std::forward<Args>(args) ... });
+      emplaceIt->second->Create();
+      return (H*)emplaceIt->second;
     }
-    // Insert new handle
-    auto const& emplaceIt = mHandles.emplace(handleKey, new H{ handleName, std::forward<Args>(args) ... });
-    emplaceIt->second->Create();
-    // Resolve doubled entries
-    return (H*)emplaceIt->second;
+    else
+    {
+      // Return first non dirty handle
+      return GetFirstNonDirtyHandleByName<H>(handleName);
+    }
   }
 
   template<typename H>
@@ -209,88 +212,105 @@ public:
 public:
 
   ////////////////////////////////////////////////////////
-  // Actor/Component internal
-  ////////////////////////////////////////////////////////
-
-  template<typename C>
-  requires std::is_base_of_v<Component, C>
-  U32 ComponentToIndex()
-  {
-    U64 hash = typeid(C).hash_code();
-    if (mIdentities[hash] == 0)
-    {
-      mIdentities[hash] = mUniqueComponentCount++;
-    }
-    return mIdentities[hash];
-  }
-
-  U32 ContainsComponentBits(U64 currentMask, U64 desiredMask)
-  {
-    return (~(currentMask ^ desiredMask) & desiredMask) == desiredMask;
-  }
-
-  void MergeWithNewMask(ActorProxy* actorProxy, Actor* actor, U64 desiredMask)
-  {
-    auto const actorIt = mActors.equal_range(actor->GetMask());
-    for (auto it = actorIt.first; it != actorIt.second; ++it)
-    {
-      if (actorProxy == it->second)
-      {
-        mActors.erase(it);
-        actor->SetMask(desiredMask);
-        mActors.emplace(desiredMask, actorProxy);
-        break;
-      }
-    }
-  }
-
-public:
-
-  ////////////////////////////////////////////////////////
   // Actor/Component interface
   ////////////////////////////////////////////////////////
 
   template<typename C, typename ... Args>
   requires std::is_base_of_v<Component, C>
-  C* Attach(Actor* actor, Args && ... args)
+  C* AttachComponent(Actor* actor, Args && ... args)
   {
-    U32 componentIndex = ComponentToIndex<C>();
-    U64 componentMask = (U64)1 << componentIndex;
-    if (ContainsComponentBits(actor->GetMask(), componentMask))
+    // Check if component already exists
+    C* component = actor->GetComponent<C>(typeid(C).hash_code());
+    if (!component)
     {
-      return actor->GetComponent<C>(componentIndex);
+      // Update actor
+      //actor->SetHash(actorHash);
+      component = actor->CreateComponent<C>(new C{ this, std::forward<Args>(args) ... });
+      // Register proxy for all single types
+      auto permutations = actor->GetInOrderComponentHashes();
+      for (auto const& typHash : permutations)
+      {
+        mTypeBuckets[typHash].emplace(actor->GetProxy());
+      }
+      // Complete transaction by computing all type permutations
+      // and insert the proxy in their respective buckets
+      do
+      {
+        // Sequencially compute hashes from current permutation
+        for (U32 i = 0; i < permutations.size(); ++i)
+        {
+          U64 permutationHash = 0;
+          for (U32 j = i; j < permutations.size(); ++j)
+          {
+            permutationHash ^= permutations[j];
+            mTypeBuckets[permutationHash].emplace(actor->GetProxy());
+          }
+        }
+      } while (std::next_permutation(permutations.begin(), permutations.end()));
     }
-    else
-    {
-      U64 newMask = actor->GetMask() | componentMask;
-      MergeWithNewMask(actor->GetProxy(), actor, newMask);
-      actor->SetComponent(componentIndex, new C{ this, std::forward<Args>(args) ... });
-      return actor->GetComponent<C>(componentIndex);
-    }
+    return component;
   }
 
   template<typename A, typename ... Args>
   requires std::is_base_of_v<Actor, A>
-  A* Create(std::string const& actorName, Args && ... args)
+  A* CreateActor(std::string const& actorName, Args && ... args)
   {
+    // Create actor proxy
     ActorProxy* proxy = new ActorProxy{};
-    mActors.emplace(0u, proxy);
-    Actor* actor = new A{ this, proxy, std::forward<Args>(args) ... };
+    // Create actor after proxy in order to initialize components inside the constructor
+    A* actor = new A{ this, proxy, std::forward<Args>(args) ... };
     actor->SetName(actorName);
     proxy->SetActor(actor);
-    return proxy->GetActor<A>();
+    // Add proxy to actor list
+    mActors.emplace_back(proxy);
+    // Add proxy to empty component bucket
+    mTypeBuckets[actor->GetCurrentHash()].emplace(proxy);
+    return actor;
   }
+
+  //template<typename A>
+  //requires std::is_base_of_v<Actor, A>
+  //void DestroyActor(std::vector<A*> const& actors)
+  //{
+  //  for (auto actor : actors)
+  //  {
+  //    auto it = mActors.begin();
+  //    while (it != mActors.end())
+  //    {
+  //      if (actor == it->second->GetActor())
+  //      {
+  //        // Cleanup component handle references
+  //        for (U32 i = 0; i < RS_MAX_COMPONENTS; ++i)
+  //        {
+  //          if (Component* component = it->second->GetComponent(i))
+  //          {
+  //            component->UnMountHandles();
+  //          }
+  //        }
+  //        // Destroy actor and proxy
+  //        delete actor;
+  //        delete it->second;
+  //        it = mActors.erase(it);
+  //      }
+  //      if (it != mActors.end())
+  //      {
+  //        ++it;
+  //      }
+  //    }
+  //  }
+  //}
 
   template<typename ... Cs>
   void DispatchFor(std::function<void(typename TypeProxy<Cs>::Ptr ...)>&& predicate)
   {
-    U64 componentMask = (((U64)1 << ComponentToIndex<typename TypeProxy<Cs>::Type>()) | ... | (U64)0);
-    auto const actorIt = mActors.equal_range(componentMask);
-    for (auto it = actorIt.first; it != actorIt.second; ++it)
+    // Compute hash
+    U64 bucketHash = ((U64)0 ^ ... ^ typeid(Cs).hash_code());
+    // Execute predicate over actors in bucket
+    for (auto const& proxy : mTypeBuckets[bucketHash])
     {
       predicate
       (
-        (it->second->GetActor()->GetComponent<typename TypeProxy<Cs>::Type>(ComponentToIndex<typename TypeProxy<Cs>::Type>()))
+        (proxy->GetActor()->GetComponent<typename TypeProxy<Cs>::Type>(typeid(Cs).hash_code()))
         ...
       );
     }
@@ -308,17 +328,44 @@ public:
 private:
 
   ////////////////////////////////////////////////////////
-  // State
+  // Context state
   ////////////////////////////////////////////////////////
 
   GladGLContext* mGladContext = nullptr;
   ImGuiContext* mImGuiContext = nullptr;
 
-  std::map<std::string, ModuleProxy*> mModules = {};
-  std::map<std::string, Resource*> mResources = {};
-  std::multimap<std::string, Handle*> mHandles = {};
-  std::multimap<U64, ActorProxy*> mActors = {};
+private:
 
+  ////////////////////////////////////////////////////////
+  // Modules
+  ////////////////////////////////////////////////////////
+
+  std::map<std::string, ModuleProxy*> mModules = {};
+
+private:
+
+  ////////////////////////////////////////////////////////
+  // Resources
+  ////////////////////////////////////////////////////////
+
+  std::map<std::string, Resource*> mResources = {};
+
+private:
+
+  ////////////////////////////////////////////////////////
+  // Handles
+  ////////////////////////////////////////////////////////
+
+  std::multimap<std::string, Handle*> mHandles = {};
+
+private:
+
+  ////////////////////////////////////////////////////////
+  // Actor/Components
+  ////////////////////////////////////////////////////////
+
+  std::map<U64, std::set<ActorProxy*>> mTypeBuckets = {};
+  std::vector<ActorProxy*> mActors = {};
   U32 mUniqueComponentCount = 0;
   std::map<U64, U32> mIdentities = {};
 };

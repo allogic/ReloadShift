@@ -19,6 +19,10 @@ public:
 
 public:
 
+  inline U32 GetSize() const { return mSize; }
+
+public:
+
   virtual void Create() override
   {
     glGenBuffers(1, &mID);
@@ -44,33 +48,23 @@ public:
   }
   void Clear()
   {
-    glBindBuffer(Type, mID);
     glBufferSubData(Type, 0, mSize * sizeof(Value), nullptr);
-    glBindBuffer(Type, 0);
   }
   void Set(Value* buffer)
   {
-    glBindBuffer(Type, mID);
     glBufferSubData(Type, 0, mSize * sizeof(Value), buffer);
-    glBindBuffer(Type, 0);
   }
   void Set(U32 offset, Value* buffer, U32 size)
   {
-    glBindBuffer(Type, mID);
     glBufferSubData(Type, offset * sizeof(Value), size * sizeof(Value), buffer);
-    glBindBuffer(Type, 0);
   }
   void Get(Value* buffer)
   {
-    glBindBuffer(Type, mID);
     glGetBufferSubData(Type, 0, mSize * sizeof(Value), buffer);
-    glBindBuffer(Type, 0);
   }
   void Get(U32 offset, Value* buffer, U32 size)
   {
-    glBindBuffer(Type, mID);
     glGetBufferSubData(Type, offset * sizeof(Value), size * sizeof(Value), buffer);
-    glBindBuffer(Type, 0);
   }
   void UnBind()
   {

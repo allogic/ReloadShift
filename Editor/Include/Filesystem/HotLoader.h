@@ -39,7 +39,7 @@ private:
   ////////////////////////////////////////////////////////
 
   void UpdateTexturesAssets();
-  void UpdateMeshesAssets();
+  void UpdateMesheAssets();
   void UpdateShadersAssets();
 
 private:

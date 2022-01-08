@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Core.h>
-#include <Config.h>
+#include <Component.h>
 
 class Actor;
 
@@ -25,9 +25,9 @@ public:
 
   inline void SetActor(Actor* value) { mActor = value; }
 
-public:
+private:
 
   Actor* mActor = nullptr;
-
-  void* mComponents[RS_MAX_COMPONENTS] = {};
+  std::map<U64, Component*> mComponents = {};
+  U32 mComponentCount = 0;
 };

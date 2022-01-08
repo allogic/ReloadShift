@@ -19,8 +19,7 @@ public:
 public:
 
   virtual void Tick(R32 deltaTime);
-  virtual void Render(R32 deltaTime);
-  virtual void Link();
+  virtual void Render() {}
 
 protected:
 

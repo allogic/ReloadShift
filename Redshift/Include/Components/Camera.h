@@ -20,6 +20,12 @@ public:
 
   }
 
+public:
+
+  inline R32 GetFOV() const { return mFOV; }
+  inline R32 GetNear() const { return mNear; }
+  inline R32 GetFar() const { return mFar; }
+
 private:
 
   R32 mFOV;

@@ -36,5 +36,5 @@ private:
 private:
 
   std::vector<Vertex> mVertices = {};
-  std::vector<U32> mIndices = {};
+  std::vector<U32> mElements = {};
 };

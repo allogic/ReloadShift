@@ -25,6 +25,10 @@ public:
 
 public:
 
+  inline U32 GetID() const { return mID; }
+
+public:
+
   virtual void Create() override
   {
     glGenTextures(1, &mID);
@@ -71,3 +75,5 @@ using Texture2DU8RGBA = GenericTexture<GL_TEXTURE_2D, GL_UNSIGNED_BYTE, GL_RGBA,
 
 using Texture2DR32RGB = GenericTexture<GL_TEXTURE_2D, GL_FLOAT, GL_RGB, GL_RGB32F>;
 using Texture2DR32RGBA = GenericTexture<GL_TEXTURE_2D, GL_FLOAT, GL_RGBA, GL_RGBA32F>;
+
+using Texture2DU24U8DS = GenericTexture<GL_TEXTURE_2D, GL_UNSIGNED_INT_24_8, GL_DEPTH_STENCIL, GL_DEPTH24_STENCIL8>;

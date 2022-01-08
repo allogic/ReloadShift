@@ -39,13 +39,15 @@ bool TextureResource::ProduceHandles()
   {
     case 3:
     {
-      mWorld->CreateHandle<Texture2DR32RGB>(GetName(), mWidth, mHeight, ETextureWrap::ClampToEdge, ETextureFilter::Nearest);
+      mWorld->MarkHandlesAsDirtyByName<Texture2DR32RGB>(GetName());
+      mWorld->MountHandle<Texture2DR32RGB>(GetName(), mWidth, mHeight, ETextureWrap::ClampToEdge, ETextureFilter::Nearest);
       mDirty = false;
       return true;
     }
     case 4:
     {
-      mWorld->CreateHandle<Texture2DR32RGBA>(GetName(), mWidth, mHeight, ETextureWrap::ClampToEdge, ETextureFilter::Nearest);
+      mWorld->MarkHandlesAsDirtyByName<Texture2DR32RGBA>(GetName());
+      mWorld->MountHandle<Texture2DR32RGBA>(GetName(), mWidth, mHeight, ETextureWrap::ClampToEdge, ETextureFilter::Nearest);
       mDirty = false;
       return true;
     }

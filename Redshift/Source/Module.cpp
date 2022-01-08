@@ -12,11 +12,3 @@ void Module::Tick(R32 deltaTime)
   gladSetGLContext(mWorld->GetGladContext());
   ImGui::SetCurrentContext(mWorld->GetImGuiContext());
 }
-void Module::Render(R32 deltaTime)
-{
-  
-}
-void Module::Link()
-{
-
-}
