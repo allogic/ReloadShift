@@ -77,30 +77,6 @@ bool MeshResource::ProduceHandles()
   return false;
 }
 
-ofbx::IElement const* MeshResource::GetElementByName(ofbx::IElement const* parent, std::string const& elementName)
-{
-  I8 label[512] = {};
-  for (ofbx::IElement const* element = parent->getFirstChild(); element; element = element->getSibling())
-  {
-    element->getID().toString(label);
-    if (std::strcmp(label, elementName.c_str()) == 0)
-    {
-      return element;
-    }
-  }
-  return nullptr;
-}
-ofbx::IElementProperty const* MeshResource::GetPropertyByName(ofbx::IElement const* parent, std::string const& propertyName)
-{
-  I8 label[512] = {};
-  for (ofbx::IElementProperty const* property = parent->getFirstProperty(); property; property = property->getNext())
-  {
-    std::printf("%c\n", (I8)property->getType());
-    return property;
-  }
-  return nullptr;
-}
-
 bool MeshResource::ParseScene()
 {
   if (mBytes)
@@ -161,13 +137,12 @@ bool MeshResource::ParseScene()
       mElements.clear();
       mElements.resize(elementCount);
       I32 const* elements = geometry->getFaceIndices();
-      for (U32 i = 0; i < (elementCount / 3); i += 3)
+      for (U32 i = 0; i < (elementCount); i += 3)
       {
-        mElements[i + 0] = elements[i + 0];
-        mElements[i + 1] = elements[i + 1];
-        mElements[i + 2] = elements[i + 2];
+        mElements[i + 0] = (elements[i + 0] < 0) ? (-elements[i + 0] - 1) : elements[i + 0];
+        mElements[i + 1] = (elements[i + 1] < 0) ? (-elements[i + 1] - 1) : elements[i + 1];
+        mElements[i + 2] = (elements[i + 2] < 0) ? (-elements[i + 2] - 1) : elements[i + 2];
       }
-      //std::memcpy(mElements.data(), elements, sizeof(U32) * elementCount);
     }
     return true;
   }

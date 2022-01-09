@@ -52,10 +52,11 @@ public:
   {
     glTexImage2D(Type, 0, FormatInternal, (I32)size.x, (I32)size.y, 0, Format, Layout, nullptr);
   }
-  void Mount(U32 index) const
+  void Mount(U32 index) const // aka MapSampler
   {
     glBindTextureUnit(index, mID);
   }
+  //glBindImageTexture(mappingIndex, textureLayout.mTid, 0, GL_FALSE, 0, GL_READ_WRITE, type);
   void UnBind() const
   {
     glBindTexture(Type, 0);

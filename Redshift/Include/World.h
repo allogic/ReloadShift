@@ -264,12 +264,12 @@ public:
 
   template<typename ... Cs>
   requires (std::is_base_of_v<Component, typename TypeProxy<Cs>::Type> && ...)
-  void DispatchFor(std::function<void(typename TypeProxy<Cs>::Ptr ...)>&& predicate)
+  static void DispatchFor(World* world, std::function<void(typename TypeProxy<Cs>::Ptr ...)>&& predicate)
   {
     // Compute hash
     U64 bucketHash = ((U64)0 ^ ... ^ typeid(Cs).hash_code());
     // Execute predicate over actors in bucket
-    for (auto const& proxy : mPermutationTable[bucketHash])
+    for (auto const& proxy : world->GetPermutationTable()[bucketHash])
     {
       predicate
       (

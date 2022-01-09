@@ -21,7 +21,6 @@ public:
     GL_COLOR_ATTACHMENT2,
     GL_COLOR_ATTACHMENT3,
     GL_COLOR_ATTACHMENT4,
-    GL_COLOR_ATTACHMENT5,
   };
 
 public:
@@ -38,10 +37,10 @@ public:
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mID);
     U32 colorTextureIndex = 0;
     U32 bufferAttachmentIndex = 0;
-    U32 bufferAttachments[sizeof ... (ColorTextures)];
+    U32 bufferAttachments[(sizeof ... (ColorTextures)) - 1];
     ((glFramebufferTexture2D(GL_FRAMEBUFFER, BufferAttachmentTypes[bufferAttachmentIndex++], GL_TEXTURE_2D, ((typename TypeProxy<ColorTextures>::Ptr)mColorTextures[colorTextureIndex++])->GetID(), 0)), ...);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, mDepthStencilTexture->GetID(), 0);
-    for (U32 i = 0; i < (sizeof ... (ColorTextures)); ++i)
+    for (U32 i = 0; i < ((sizeof ... (ColorTextures)) - 1); ++i)
     {
       bufferAttachments[i] = BufferAttachmentTypes[i];
     }

@@ -29,9 +29,17 @@ public:
     if (roll >= 360.0f) roll = 0.0f;
     mWorld->DispatchFor<
       Transform,
-      Brain>([=](Transform* transform, Brain* brain)
+      Camera>(mWorld, [=](Transform* transform, Camera* camera)
         {
-          transform->SetRotation(R32V3{ -90.0f, 0.0f, roll });
+          transform->SetWorldPosition(R32V3{ 0.0f, 0.0f, -10.0f });
+        });
+    mWorld->DispatchFor<
+      Transform,
+      Renderable,
+      Brain>(mWorld, [=](Transform* transform, Renderable* renderable, Brain* brain)
+        {
+          transform->SetWorldPosition(R32V3{ 0.0f, 3.5f, 0.0f });
+          transform->SetWorldRotation(R32V3{ -90.0f, 0.0f, roll });
         });
 
     ImGui::Begin("Debug");
@@ -52,7 +60,7 @@ public:
           for (U32 k = 0; k < 10; ++k)
           {
             Enemy* enemy = mWorld->CreateActor<Enemy>("Enemy");
-            enemy->GetTransform()->SetPosition((R32V3{ i, j, k } * 3.0f) - 15.0f);
+            enemy->GetTransform()->SetWorldPosition((R32V3{ i, j, k } * 3.0f) - 15.0f);
             mEnemies.emplace_back(enemy);
           }
         }
