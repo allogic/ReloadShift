@@ -2,12 +2,13 @@
 
 #include <Redshift.h>
 
+#include <Renderer/DeferredRenderTask.h>
+
 class DeferredRenderer : public Renderer
 {
 public:
 
   using DeferredFrameBuffer = FrameBufferU24U8DS<
-    Texture2DR32RGBA,
     Texture2DR32RGBA,
     Texture2DR32RGBA,
     Texture2DR32RGBA,
@@ -19,6 +20,7 @@ public:
 
   DeferredRenderer(World* world)
     : Renderer(world)
+    , mCurrentTextureID{ mDeferredPosition.Get()->GetID() }
   {
     
   }
@@ -43,13 +45,14 @@ public:
       Transform,
       Camera>([&](Transform* transform, Camera* camera)
         {
-          mProjection.Projection = glm::perspective(glm::radians(camera->GetFOV()), 1280.0f / 720.0f, camera->GetNear(), camera->GetFar());
+          mProjection.Projection = glm::perspective(glm::radians(camera->GetFOV()), mViewportSize.x / mViewportSize.y, camera->GetNear(), camera->GetFar());
           mProjection.View = glm::lookAt(transform->GetPosition(), transform->GetPosition() + R32V3{ 0.0f, 0.0f, 1.0f }, R32V3{ 0.0f, 1.0f, 0.0f });
         });
     // Render geometry into framebuffer
     mFrameBuffer.Get()->BindWrite();
     glClearColor(0.1f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glViewport(0, 0, (I32)mViewportSize.x, (I32)mViewportSize.y);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -68,42 +71,45 @@ public:
 
 public:
 
-  void Debug() const
+  void Debug()
   {
-    ImGuiWindowFlags windowsFlags = ImGuiWindowFlags_NoDecoration;
     static bool opened = true;
+    R32V2 currentSize = R32V2{};
+    bool resize = false;
 
-    ImGui::Begin("DepthStencil", &opened);
-    ImGui::Image((void*)(U64)mDeferredDepthStencil.Get()->GetID(), ImGui::GetWindowSize());
-    ImGui::End();
+    ImGuiWindowFlags windowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoScrollbar;
 
-    ImGui::Begin("Position", &opened);
-    ImGui::Image((void*)(U64)mDeferredPosition.Get()->GetID(), ImGui::GetWindowSize());
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0f, 0.0f });
+    ImGui::Begin("Viewport", &opened, windowFlags);
+    ImGui::BeginMenuBar();
+    if (ImGui::BeginMenu("Buffer"))
+    {
+      if (ImGui::MenuItem("DepthStencil")) mCurrentTextureID = mDeferredDepthStencil.Get()->GetID();
+      if (ImGui::MenuItem("Position")) mCurrentTextureID = mDeferredPosition.Get()->GetID();
+      if (ImGui::MenuItem("Albedo")) mCurrentTextureID = mDeferredAlbedo.Get()->GetID();
+      if (ImGui::MenuItem("Normal")) mCurrentTextureID = mDeferredNormal.Get()->GetID();
+      if (ImGui::MenuItem("Specular")) mCurrentTextureID = mDeferredSpecular.Get()->GetID();
+      if (ImGui::MenuItem("Metallic")) mCurrentTextureID = mDeferredMetallic.Get()->GetID();
+      if (ImGui::MenuItem("Roughness")) mCurrentTextureID = mDeferredRoughness.Get()->GetID();
+      ImGui::EndMenu();
+    }
+    currentSize = R32V2{ ImGui::GetWindowSize().x, ImGui::GetWindowSize().y };
+    ImGui::Text("%ux%u", (U32)mViewportSize.x, (U32)mViewportSize.y);
+    ImGui::EndMenuBar();
+    if (mViewportSize != currentSize)
+    {
+      mViewportSize = currentSize;
+      if (Texture2DU24U8DS* texture = mDeferredDepthStencil.Get()) { texture->Bind(); texture->Resize(mViewportSize); texture->UnBind(); }
+      if (Texture2DR32RGBA* texture = mDeferredPosition.Get()) { texture->Bind(); texture->Resize(mViewportSize); texture->UnBind(); }
+      if (Texture2DR32RGBA* texture = mDeferredAlbedo.Get()) { texture->Bind(); texture->Resize(mViewportSize); texture->UnBind(); }
+      if (Texture2DR32RGBA* texture = mDeferredNormal.Get()) { texture->Bind(); texture->Resize(mViewportSize); texture->UnBind(); }
+      if (Texture2DR32RGBA* texture = mDeferredSpecular.Get()) { texture->Bind(); texture->Resize(mViewportSize); texture->UnBind(); }
+      if (Texture2DR32RGBA* texture = mDeferredMetallic.Get()) { texture->Bind(); texture->Resize(mViewportSize); texture->UnBind(); }
+      if (Texture2DR32RGBA* texture = mDeferredRoughness.Get()) { texture->Bind(); texture->Resize(mViewportSize); texture->UnBind(); }
+    }
+    ImGui::Image((void*)(U64)mCurrentTextureID, ImVec2{ mViewportSize.x , mViewportSize.y - 39.0f });
     ImGui::End();
-
-    ImGui::Begin("Albedo", &opened);
-    ImGui::Image((void*)(U64)mDeferredAlbedo.Get()->GetID(), ImGui::GetWindowSize());
-    ImGui::End();
-
-    ImGui::Begin("Normal", &opened);
-    ImGui::Image((void*)(U64)mDeferredNormal.Get()->GetID(), ImGui::GetWindowSize());
-    ImGui::End();
-
-    ImGui::Begin("Specular", &opened);
-    ImGui::Image((void*)(U64)mDeferredSpecular.Get()->GetID(), ImGui::GetWindowSize());
-    ImGui::End();
-
-    ImGui::Begin("Height", &opened);
-    ImGui::Image((void*)(U64)mDeferredHeight.Get()->GetID(), ImGui::GetWindowSize());
-    ImGui::End();
-
-    ImGui::Begin("Metallic", &opened);
-    ImGui::Image((void*)(U64)mDeferredMetallic.Get()->GetID(), ImGui::GetWindowSize());
-    ImGui::End();
-
-    ImGui::Begin("Roughness", &opened);
-    ImGui::Image((void*)(U64)mDeferredRoughness.Get()->GetID(), ImGui::GetWindowSize());
-    ImGui::End();
+    ImGui::PopStyleVar();
   }
 
 private:
@@ -114,7 +120,7 @@ private:
     // Dequeue render tasks and fill draw calls
     while (!mRenderQueue.empty())
     {
-      RenderTask task = mRenderQueue.front();
+      DeferredRenderTask task = mRenderQueue.front();
       mDrawCalls[task.GetProgram()].emplace(task);
       mRenderQueue.pop();
     }
@@ -124,8 +130,10 @@ private:
       program->Bind();
       for (auto const& task : tasks)
       {
+        // Update projection
         mProjection.Model = task.GetTransform()->GetMatrix();
         mUniformProjection.Get()->Set(&mProjection);
+        // Render regular mesh
         task.GetMesh()->Bind();
         task.GetMesh()->Draw();
       }
@@ -143,11 +151,16 @@ private:
   HotRef<Texture2DR32RGBA> const& mDeferredAlbedo = mWorld->LinkHandle<Texture2DR32RGBA>("DeferredAlbedo", 1280u, 720u, ETextureWrap::ClampToEdge, ETextureFilter::Nearest);
   HotRef<Texture2DR32RGBA> const& mDeferredNormal = mWorld->LinkHandle<Texture2DR32RGBA>("DeferredNormal", 1280u, 720u, ETextureWrap::ClampToEdge, ETextureFilter::Nearest);
   HotRef<Texture2DR32RGBA> const& mDeferredSpecular = mWorld->LinkHandle<Texture2DR32RGBA>("DeferredSpecular", 1280u, 720u, ETextureWrap::ClampToEdge, ETextureFilter::Nearest);
-  HotRef<Texture2DR32RGBA> const& mDeferredHeight = mWorld->LinkHandle<Texture2DR32RGBA>("DeferredHeight", 1280u, 720u, ETextureWrap::ClampToEdge, ETextureFilter::Nearest);
   HotRef<Texture2DR32RGBA> const& mDeferredMetallic = mWorld->LinkHandle<Texture2DR32RGBA>("DeferredMetallic", 1280u, 720u, ETextureWrap::ClampToEdge, ETextureFilter::Nearest);
   HotRef<Texture2DR32RGBA> const& mDeferredRoughness = mWorld->LinkHandle<Texture2DR32RGBA>("DeferredRoughness", 1280u, 720u, ETextureWrap::ClampToEdge, ETextureFilter::Nearest);
 
-  HotRef<DeferredFrameBuffer> const& mFrameBuffer = mWorld->LinkHandle<DeferredFrameBuffer>("DeferredFrameBuffer", 1280u, 720u, mDeferredDepthStencil.Get(), mDeferredPosition.Get(), mDeferredAlbedo.Get(), mDeferredNormal.Get(), mDeferredSpecular.Get(), mDeferredHeight.Get(), mDeferredMetallic.Get(), mDeferredRoughness.Get());
+  HotRef<DeferredFrameBuffer> const& mFrameBuffer = mWorld->LinkHandle<DeferredFrameBuffer>("DeferredFrameBuffer", mDeferredDepthStencil.Get(), mDeferredPosition.Get(), mDeferredAlbedo.Get(), mDeferredNormal.Get(), mDeferredSpecular.Get(), mDeferredMetallic.Get(), mDeferredRoughness.Get());
+
+  R32V2 mViewportSize = R32V2{};
+  U32 mCurrentTextureID = 0;
 
   Projection mProjection = {};
+
+  std::queue<DeferredRenderTask> mRenderQueue = {};
+  std::unordered_map<RenderProgram*, std::multiset<DeferredRenderTask>> mDrawCalls = {};
 };

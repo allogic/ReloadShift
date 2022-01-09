@@ -44,15 +44,19 @@ public:
 
 public:
 
-  void Bind()
+  void Bind() const
   {
     glBindTexture(Type, mID);
   }
-  void Mount(U32 index)
+  void Resize(R32V2 size) const
+  {
+    glTexImage2D(Type, 0, FormatInternal, (I32)size.x, (I32)size.y, 0, Format, Layout, nullptr);
+  }
+  void Mount(U32 index) const
   {
     glBindTextureUnit(index, mID);
   }
-  void UnBind()
+  void UnBind() const
   {
     glBindTexture(Type, 0);
   }

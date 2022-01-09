@@ -32,5 +32,11 @@
     <ClInclude Include="Include\Actors\Player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Components\Renderable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\DeferredRenderTask.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

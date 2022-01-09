@@ -7,11 +7,11 @@
 
 class Transform;
 
-class RenderTask
+class DeferredRenderTask
 {
 public:
 
-  RenderTask(
+  DeferredRenderTask(
     Transform* transform,
     DefaultMesh* mesh,
     RenderProgram* program)
@@ -30,7 +30,7 @@ public:
 
 public:
 
-  bool operator < (RenderTask const& other) const { return mProgram < other.mProgram; }
+  bool operator < (DeferredRenderTask const& other) const { return mProgram < other.mProgram; }
 
 private:
 

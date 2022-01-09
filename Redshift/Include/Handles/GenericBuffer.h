@@ -32,36 +32,36 @@ public:
 
 public:
 
-  void Bind()
+  void Bind() const
   {
     glBindBuffer(Type, mID);
   }
-  void Mount(U32 index)
+  void Mount(U32 index) const
   {
     static_assert(Type == GL_SHADER_STORAGE_BUFFER || Type == GL_UNIFORM_BUFFER);
     glBindBufferBase(Type, index, mID);
   }
-  void Clear()
+  void Clear() const
   {
     glBufferSubData(Type, 0, mSize * sizeof(Value), nullptr);
   }
-  void Set(Value* buffer)
+  void Set(Value* buffer) const
   {
     glBufferSubData(Type, 0, mSize * sizeof(Value), buffer);
   }
-  void Set(U32 offset, Value* buffer, U32 size)
+  void Set(U32 offset, Value* buffer, U32 size) const
   {
     glBufferSubData(Type, offset * sizeof(Value), size * sizeof(Value), buffer);
   }
-  void Get(Value* buffer)
+  void Get(Value* buffer) const
   {
     glGetBufferSubData(Type, 0, mSize * sizeof(Value), buffer);
   }
-  void Get(U32 offset, Value* buffer, U32 size)
+  void Get(U32 offset, Value* buffer, U32 size) const
   {
     glGetBufferSubData(Type, offset * sizeof(Value), size * sizeof(Value), buffer);
   }
-  void UnBind()
+  void UnBind() const
   {
     glBindBuffer(Type, mID);
   }

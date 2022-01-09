@@ -8,6 +8,8 @@
 #include <Handles/GenericMesh.h>
 #include <Handles/GenericProgram.h>
 
+#include <Renderer/DeferredRenderTask.h>
+
 class Transform;
 
 class Renderable : public Component
@@ -27,11 +29,11 @@ public:
 
 public:
 
-  void SubmitRenderTask(Transform* transform, std::queue<RenderTask>& renderQueue)
+  void SubmitRenderTask(Transform* transform, std::queue<DeferredRenderTask>& renderQueue)
   {
     if (mMesh.Get() && mProgram.Get())
     {
-      renderQueue.emplace(RenderTask{ transform, mMesh.Get(), mProgram.Get() });
+      renderQueue.emplace(DeferredRenderTask{ transform, mMesh.Get(), mProgram.Get() });
     }
   }
 

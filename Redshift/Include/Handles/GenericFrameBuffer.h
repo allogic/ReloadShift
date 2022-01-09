@@ -28,13 +28,9 @@ public:
 
   GenericFrameBuffer(
     std::string const& name,
-    U32 width,
-    U32 height,
     DepthStencilTexture* depthStencilTexture,
     ColorTextures* ... colorTextures)
     : Handle(name)
-    , mWidth{ width }
-    , mHeight{ height }
     , mDepthStencilTexture{ depthStencilTexture }
     , mColorTextures{ colorTextures ... }
   {
@@ -67,23 +63,20 @@ public:
 
 public:
 
-  void BindRead()
+  void BindRead() const
   {
     glBindFramebuffer(GL_READ_FRAMEBUFFER, mID);
   }
-  void BindWrite()
+  void BindWrite() const
   {
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mID);
   }
-  void UnBind()
+  void UnBind() const
   {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
   }
 
 private:
-
-  U32 mWidth;
-  U32 mHeight;
 
   DepthStencilTexture* mDepthStencilTexture;
   void* mColorTextures[sizeof ... (ColorTextures)];

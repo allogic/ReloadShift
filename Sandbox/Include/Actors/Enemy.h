@@ -3,6 +3,7 @@
 #include <Redshift.h>
 
 #include <Components/Brain.h>
+#include <Components/Renderable.h>
 
 class Enemy : public Actor
 {
@@ -13,8 +14,8 @@ public:
     ActorProxy* proxy,
     std::string const& name)
     : Actor(world, proxy, name)
-    , mTransform{ world->AttachComponent<Transform>(this, R32V3{ 0.0f }, R32V3{ 0.0f }, R32V3{ 0.03f }) }
-    , mRenderable{ world->AttachComponent<Renderable>(this, "Puker", "Lit") }
+    , mTransform{ world->AttachComponent<Transform>(this, R32V3{ 0.0f }, R32V3{ 0.0f }, R32V3{ 1.0f }) }
+    , mRenderable{ world->AttachComponent<Renderable>(this, "Cube", "Lit") }
     , mBrain{ world->AttachComponent<Brain>(this) }
   {
 

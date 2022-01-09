@@ -148,7 +148,6 @@
     <ClInclude Include="Include\Actor.h" />
     <ClInclude Include="Include\Component.h" />
     <ClInclude Include="Include\Components\Camera.h" />
-    <ClInclude Include="Include\Components\Renderable.h" />
     <ClInclude Include="Include\Components\Transform.h" />
     <ClInclude Include="Include\Handles\GenericBuffer.h" />
     <ClInclude Include="Include\Handle.h" />
@@ -162,7 +161,6 @@
     <ClInclude Include="Include\HotRef.h" />
     <ClInclude Include="Include\ModuleProxy.h" />
     <ClInclude Include="Include\Renderer.h" />
-    <ClInclude Include="Include\RenderTask.h" />
     <ClInclude Include="Include\Resources\MeshResource.h" />
     <ClInclude Include="Include\Module.h" />
     <ClInclude Include="Include\Redshift.h" />
@@ -170,7 +168,6 @@
     <ClInclude Include="Include\Uniforms\Projection.h" />
     <ClInclude Include="Include\Utility.h" />
     <ClInclude Include="Include\Vertex.h" />
-    <ClInclude Include="Include\Viewport.h" />
     <ClInclude Include="Include\World.h" />
     <ClInclude Include="Include\Resources\ShaderResource.h" />
     <ClInclude Include="Include\Resources\TextureResource.h" />

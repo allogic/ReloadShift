@@ -26,11 +26,11 @@ public:
 
 public:
 
-  void Bind()
+  void Bind() const
   {
     glUseProgram(mID);
   }
-  void Execute(U32 x, U32 y, U32 z)
+  void Execute(U32 x, U32 y, U32 z) const
   {
     static_assert(Type == EProgramType::Compute);
     glDispatchCompute(x, y, z);
@@ -61,7 +61,7 @@ public:
     return linkStatus;
   }
 
-  void UnBind()
+  void UnBind() const
   {
     glUseProgram(0);
   }

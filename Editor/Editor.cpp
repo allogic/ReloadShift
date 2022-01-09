@@ -22,7 +22,9 @@ I32 main()
   glfwWindowHint(GLFW_SAMPLES, 0);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-  GLFWwindow* window = glfwCreateWindow(1920, 1080, "Redshift", nullptr, nullptr);
+  U32 editorWidth = 1920;
+  U32 editorHeight = 1080;
+  GLFWwindow* window = glfwCreateWindow((I32)editorWidth, (I32)editorHeight, "Redshift", nullptr, nullptr);
   if (window)
   {
     // Set GC current
@@ -44,6 +46,7 @@ I32 main()
       if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
       {
         style.WindowRounding = 0.0f;
+        style.FrameBorderSize = 0.0f;
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
       }
       bool imguiGLFWInitialized = ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -92,6 +95,7 @@ I32 main()
             // Begin rendering imgui
             glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glViewport(0, 0, (I32)editorWidth, (I32)editorHeight);
             // Create new imgui frame
             ImGui_ImplOpenGL3_NewFrame();
             ImGui_ImplGlfw_NewFrame();

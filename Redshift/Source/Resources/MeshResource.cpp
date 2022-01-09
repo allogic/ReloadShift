@@ -106,10 +106,68 @@ bool MeshResource::ParseScene()
   if (mBytes)
   {
     ofbx::IScene* scene = ofbx::load(mBytes, mBytesSize, (U64)ofbx::LoadFlags::TRIANGULATE);
+
+    for (U32 i = 0; i < 1 /* scene->getMeshCount() */; ++i)
+    {
+      ofbx::Mesh const* mesh = scene->getMesh(i);
+      ofbx::Geometry const* geometry = mesh->getGeometry();
+
+      // Extract vertices
+      U32 vertexCount = geometry->getVertexCount();
+      mVertices.clear();
+      mVertices.resize(vertexCount);
+      ofbx::Vec3 const* vertices = geometry->getVertices();
+      ofbx::Vec3 const* normals = geometry->getNormals();
+      ofbx::Vec2 const* UVs = geometry->getUVs();
+      ofbx::Vec4 const* colors = geometry->getColors();
+      ofbx::Vec3 const* tangents = geometry->getTangents();
+      for (U32 i = 0; i < vertexCount; ++i)
+      {
+        if (vertices)
+        {
+          mVertices[i].Position.x = (R32)vertices[i].x;
+          mVertices[i].Position.y = (R32)vertices[i].y;
+          mVertices[i].Position.z = (R32)vertices[i].z;
+        }
+
+        if (normals)
+        {
+          mVertices[i].Normal.x = (R32)normals[i].x;
+          mVertices[i].Normal.y = (R32)normals[i].y;
+          mVertices[i].Normal.z = (R32)normals[i].z;
+        }
+
+        if (UVs)
+        {
+          mVertices[i].UV.x = (R32)UVs[i].x;
+          mVertices[i].UV.y = (R32)UVs[i].y;
+        }
+
+        if (colors)
+        {
+          mVertices[i].Color.x = (R32)colors[i].x;
+          mVertices[i].Color.y = (R32)colors[i].y;
+          mVertices[i].Color.z = (R32)colors[i].z;
+          mVertices[i].Color.w = (R32)colors[i].w;
+        }
+
+        if (tangents)
+        {
+          mVertices[i].Tangent.x = (R32)tangents[i].x;
+          mVertices[i].Tangent.y = (R32)tangents[i].y;
+          mVertices[i].Tangent.z = (R32)tangents[i].z;
+        }
+      }
+
+      // Extract elements
+      U32 elementCount = geometry->getIndexCount();
+      mElements.resize(elementCount);
+      std::memcpy(mElements.data(), geometry->getFaceIndices(), sizeof(U32) * elementCount);
+    }
+    
+
     if (scene && scene->getRootElement())
     {
-      //scene->getMesh();
-
       ofbx::IElement const* root = scene->getRootElement();
       ofbx::IElement const* objects = GetElementByName(root, "Objects");
       ofbx::IElement const* geometry = GetElementByName(objects, "Geometry");

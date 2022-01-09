@@ -72,9 +72,6 @@
     <ClInclude Include="Include\Components\Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Components\Renderable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\Components\Transform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -93,13 +90,7 @@
     <ClInclude Include="Include\Renderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\RenderTask.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\Handles\GenericFrameBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Viewport.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\HotRef.h">

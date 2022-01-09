@@ -27,7 +27,7 @@ public:
 
 public:
 
-  void Bind()
+  void Bind() const
   {
     glBindVertexArray(mID);
   }
@@ -49,11 +49,11 @@ public:
     elementBuffer->UnBind();
     return true;
   }
-  void Draw()
+  void Draw() const
   {
     glDrawElements(GL_TRIANGLES, mNumElements, GL_UNSIGNED_INT, nullptr);
   }
-  void UnBind()
+  void UnBind() const
   {
     glBindVertexArray(0);
   }
