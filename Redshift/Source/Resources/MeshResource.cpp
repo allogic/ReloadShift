@@ -106,12 +106,10 @@ bool MeshResource::ParseScene()
   if (mBytes)
   {
     ofbx::IScene* scene = ofbx::load(mBytes, mBytesSize, (U64)ofbx::LoadFlags::TRIANGULATE);
-
     for (U32 i = 0; i < 1 /* scene->getMeshCount() */; ++i)
     {
       ofbx::Mesh const* mesh = scene->getMesh(i);
       ofbx::Geometry const* geometry = mesh->getGeometry();
-
       // Extract vertices
       U32 vertexCount = geometry->getVertexCount();
       mVertices.clear();
@@ -158,47 +156,20 @@ bool MeshResource::ParseScene()
           mVertices[i].Tangent.z = (R32)tangents[i].z;
         }
       }
-
       // Extract elements
       U32 elementCount = geometry->getIndexCount();
-      mElements.resize(elementCount);
-      std::memcpy(mElements.data(), geometry->getFaceIndices(), sizeof(U32) * elementCount);
-    }
-    
-
-    if (scene && scene->getRootElement())
-    {
-      ofbx::IElement const* root = scene->getRootElement();
-      ofbx::IElement const* objects = GetElementByName(root, "Objects");
-      ofbx::IElement const* geometry = GetElementByName(objects, "Geometry");
-      ofbx::IElement const* vertices = GetElementByName(geometry, "Vertices");
-      ofbx::IElement const* polygonVertexIndex = GetElementByName(geometry, "PolygonVertexIndex");
-
-      std::vector<R64> positionsRaw;
-      std::vector<I32> indicesRaw;
-
-      GetArray(positionsRaw, vertices->getFirstProperty());
-      GetArray(indicesRaw, polygonVertexIndex->getFirstProperty());
-
-      mVertices.clear();
       mElements.clear();
-
-      mVertices.resize(positionsRaw.size() / 3);
-      for (U32 i = 0, j = 0; (i < mVertices.size()) && (j < positionsRaw.size()); ++i, j += 3)
+      mElements.resize(elementCount);
+      I32 const* elements = geometry->getFaceIndices();
+      for (U32 i = 0; i < (elementCount / 3); i += 3)
       {
-        mVertices[i].Position.x = (R32)positionsRaw[j + 0];
-        mVertices[i].Position.y = (R32)positionsRaw[j + 1];
-        mVertices[i].Position.z = (R32)positionsRaw[j + 2];
+        mElements[i + 0] = elements[i + 0];
+        mElements[i + 1] = elements[i + 1];
+        mElements[i + 2] = elements[i + 2];
       }
-
-      mElements.resize(indicesRaw.size());
-      for (U32 i = 0; i < indicesRaw.size(); ++i)
-      {
-        mElements[i] = (U32)indicesRaw[i];
-      }
-
-      return true;
+      //std::memcpy(mElements.data(), elements, sizeof(U32) * elementCount);
     }
+    return true;
   }
   return false;
 }
