@@ -96,6 +96,18 @@
     <ClInclude Include="Include\HotRef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Renderer\DeferredRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\DeferredRenderTask.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Components\Renderable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Physics\PhysicsWorld.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Resources\TextureResource.cpp">

@@ -23,6 +23,10 @@ public:
 
 private:
 
+  bool ParseFile();
+
+private:
+
   U32 mWidth = 0;
   U32 mHeight = 0;
   U32 mChannels = 0;
@@ -30,4 +34,7 @@ private:
   U32 mGLType = 0;
   U32 mGLFormat = 0;
   U32 mGLFormatInternal = 0;
+
+  std::vector<U8> mIntRepresentation;
+  std::vector<R32> mRealRepresentation;
 };

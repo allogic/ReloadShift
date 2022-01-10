@@ -8,6 +8,7 @@
 #include <Utility.h>
 #include <Component.h>
 #include <Resource.h>
+#include <Renderer.h>
 
 class HotLoader;
 class ActorProxy;
@@ -23,6 +24,7 @@ public:
   using ModulesByName = std::map<std::string, ModuleProxy*>;
   using ResourcesByName = std::map<std::string, Resource*>;
   using ActorsByName = std::unordered_multimap<std::string, ActorProxy*>;
+  using RendererByName = std::map<std::string, Renderer*>;
 
   using HandlesByName = std::unordered_map<std::string, HotRef<Handle>>;
   using HandlesByNameByType = std::unordered_map<U64, HandlesByName>;
@@ -56,7 +58,8 @@ public:
 
   inline ModulesByName& GetModules() { return mModules; }
   inline ResourcesByName& GetResources() { return mResources; }
-  inline ActorsByName GetActors() { return mActors; }
+  inline ActorsByName& GetActors() { return mActors; }
+  inline RendererByName& GetRenderer() { return mRenderer; }
 
   inline HandlesByNameByType& GetHandles() { return mHandles; }
 
@@ -70,7 +73,7 @@ public:
 
   template<typename R, typename ... Args>
   requires std::is_base_of_v<Resource, R>
-  R* MountResource(std::string const& resourceName, Args &&... args)
+  R* CreateResource(std::string const& resourceName, Args &&... args)
   {
     Resource*& resource = mResources[resourceName + typeid(R).name()];
     // Probe if resource already exists
@@ -89,14 +92,16 @@ public:
 
   template<typename R>
   requires std::is_base_of_v<Resource, R>
-  void UnMountResource(std::string const& resourceName)
+  bool DestroyResource(std::string const& resourceName)
   {
     Resource*& resource = mResources[resourceName + typeid(R).name()];
     // Check if resource exists, if so, destroy it
     if (resource)
     {
       delete resource; resource = nullptr;
+      return true;
     }
+    return false;
   }
 
 public:
@@ -288,16 +293,51 @@ public:
   bool CreateModule(std::filesystem::path const& filePath);
   bool DestroyModule(std::string const& moduleName);
 
+public:
+
+  ////////////////////////////////////////////////////////
+  // Renderer interface
+  ////////////////////////////////////////////////////////
+
+  template<typename R, typename ... Args>
+  requires std::is_base_of_v<Renderer, R>
+  R* CreateRenderer(std::string const& rendererName, Args &&... args)
+  {
+    Renderer*& renderer = mRenderer[rendererName];
+    // Probe if renderer already exists
+    if (!renderer)
+    {
+      renderer = new R{ this, rendererName, std::forward<Args>(args) ... };
+      return (R*)renderer;
+    }
+    return (R*)renderer;
+  }
+
+  template<typename R>
+  requires std::is_base_of_v<Renderer, R>
+  bool DestroyRenderer(std::string const& rendererName)
+  {
+    Renderer*& renderer = mResources[rendererName];
+    // Check if resource exists, if so, destroy it
+    if (renderer)
+    {
+      delete renderer; renderer = nullptr;
+      return true;
+    }
+    return false;
+  }
+
 private:
 
   GladGLContext* mGladContext = nullptr;
   ImGuiContext* mImGuiContext = nullptr;
 
-  ModulesByName mModules = {};
-  ResourcesByName mResources = {};
-  ActorsByName mActors = {};
+  ModulesByName mModules = ModulesByName{};
+  ResourcesByName mResources = ResourcesByName{};
+  ActorsByName mActors = ActorsByName{};
+  RendererByName mRenderer = RendererByName{};
 
-  HandlesByNameByType mHandles = {};
+  HandlesByNameByType mHandles = HandlesByNameByType{};
 
-  PermutationTable mPermutationTable = {};
+  PermutationTable mPermutationTable = PermutationTable{};
 };

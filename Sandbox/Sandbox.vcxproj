@@ -25,9 +25,6 @@
     <ClInclude Include="Include\Actors\Enemy.h" />
     <ClInclude Include="Include\Actors\Player.h" />
     <ClInclude Include="Include\Components\Brain.h" />
-    <ClInclude Include="Include\Components\Renderable.h" />
-    <ClInclude Include="Include\Renderer\DeferredRenderer.h" />
-    <ClInclude Include="Include\Renderer\DeferredRenderTask.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

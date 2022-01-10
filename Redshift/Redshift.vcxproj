@@ -136,6 +136,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -148,6 +149,7 @@
     <ClInclude Include="Include\Actor.h" />
     <ClInclude Include="Include\Component.h" />
     <ClInclude Include="Include\Components\Camera.h" />
+    <ClInclude Include="Include\Components\Renderable.h" />
     <ClInclude Include="Include\Components\Transform.h" />
     <ClInclude Include="Include\Handles\GenericBuffer.h" />
     <ClInclude Include="Include\Handle.h" />
@@ -160,7 +162,10 @@
     <ClInclude Include="Include\Handles\GenericTexture.h" />
     <ClInclude Include="Include\HotRef.h" />
     <ClInclude Include="Include\ModuleProxy.h" />
+    <ClInclude Include="Include\Physics\PhysicsWorld.h" />
     <ClInclude Include="Include\Renderer.h" />
+    <ClInclude Include="Include\Renderer\DeferredRenderer.h" />
+    <ClInclude Include="Include\Renderer\DeferredRenderTask.h" />
     <ClInclude Include="Include\Resources\MeshResource.h" />
     <ClInclude Include="Include\Module.h" />
     <ClInclude Include="Include\Redshift.h" />

@@ -56,8 +56,12 @@ I32 main()
         // Create global world object
         World& world = World::Instance();
         // Create file browser and hot-reloader
-        HotLoader hotLoader = { window, &world, "C:\\Users\\Michael\\Downloads\\Redshift\\Streaming\\" };
-        FileBrowser fileBrowser = { "" };
+        HotLoader hotLoader = HotLoader{ window, &world, "C:\\Users\\Michael\\Downloads\\Redshift\\Streaming\\" };
+        FileBrowser fileBrowser = FileBrowser{ "" };
+        // Create deferred renderer
+        DeferredRenderer* deferredRenderer = world.CreateRenderer<DeferredRenderer>("Deferred");
+        // Create physics world
+        PhysicsWorld physicsWorld = PhysicsWorld{};
         // Setup timer stuff
         R32 prevTime = 0.0f;
         R32 renderRate = 1.0f / 60.0f;
@@ -76,7 +80,9 @@ I32 main()
             // Dispatch modules render
             if ((time - prevRenderTime) >= renderRate)
             {
-              // Render
+              // Render deferred
+              deferredRenderer->Render();
+              // Render modules
               for (auto const& [name, proxy] : world.GetModules())
               {
                 proxy->GetModInstance()->Render();

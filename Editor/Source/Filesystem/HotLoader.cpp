@@ -97,7 +97,7 @@ void HotLoader::UpdateTexturesAssets()
   for (auto const& file : mWatchdogTexture.FilesToDelete())
   {
     std::string assetName = file.stem().string();
-    mWorld->UnMountResource<TextureResource>(assetName);
+    mWorld->DestroyResource<TextureResource>(assetName);
     mWorld->TrySetDirty<Texture2DU8RGB>(assetName);
     mWorld->TrySetDirty<Texture2DU8RGBA>(assetName);
     mWorld->TrySetDirty<Texture2DR32RGB>(assetName);
@@ -107,18 +107,18 @@ void HotLoader::UpdateTexturesAssets()
   for (auto const& file : mWatchdogTexture.FilesToChange())
   {
     std::string assetName = file.stem().string();
-    mWorld->UnMountResource<TextureResource>(assetName);
+    mWorld->DestroyResource<TextureResource>(assetName);
     mWorld->TrySetDirty<Texture2DU8RGB>(assetName);
     mWorld->TrySetDirty<Texture2DU8RGBA>(assetName);
     mWorld->TrySetDirty<Texture2DR32RGB>(assetName);
     mWorld->TrySetDirty<Texture2DR32RGBA>(assetName);
-    mWorld->MountResource<TextureResource>(assetName, file);
+    mWorld->CreateResource<TextureResource>(assetName, file);
   }
 
   for (auto const& file : mWatchdogTexture.FilesToCreate())
   {
     std::string assetName = file.stem().string();
-    mWorld->MountResource<TextureResource>(assetName, file);
+    mWorld->CreateResource<TextureResource>(assetName, file);
   }
 }
 void HotLoader::UpdateMesheAssets()
@@ -128,7 +128,7 @@ void HotLoader::UpdateMesheAssets()
   for (auto const& file : mWatchdogMesh.FilesToDelete())
   {
     std::string assetName = file.stem().string();
-    mWorld->UnMountResource<MeshResource>(assetName);
+    mWorld->DestroyResource<MeshResource>(assetName);
     mWorld->TrySetDirty<VertexBuffer<Vertex>>(assetName);
     mWorld->TrySetDirty<ElementBuffer<U32>>(assetName);
     mWorld->TrySetDirty<DefaultMesh>(assetName);
@@ -138,19 +138,19 @@ void HotLoader::UpdateMesheAssets()
   for (auto const& file : mWatchdogMesh.FilesToChange())
   {
     std::string assetName = file.stem().string();
-    mWorld->UnMountResource<MeshResource>(assetName);
+    mWorld->DestroyResource<MeshResource>(assetName);
     mWorld->TrySetDirty<VertexBuffer<Vertex>>(assetName);
     mWorld->TrySetDirty<ElementBuffer<U32>>(assetName);
     mWorld->TrySetDirty<DefaultMesh>(assetName);
     ProduceMeshHandles();
-    mWorld->MountResource<MeshResource>(assetName, file);
+    mWorld->CreateResource<MeshResource>(assetName, file);
     ProduceMeshHandles();
   }
 
   for (auto const& file : mWatchdogMesh.FilesToCreate())
   {
     std::string assetName = file.stem().string();
-    mWorld->MountResource<MeshResource>(assetName, file);
+    mWorld->CreateResource<MeshResource>(assetName, file);
     ProduceMeshHandles();
   }
 }
@@ -163,7 +163,7 @@ void HotLoader::UpdateShadersAssets()
   for (auto const& file : mWatchdogVertexShader.FilesToDelete())
   {
     std::string assetName = file.stem().string();
-    mWorld->UnMountResource<ShaderResource<EShaderType::Vertex>>(assetName);
+    mWorld->DestroyResource<ShaderResource<EShaderType::Vertex>>(assetName);
     mWorld->TrySetDirty<VertexShader>(assetName);
     mWorld->TrySetDirty<RenderProgram>(assetName);
     ProduceRenderProgramHandles();
@@ -171,7 +171,7 @@ void HotLoader::UpdateShadersAssets()
   for (auto const& file : mWatchdogFragmentShader.FilesToDelete())
   {
     std::string assetName = file.stem().string();
-    mWorld->UnMountResource<ShaderResource<EShaderType::Fragment>>(assetName);
+    mWorld->DestroyResource<ShaderResource<EShaderType::Fragment>>(assetName);
     mWorld->TrySetDirty<FragmentShader>(assetName);
     mWorld->TrySetDirty<RenderProgram>(assetName);
     ProduceRenderProgramHandles();
@@ -179,7 +179,7 @@ void HotLoader::UpdateShadersAssets()
   for (auto const& file : mWatchdogComputeShader.FilesToDelete())
   {
     std::string assetName = file.stem().string();
-    mWorld->UnMountResource<ShaderResource<EShaderType::Compute>>(assetName);
+    mWorld->DestroyResource<ShaderResource<EShaderType::Compute>>(assetName);
     mWorld->TrySetDirty<ComputeShader>(assetName);
     mWorld->TrySetDirty<ComputeProgram>(assetName);
     ProduceComputeProgramHandles();
@@ -188,50 +188,50 @@ void HotLoader::UpdateShadersAssets()
   for (auto const& file : mWatchdogVertexShader.FilesToChange())
   {
     std::string assetName = file.stem().string();
-    mWorld->UnMountResource<ShaderResource<EShaderType::Vertex>>(assetName);
+    mWorld->DestroyResource<ShaderResource<EShaderType::Vertex>>(assetName);
     mWorld->TrySetDirty<VertexShader>(assetName);
     mWorld->TrySetDirty<RenderProgram>(assetName);
     ProduceRenderProgramHandles();
-    mWorld->MountResource<ShaderResource<EShaderType::Vertex>>(assetName, file);
+    mWorld->CreateResource<ShaderResource<EShaderType::Vertex>>(assetName, file);
     ProduceRenderProgramHandles();
   }
   for (auto const& file : mWatchdogFragmentShader.FilesToChange())
   {
     std::string assetName = file.stem().string();
-    mWorld->UnMountResource<ShaderResource<EShaderType::Fragment>>(assetName);
+    mWorld->DestroyResource<ShaderResource<EShaderType::Fragment>>(assetName);
     mWorld->TrySetDirty<FragmentShader>(assetName);
     mWorld->TrySetDirty<RenderProgram>(assetName);
     ProduceRenderProgramHandles();
-    mWorld->MountResource<ShaderResource<EShaderType::Fragment>>(assetName, file);
+    mWorld->CreateResource<ShaderResource<EShaderType::Fragment>>(assetName, file);
     ProduceRenderProgramHandles();
   }
   for (auto const& file : mWatchdogComputeShader.FilesToChange())
   {
     std::string assetName = file.stem().string();
-    mWorld->UnMountResource<ShaderResource<EShaderType::Compute>>(assetName);
+    mWorld->DestroyResource<ShaderResource<EShaderType::Compute>>(assetName);
     mWorld->TrySetDirty<ComputeShader>(assetName);
     mWorld->TrySetDirty<ComputeProgram>(assetName);
     ProduceComputeProgramHandles();
-    mWorld->MountResource<ShaderResource<EShaderType::Compute>>(assetName, file);
+    mWorld->CreateResource<ShaderResource<EShaderType::Compute>>(assetName, file);
     ProduceComputeProgramHandles();
   }
 
   for (auto const& file : mWatchdogVertexShader.FilesToCreate())
   {
     std::string assetName = file.stem().string();
-    mWorld->MountResource<ShaderResource<EShaderType::Vertex>>(assetName, file);
+    mWorld->CreateResource<ShaderResource<EShaderType::Vertex>>(assetName, file);
     ProduceRenderProgramHandles();
   }
   for (auto const& file : mWatchdogFragmentShader.FilesToCreate())
   {
     std::string assetName = file.stem().string();
-    mWorld->MountResource<ShaderResource<EShaderType::Fragment>>(assetName, file);
+    mWorld->CreateResource<ShaderResource<EShaderType::Fragment>>(assetName, file);
     ProduceRenderProgramHandles();
   }
   for (auto const& file : mWatchdogComputeShader.FilesToCreate())
   {
     std::string assetName = file.stem().string();
-    mWorld->MountResource<ShaderResource<EShaderType::Compute>>(assetName, file);
+    mWorld->CreateResource<ShaderResource<EShaderType::Compute>>(assetName, file);
     ProduceComputeProgramHandles();
   }
 }

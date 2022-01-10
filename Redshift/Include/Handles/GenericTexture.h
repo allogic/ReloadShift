@@ -13,7 +13,8 @@ public:
     U32 width,
     U32 height,
     ETextureWrap::Type wrap,
-    ETextureFilter::Type filter)
+    ETextureFilter::Type filter,
+    void* data = nullptr)
     : Handle(name)
     , mWidth{ width }
     , mHeight{ height }
@@ -26,7 +27,7 @@ public:
     glTextureParameteri(mID, GL_TEXTURE_WRAP_T, (I32)mWrap);
     glTextureParameteri(mID, GL_TEXTURE_MIN_FILTER, (I32)mFilter);
     glTextureParameteri(mID, GL_TEXTURE_MAG_FILTER, (I32)mFilter);
-    glTexImage2D(Type, 0, FormatInternal, mWidth, mHeight, 0, Format, Layout, nullptr);
+    glTexImage2D(Type, 0, FormatInternal, mWidth, mHeight, 0, Format, Layout, data);
     glBindTexture(Type, 0);
   }
   virtual ~GenericTexture()

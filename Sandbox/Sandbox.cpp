@@ -4,15 +4,12 @@
 #include <Actors/Enemy.h>
 #include <Actors/Player.h>
 
-#include <Renderer/DeferredRenderer.h>
-
 class Sandbox : public Module
 {
 public:
 
   Sandbox(World* world)
     : Module(world)
-    , mDeferredRenderer{ world }
   {
 
   }
@@ -23,7 +20,6 @@ public:
   {
     Module::Tick(deltaTime);
 
-    // Rotating enemies hooray
     static R32 roll = 0.0f;
     roll += 0.03f * deltaTime;
     if (roll >= 360.0f) roll = 0.0f;
@@ -35,8 +31,7 @@ public:
         });
     mWorld->DispatchFor<
       Transform,
-      Renderable,
-      Brain>(mWorld, [=](Transform* transform, Renderable* renderable, Brain* brain)
+      Brain>(mWorld, [=](Transform* transform, Brain* brain)
         {
           transform->SetWorldPosition(R32V3{ 0.0f, 3.5f, 0.0f });
           transform->SetWorldRotation(R32V3{ -90.0f, 0.0f, roll });
@@ -77,17 +72,11 @@ public:
       //mEnemies.clear();
     }
     ImGui::End();
-
-    mDeferredRenderer.Debug();
   }
   virtual void Render() override
   {
-    mDeferredRenderer.Render();
+    
   }
-
-private:
-
-  DeferredRenderer mDeferredRenderer;
 
 private:
 

@@ -14,6 +14,7 @@ public:
     DrawResources(world);
     DrawActors(world);
     DrawHandles(world);
+    DrawViewport(world);
   }
 
 private:
@@ -94,5 +95,31 @@ private:
       ImGui::EndTable();
     }
     ImGui::End();
+  }
+  static void DrawViewport(World* world)
+  {
+    static bool opened = true;
+    ImGuiWindowFlags windowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoScrollbar;
+    for (auto const& [rendererName, renderer] : world->GetRenderer())
+    {
+      bool resize = false;
+      ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0f, 0.0f });
+      ImGui::Begin(rendererName.c_str(), &opened, windowFlags);
+      ImGui::PopStyleVar();
+      ImGui::BeginMenuBar();
+      if (ImGui::BeginMenu("Buffers"))
+      {
+        for (auto const& [bufferName, bufferID] : renderer->GetBuffers())
+        {
+          if (ImGui::MenuItem(bufferName.c_str())) renderer->SetCurrentBufferID(bufferID);
+        }
+        ImGui::EndMenu();
+      }
+      renderer->SetViewportSize(R32V2{ ImGui::GetWindowSize().x, ImGui::GetWindowSize().y });
+      ImGui::Text("%ux%u", (U32)renderer->GetViewportSize().x, (U32)renderer->GetViewportSize().y);
+      ImGui::EndMenuBar();
+      ImGui::Image((void*)(U64)renderer->GetCurrentBufferID(), ImVec2{renderer->GetViewportSize().x , renderer->GetViewportSize().y - 39.0f});
+      ImGui::End();
+    }
   }
 };

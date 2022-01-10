@@ -24,6 +24,11 @@
 #include <Handles/GenericShader.h>
 #include <Handles/GenericTexture.h>
 
+#include <Physics/PhysicsWorld.h>
+
+#include <Renderer/DeferredRenderer.h>
+#include <Renderer/DeferredRenderTask.h>
+
 #include <Resources/ShaderResource.h>
 #include <Resources/TextureResource.h>
 #include <Resources/MeshResource.h>
