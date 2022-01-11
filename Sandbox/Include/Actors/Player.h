@@ -12,7 +12,7 @@ public:
     std::string const& name)
     : Actor(world, proxy, name)
     , mTransform{ World::AttachComponent<Transform>(world, this, R32V3{ 0.0f, 0.0f, -5.0f }, R32V3{ 0.0f }, R32V3{ 1.0f }) }
-    , mCamera{ World::AttachComponent<Camera>(world, this, 45.0f, 0.001f, 1000.0f) }
+    , mCamera{ World::AttachComponent<Camera>(world, this, 45.0f, 0.1f, 1000.0f) }
   {
 
   }
@@ -33,9 +33,16 @@ public:
     //eventRegistry.BindAxis("TurnHorizontal", this, &Player::TurnHorizontal);
     //eventRegistry.BindAxis("TurnVertical", this, &Player::TurnVertical);
 
+    eventRegistry.BindAction('W', EInputType::Pressed, this, &Player::OnMoveForward);
     eventRegistry.BindAction('W', EInputType::Held, this, &Player::OnMoveForward);
+
+    eventRegistry.BindAction('S', EInputType::Pressed, this, &Player::OnMoveBackward);
     eventRegistry.BindAction('S', EInputType::Held, this, &Player::OnMoveBackward);
+
+    eventRegistry.BindAction('D', EInputType::Pressed, this, &Player::OnMoveRight);
     eventRegistry.BindAction('D', EInputType::Held, this, &Player::OnMoveRight);
+
+    eventRegistry.BindAction('A', EInputType::Pressed, this, &Player::OnMoveLeft);
     eventRegistry.BindAction('A', EInputType::Held, this, &Player::OnMoveLeft);
   }
 
@@ -61,19 +68,19 @@ private:
 
   void OnMoveForward()
   {
-    mTransform->AddWorldPosition(R32V3{ 0.0f, 0.0f, 1.0f } * 0.02f);
+    mTransform->AddWorldPosition(R32V3{ 0.0f, 0.0f, 1.0f } * 1.0f);
   }
   void OnMoveBackward()
   {
-    mTransform->AddWorldPosition(R32V3{ 0.0f, 0.0f, -1.0f } * 0.02f);
+    mTransform->AddWorldPosition(R32V3{ 0.0f, 0.0f, -1.0f } * 1.0f);
   }
   void OnMoveRight()
   {
-    mTransform->AddWorldPosition(R32V3{ 1.0f, 0.0f, 0.0f } * 0.02f);
+    mTransform->AddWorldPosition(R32V3{ -1.0f, 0.0f, 0.0f } * 1.0f);
   }
   void OnMoveLeft()
   {
-    mTransform->AddWorldPosition(R32V3{ -1.0f, 0.0f, 0.0f } * 0.02f);
+    mTransform->AddWorldPosition(R32V3{ 1.0f, 0.0f, 0.0f } * 1.0f);
   }
 
 private:

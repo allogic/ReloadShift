@@ -24,16 +24,11 @@ private:
     static bool openActors = true;
     static bool openHandles = true;
     static bool openViewport = true;
-    static bool openMapping = false;
+    static bool openEventMapping = true;
+    static bool openStringRegistry = true;
 
     if (ImGui::BeginMainMenuBar())
     {
-      if (ImGui::BeginMenu("Input"))
-      {
-        if (ImGui::MenuItem("Mapping")) openMapping = true;
-        ImGui::EndMenu();
-      }
-
       if (ImGui::BeginMenu("Physics"))
       {
         static R32V3 gravity = {};
@@ -47,6 +42,8 @@ private:
         if (ImGui::MenuItem("Actors")) openActors = true;
         if (ImGui::MenuItem("Handles")) openHandles = true;
         if (ImGui::MenuItem("Viewport")) openViewport = true;
+        if (ImGui::MenuItem("Event Mapping")) openEventMapping = true;
+        if (ImGui::MenuItem("String Registry")) openStringRegistry = true;
         ImGui::EndMenu();
       }
 
@@ -58,7 +55,8 @@ private:
     DrawHandlesWindow(openHandles);
     DrawViewportWindow(openViewport);
 
-    DrawMapping(openMapping);
+    DrawEventMapping(openEventMapping);
+    DrawStringRegistry(openStringRegistry);
   }
 
   static void DrawResourcesWindow(bool& open)
@@ -176,12 +174,12 @@ private:
       }
     }
   }
-  static void DrawMapping(bool& open)
+  static void DrawEventMapping(bool& open)
   {
     if (open)
     {
       EventRegistry& registry = World::Instance().GetEventRegistry();
-      open = ImGui::Begin("Mapping", &open);
+      open = ImGui::Begin("Event Mapping", &open);
       if (ImGui::BeginTable("Axis", 3))
       {
         ImGui::TableNextColumn(); ImGui::Text("Name");
@@ -211,6 +209,26 @@ private:
               ImGui::TableNextColumn(); ImGui::Text("%p", actionInfo.Delegate);
             }
           }
+        }
+        ImGui::EndTable();
+      }
+      ImGui::End();
+    }
+  }
+  static void DrawStringRegistry(bool& open)
+  {
+    if (open)
+    {
+      World& world = World::Instance();
+      open = ImGui::Begin("String Registry", &open);
+      if (ImGui::BeginTable("Strings", 2))
+      {
+        ImGui::TableNextColumn(); ImGui::Text("Key");
+        ImGui::TableNextColumn(); ImGui::Text("Value");
+        for (auto const& [key, value] : world.GetStringRegistry())
+        {
+          ImGui::TableNextColumn(); ImGui::Text(key.c_str());
+          ImGui::TableNextColumn(); ImGui::Text(value.c_str());
         }
         ImGui::EndTable();
       }

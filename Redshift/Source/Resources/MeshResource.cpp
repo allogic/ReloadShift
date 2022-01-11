@@ -102,20 +102,17 @@ bool MeshResource::ParseScene()
           mVertices[i].Position.y = (R32)vertices[i].y;
           mVertices[i].Position.z = (R32)vertices[i].z;
         }
-
         if (normals)
         {
           mVertices[i].Normal.x = (R32)normals[i].x;
           mVertices[i].Normal.y = (R32)normals[i].y;
           mVertices[i].Normal.z = (R32)normals[i].z;
         }
-
         if (UVs)
         {
           mVertices[i].UV.x = (R32)UVs[i].x;
           mVertices[i].UV.y = (R32)UVs[i].y;
         }
-
         if (colors)
         {
           mVertices[i].Color.x = (R32)colors[i].x;
@@ -123,7 +120,6 @@ bool MeshResource::ParseScene()
           mVertices[i].Color.z = (R32)colors[i].z;
           mVertices[i].Color.w = (R32)colors[i].w;
         }
-
         if (tangents)
         {
           mVertices[i].Tangent.x = (R32)tangents[i].x;

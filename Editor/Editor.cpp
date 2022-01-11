@@ -70,6 +70,9 @@ I32 main()
         R32 prevRenderTime = 0.0f;
         R32 hotLoadRate = 1.0f / 1.0f;
         R32 prevHotLoadTime = 0.0f;
+        // FPS counter
+        R32 prevTimeFPS = (R32)glfwGetTime();
+        U32 FPSCount = 0;
         try
         {
           // Enter main loop
@@ -79,6 +82,15 @@ I32 main()
             // Compute delta time
             R32 time = (R32)glfwGetTime();
             R32 deltaTime = time - prevTime;
+            // FPS counter
+            FPSCount++;
+            if ((time - prevTimeFPS) > 1.0f)
+            {
+              World::SetStringValue(world, "fps_count", std::to_string(FPSCount));
+              World::SetStringValue(world, "ms_per_frame", std::to_string(1000.0f / FPSCount));
+              FPSCount = 0;
+              prevTimeFPS += 1.0f;
+            }
             // Dispatch modules render
             if ((time - prevRenderTime) >= renderRate)
             {

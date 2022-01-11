@@ -32,6 +32,8 @@ public:
 
   using PermutationTable = std::unordered_map<U64, std::set<ActorProxy*>>;
 
+  using StringRegistry = std::map<std::string, std::string>;
+
 public:
 
   ////////////////////////////////////////////////////////
@@ -64,10 +66,11 @@ public:
   inline RendererByName& GetRenderer() { return mRenderer; }
 
   inline HandlesByNameByType& GetHandles() { return mHandles; }
-
   inline PermutationTable& GetPermutationTable() { return mPermutationTable; }
 
   inline EventRegistry& GetEventRegistry() { return mEventRegistry; }
+
+  inline StringRegistry& GetStringRegistry() { return mStringRegistry; }
 
 public:
 
@@ -302,6 +305,21 @@ public:
     return false;
   }
 
+public:
+
+  ////////////////////////////////////////////////////////
+  // Renderer interface
+  ////////////////////////////////////////////////////////
+
+  static void SetStringValue(World& world, std::string const& stringName, std::string const& stringValue)
+  {
+    world.mStringRegistry[stringName] = stringValue;
+  }
+  static std::string const& GetStringValue(World& world, std::string const& stringName)
+  {
+    return world.mStringRegistry[stringName];
+  }
+
 private:
 
   GLFWwindow* mGlfwWindow;
@@ -316,6 +334,7 @@ private:
   RendererByName mRenderer = RendererByName{};
 
   HandlesByNameByType mHandles = HandlesByNameByType{};
-
   PermutationTable mPermutationTable = PermutationTable{};
+
+  StringRegistry mStringRegistry = StringRegistry{};
 };

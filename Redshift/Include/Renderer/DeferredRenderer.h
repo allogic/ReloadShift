@@ -121,21 +121,26 @@ private:
         mProjection.Model = task.GetTransform()->GetModelMatrix();
         mUniformProjection.Get()->Set(&mProjection);
         // Bind textures
-        if (task.GetTextureAlbedo()) { task.GetTextureAlbedo()->Bind(); task.GetTextureAlbedo()->Mount(0); }
-        if (task.GetTextureNormal()) { task.GetTextureNormal()->Bind(); task.GetTextureNormal()->Mount(1); }
-        if (task.GetTextureSpecular()) { task.GetTextureSpecular()->Bind(); task.GetTextureSpecular()->Mount(2); }
-        if (task.GetTextureMetallic()) { task.GetTextureMetallic()->Bind(); task.GetTextureMetallic()->Mount(3); }
-        if (task.GetTextureRoughness()) { task.GetTextureRoughness()->Bind(); task.GetTextureRoughness()->Mount(4); }
+        Texture2DR32RGBA* textureAlbedo = task.GetTextureAlbedo();
+        Texture2DR32RGBA* textureNormal = task.GetTextureNormal();
+        Texture2DR32RGBA* textureSpecular = task.GetTextureSpecular();
+        Texture2DR32RGBA* textureMetallic = task.GetTextureMetallic();
+        Texture2DR32RGBA* textureRoughness = task.GetTextureRoughness();
+        if (textureAlbedo) { textureAlbedo->Bind(); textureAlbedo->Mount(0); }
+        if (textureNormal) { textureNormal->Bind(); textureNormal->Mount(1); }
+        if (textureSpecular) { textureSpecular->Bind(); textureSpecular->Mount(2); }
+        if (textureMetallic) { textureMetallic->Bind(); textureMetallic->Mount(3); }
+        if (textureRoughness) { textureRoughness->Bind(); textureRoughness->Mount(4); }
         // Draw mesh
         task.GetMesh()->Bind();
         task.GetMesh()->Draw();
         task.GetMesh()->UnBind();
         // UnBind textures
-        if (task.GetTextureAlbedo()) task.GetTextureAlbedo()->UnBind();
-        if (task.GetTextureNormal()) task.GetTextureNormal()->UnBind();
-        if (task.GetTextureSpecular()) task.GetTextureSpecular()->UnBind();
-        if (task.GetTextureMetallic()) task.GetTextureMetallic()->UnBind();
-        if (task.GetTextureRoughness()) task.GetTextureRoughness()->UnBind();
+        if (textureAlbedo) textureAlbedo->UnBind();
+        if (textureNormal) textureNormal->UnBind();
+        if (textureSpecular) textureSpecular->UnBind();
+        if (textureMetallic) textureMetallic->UnBind();
+        if (textureRoughness) textureRoughness->UnBind();
       }
       program->UnBind();
     }

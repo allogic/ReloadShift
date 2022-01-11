@@ -15,7 +15,7 @@ public:
     std::string const& name)
     : Actor(world, proxy, name)
     , mTransform{ World::AttachComponent<Transform>(world, this, R32V3{ 0.0f }, R32V3{ 0.0f }, R32V3{ 1.0f }) }
-    , mRenderable{ World::AttachComponent<Renderable>(world, this, "Cube", "Lit", "PukerAlbedo", "PukerNormal", "PukerSpecular", "PukerMetallic", "PukerRoughness")}
+    , mRenderable{ World::AttachComponent<Renderable>(world, this, "Puker", "Lit", "PukerAlbedo", "PukerNormal", "PukerSpecular", "PukerMetallic", "PukerRoughness")}
     , mBrain{ World::AttachComponent<Brain>(world, this) }
   {
 

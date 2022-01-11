@@ -31,9 +31,12 @@ public:
         });
     World::DispatchFor<
       Transform,
-      Brain>(mWorld, [=](Transform* transform, Brain* brain)
+      Renderable,
+      Brain>(mWorld, [=](Transform* transform, Renderable* renderable, Brain* brain)
         {
-          transform->SetWorldRotation(R32V3{ -90.0f, 0.0f, roll });
+          void* ptr = renderable->mTextureAlbedo.Get() ? (void*)(U64)renderable->mTextureAlbedo.Get()->GetID() : nullptr;
+          ImGui::Image(ptr, ImVec2{ 512, 512 });
+          transform->SetWorldRotation(R32V3{ 0.0f, 90.0f, roll });
         });
 
     ImGui::Begin("Debug");

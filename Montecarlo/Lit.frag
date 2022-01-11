@@ -8,11 +8,11 @@ layout (binding = 4) uniform sampler2D uRoughness;
 
 layout (location = 0) in VertOut
 {
-  vec3 position;
-  vec3 normal;
-  vec2 uv;
-  vec4 color;
-  vec3 tangent;
+  vec3 Position;
+  vec3 Normal;
+  vec2 UV;
+  vec4 Color;
+  vec3 Tangent;
 } fragIn;
 
 layout (location = 0) out vec4 oPosition;
@@ -24,10 +24,10 @@ layout (location = 5) out vec4 oRoughness;
 
 void main()
 {
-  oPosition = vec4(fragIn.position, 1.0f);
-  oAlbedo = texture(uAlbedo, fragIn.uv);
-  oNormal = texture(uNormal, fragIn.uv);
-  oSpecular = texture(uSpecular, fragIn.uv);
-  oMetallic = texture(uMetallic, fragIn.uv);
-  oRoughness = texture(uRoughness, fragIn.uv);
+  oPosition = vec4(fragIn.UV, 0.0f, 1.0f);
+  oAlbedo = texture(uAlbedo, fragIn.UV);
+  oNormal = texture(uNormal, fragIn.UV);
+  oSpecular = texture(uSpecular, fragIn.UV);
+  oMetallic = texture(uMetallic, fragIn.UV);
+  oRoughness = texture(uRoughness, fragIn.UV);
 }

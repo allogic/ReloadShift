@@ -40,7 +40,7 @@ public:
     {
       glEnableVertexAttribArray(i);
       glVertexAttribPointer(i, Vertex::Strides[i], GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)stride);
-      stride += Vertex::Strides[i];
+      stride += sizeof(float) * Vertex::Strides[i];
     }
     elementBuffer->Bind();
     mNumElements = elementBuffer->GetSize();
