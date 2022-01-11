@@ -11,13 +11,13 @@ public:
     , mDispatcher{ new btCollisionDispatcher{ mCollisionConfiguration } }
     , mOverlappingPairCache{ new btDbvtBroadphase }
     , mSolver{ new btSequentialImpulseConstraintSolver }
-    , mDynamicWorld{ new btDiscreteDynamicsWorld{ mDispatcher, mOverlappingPairCache, mSolver, mCollisionConfiguration } }
+    , mDynamicsWorld{ new btDiscreteDynamicsWorld{ mDispatcher, mOverlappingPairCache, mSolver, mCollisionConfiguration } }
   {
-    
+    mDynamicsWorld->setGravity(btVector3(0, -10, 0));
   }
   virtual ~PhysicsWorld()
   {
-    delete mDynamicWorld;
+    delete mDynamicsWorld;
     delete mSolver;
     delete mOverlappingPairCache;
     delete mDispatcher;
@@ -30,5 +30,7 @@ private:
   btCollisionDispatcher* mDispatcher;
   btBroadphaseInterface* mOverlappingPairCache;
   btSequentialImpulseConstraintSolver* mSolver;
-  btDiscreteDynamicsWorld* mDynamicWorld;
+  btDiscreteDynamicsWorld* mDynamicsWorld;
+
+  btAlignedObjectArray<btCollisionShape*> mCollisionSHapes;
 };

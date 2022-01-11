@@ -1,124 +1,213 @@
 #pragma once
 
 #include <Core.h>
-#include <World.h>
 #include <Resource.h>
+
+#include <Globals/EventRegistry.h>
+#include <Globals/World.h>
 
 class UI
 {
 public:
 
-  static void Draw(World* world)
+  static void Draw()
   {
     ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
-    DrawResources(world);
-    DrawActors(world);
-    DrawHandles(world);
-    DrawViewport(world);
+    DrawToolBar();
   }
 
 private:
 
-  static void DrawResources(World* world)
+  static void DrawToolBar()
   {
-    static bool opened = true;
-    ImGui::Begin("Resources", &opened);
-    if (ImGui::BeginTable("Resources", 7))
+    static bool openResources = true;
+    static bool openActors = true;
+    static bool openHandles = true;
+    static bool openViewport = true;
+    static bool openMapping = false;
+
+    if (ImGui::BeginMainMenuBar())
     {
-      ImGui::TableNextColumn(); ImGui::Text("Type");
-      ImGui::TableNextColumn(); ImGui::Text("Name");
-      ImGui::TableNextColumn(); ImGui::Text("Address");
-      ImGui::TableNextColumn(); ImGui::Text("Bytes");
-      ImGui::TableNextColumn(); ImGui::Text("BytesSize");
-      ImGui::TableNextColumn(); ImGui::Text("Dirty");
-      ImGui::TableNextColumn(); ImGui::Text("FilePath");
-      for (auto& [name, resource] : world->GetResources())
+      if (ImGui::BeginMenu("Input"))
       {
-        if (resource)
-        {
-          ImGui::TableNextColumn(); ImGui::Text("%s", resource->GetType().c_str());
-          ImGui::TableNextColumn(); ImGui::Text(resource->GetName().c_str());
-          ImGui::TableNextColumn(); ImGui::Text("%p", resource);
-          ImGui::TableNextColumn(); ImGui::Text("%p", resource->GetBytes());
-          ImGui::TableNextColumn(); ImGui::Text("%u", resource->GetBytesSize());
-          ImGui::TableNextColumn(); ImGui::Text("%u", resource->GetDirty());
-          ImGui::TableNextColumn(); ImGui::Text(resource->GetFilePath().string().c_str());
-        }
-      }
-      ImGui::EndTable();
-    }
-    ImGui::End();
-  }
-  static void DrawActors(World* world)
-  {
-    static bool opened = true;
-    ImGui::Begin("Actors", &opened);
-    if (ImGui::BeginTable("Actors", 4))
-    {
-      ImGui::TableNextColumn(); ImGui::Text("Name");
-      ImGui::TableNextColumn(); ImGui::Text("Address");
-      ImGui::TableNextColumn(); ImGui::Text("Hash");
-      ImGui::TableNextColumn(); ImGui::Text("ComponentCount");
-      for (auto const& [name, proxy] : world->GetActors())
-      {
-        ImGui::TableNextColumn(); ImGui::Text(proxy->GetActor()->GetName().c_str());
-        ImGui::TableNextColumn(); ImGui::Text("%p", proxy->GetActor());
-        ImGui::TableNextColumn(); ImGui::Text("%s", std::bitset<8>(proxy->GetActor()->GetCurrentHash()).to_string().c_str());
-        ImGui::TableNextColumn(); ImGui::Text("%u", proxy->GetActor()->GetComponentCount());
-      }
-      ImGui::EndTable();
-    }
-    ImGui::End();
-  }
-  static void DrawHandles(World* world)
-  {
-    static bool opened = true;
-    ImGui::Begin("Handles", &opened);
-    if (ImGui::BeginTable("Handles", 5))
-    {
-      ImGui::TableNextColumn(); ImGui::Text("Type");
-      ImGui::TableNextColumn(); ImGui::Text("Name");
-      ImGui::TableNextColumn(); ImGui::Text("Address");
-      ImGui::TableNextColumn(); ImGui::Text("Dirty");
-      ImGui::TableNextColumn(); ImGui::Text("ReferenceCount");
-      for (auto const& [type, handlesByName] : world->GetHandles())
-      {
-        for (auto const& [name, hotRef] : handlesByName)
-        {
-          ImGui::TableNextColumn(); ImGui::Text(hotRef.Get() ? hotRef.Get()->GetType().c_str() : "");
-          ImGui::TableNextColumn(); ImGui::Text(name.c_str());
-          ImGui::TableNextColumn(); ImGui::Text("%p", hotRef.Get());
-          ImGui::TableNextColumn(); ImGui::Text("%u", hotRef.Get() ? hotRef.Get()->GetDirty() : 666);
-          ImGui::TableNextColumn(); ImGui::Text("%u", hotRef.Get() ? hotRef.Get()->GetReferenceCount() : 666);
-        }
-      }
-      ImGui::EndTable();
-    }
-    ImGui::End();
-  }
-  static void DrawViewport(World* world)
-  {
-    static bool opened = true;
-    ImGuiWindowFlags windowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoScrollbar;
-    for (auto const& [rendererName, renderer] : world->GetRenderer())
-    {
-      bool resize = false;
-      ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0f, 0.0f });
-      ImGui::Begin(rendererName.c_str(), &opened, windowFlags);
-      ImGui::PopStyleVar();
-      ImGui::BeginMenuBar();
-      if (ImGui::BeginMenu("Buffers"))
-      {
-        for (auto const& [bufferName, bufferID] : renderer->GetBuffers())
-        {
-          if (ImGui::MenuItem(bufferName.c_str())) renderer->SetCurrentBufferID(bufferID);
-        }
+        if (ImGui::MenuItem("Mapping")) openMapping = true;
         ImGui::EndMenu();
       }
-      renderer->SetViewportSize(R32V2{ ImGui::GetWindowSize().x, ImGui::GetWindowSize().y });
-      ImGui::Text("%ux%u", (U32)renderer->GetViewportSize().x, (U32)renderer->GetViewportSize().y);
-      ImGui::EndMenuBar();
-      ImGui::Image((void*)(U64)renderer->GetCurrentBufferID(), ImVec2{renderer->GetViewportSize().x , renderer->GetViewportSize().y - 39.0f});
+
+      if (ImGui::BeginMenu("Physics"))
+      {
+        static R32V3 gravity = {};
+        ImGui::InputFloat3("Gravity", &gravity[0]);
+        ImGui::EndMenu();
+      }
+
+      if (ImGui::BeginMenu("Windows"))
+      {
+        if (ImGui::MenuItem("Resources")) openResources = true;
+        if (ImGui::MenuItem("Actors")) openActors = true;
+        if (ImGui::MenuItem("Handles")) openHandles = true;
+        if (ImGui::MenuItem("Viewport")) openViewport = true;
+        ImGui::EndMenu();
+      }
+
+      ImGui::EndMainMenuBar();
+    }
+
+    DrawResourcesWindow(openResources);
+    DrawActorsWindow(openActors);
+    DrawHandlesWindow(openHandles);
+    DrawViewportWindow(openViewport);
+
+    DrawMapping(openMapping);
+  }
+
+  static void DrawResourcesWindow(bool& open)
+  {
+    if (open)
+    {
+      World& world = World::Instance();
+      ImGui::Begin("Resources", &open);
+      if (ImGui::BeginTable("Resources", 7))
+      {
+        ImGui::TableNextColumn(); ImGui::Text("Type");
+        ImGui::TableNextColumn(); ImGui::Text("Name");
+        ImGui::TableNextColumn(); ImGui::Text("Address");
+        ImGui::TableNextColumn(); ImGui::Text("Bytes");
+        ImGui::TableNextColumn(); ImGui::Text("BytesSize");
+        ImGui::TableNextColumn(); ImGui::Text("Dirty");
+        ImGui::TableNextColumn(); ImGui::Text("FilePath");
+        for (auto& [name, resource] : world.GetResources())
+        {
+          if (resource)
+          {
+            ImGui::TableNextColumn(); ImGui::Text("%s", resource->GetType().c_str());
+            ImGui::TableNextColumn(); ImGui::Text(resource->GetName().c_str());
+            ImGui::TableNextColumn(); ImGui::Text("%p", resource);
+            ImGui::TableNextColumn(); ImGui::Text("%p", resource->GetBytes());
+            ImGui::TableNextColumn(); ImGui::Text("%u", resource->GetBytesSize());
+            ImGui::TableNextColumn(); ImGui::Text("%u", resource->GetDirty());
+            ImGui::TableNextColumn(); ImGui::Text(resource->GetFilePath().string().c_str());
+          }
+        }
+        ImGui::EndTable();
+      }
+      ImGui::End();
+    }
+  }
+  static void DrawActorsWindow(bool& open)
+  {
+    if (open)
+    {
+      World& world = World::Instance();
+      ImGui::Begin("Actors", &open);
+      if (ImGui::BeginTable("Actors", 4))
+      {
+        ImGui::TableNextColumn(); ImGui::Text("Name");
+        ImGui::TableNextColumn(); ImGui::Text("Address");
+        ImGui::TableNextColumn(); ImGui::Text("Hash");
+        ImGui::TableNextColumn(); ImGui::Text("ComponentCount");
+        for (auto const& [name, proxy] : world.GetActors())
+        {
+          ImGui::TableNextColumn(); ImGui::Text(proxy->GetActor()->GetName().c_str());
+          ImGui::TableNextColumn(); ImGui::Text("%p", proxy->GetActor());
+          ImGui::TableNextColumn(); ImGui::Text("%s", std::bitset<8>(proxy->GetActor()->GetCurrentHash()).to_string().c_str());
+          ImGui::TableNextColumn(); ImGui::Text("%u", proxy->GetActor()->GetComponentCount());
+        }
+        ImGui::EndTable();
+      }
+      ImGui::End();
+    }
+  }
+  static void DrawHandlesWindow(bool& open)
+  {
+    if (open)
+    {
+      World& world = World::Instance();
+      open = ImGui::Begin("Handles", &open);
+      if (ImGui::BeginTable("Handles", 5))
+      {
+        ImGui::TableNextColumn(); ImGui::Text("Type");
+        ImGui::TableNextColumn(); ImGui::Text("Name");
+        ImGui::TableNextColumn(); ImGui::Text("Address");
+        ImGui::TableNextColumn(); ImGui::Text("Dirty");
+        ImGui::TableNextColumn(); ImGui::Text("ReferenceCount");
+        for (auto const& [type, handlesByName] : world.GetHandles())
+        {
+          for (auto const& [name, hotRef] : handlesByName)
+          {
+            ImGui::TableNextColumn(); ImGui::Text(hotRef.Get() ? hotRef.Get()->GetType().c_str() : "<invalid>");
+            ImGui::TableNextColumn(); ImGui::Text(name.c_str());
+            ImGui::TableNextColumn(); ImGui::Text("%p", hotRef.Get());
+            ImGui::TableNextColumn(); ImGui::Text("%d", hotRef.Get() ? hotRef.Get()->GetDirty() : -1);
+            ImGui::TableNextColumn(); ImGui::Text("%d", hotRef.Get() ? hotRef.Get()->GetReferenceCount() : -1);
+          }
+        }
+        ImGui::EndTable();
+      }
+      ImGui::End();
+    }
+  }
+  static void DrawViewportWindow(bool& open)
+  {
+    World& world = World::Instance();
+    ImGuiWindowFlags windowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoScrollbar;
+    for (auto const& [rendererName, renderer] : world.GetRenderer())
+    {
+      if (open)
+      {
+        bool resize = false;
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0f, 0.0f });
+        open = ImGui::Begin(rendererName.c_str(), &open, windowFlags);
+        ImGui::PopStyleVar();
+        ImGui::BeginMenuBar();
+        if (ImGui::BeginMenu("Buffers"))
+        {
+          for (auto const& [bufferName, bufferID] : renderer->GetBuffers())
+          {
+            if (ImGui::MenuItem(bufferName.c_str())) renderer->SetCurrentBufferID(bufferID);
+          }
+          ImGui::EndMenu();
+        }
+        renderer->SetViewportSize(R32V2{ ImGui::GetWindowSize().x, ImGui::GetWindowSize().y });
+        ImGui::Text("%ux%u", (U32)renderer->GetViewportSize().x, (U32)renderer->GetViewportSize().y);
+        ImGui::EndMenuBar();
+        ImGui::Image((void*)(U64)renderer->GetCurrentBufferID(), ImVec2{renderer->GetViewportSize().x , renderer->GetViewportSize().y - 39.0f});
+        ImGui::End();
+      }
+    }
+  }
+  static void DrawMapping(bool& open)
+  {
+    if (open)
+    {
+      EventRegistry& registry = EventRegistry::Instance();
+      open = ImGui::Begin("Mapping", &open);
+      if (ImGui::BeginTable("Axis", 3))
+      {
+        ImGui::TableNextColumn(); ImGui::Text("Name");
+        ImGui::TableNextColumn(); ImGui::Text("Instance");
+        ImGui::TableNextColumn(); ImGui::Text("Delegate");
+        for (auto const& [axisName, axisDelegate] : registry.GetAxisDelegates())
+        {
+          ImGui::TableNextColumn(); ImGui::Text(axisName.c_str());
+          ImGui::TableNextColumn(); ImGui::Text("%p", axisDelegate.Instance);
+          ImGui::TableNextColumn(); ImGui::Text("%p", axisDelegate.Delegate);
+        }
+        ImGui::EndTable();
+      }
+      if (ImGui::BeginTable("Action", 3))
+      {
+        ImGui::TableNextColumn(); ImGui::Text("Name");
+        ImGui::TableNextColumn(); ImGui::Text("Instance");
+        ImGui::TableNextColumn(); ImGui::Text("Delegate");
+        for (auto const& [actionName, actionDelegate] : registry.GetActionDelegates())
+        {
+          ImGui::TableNextColumn(); ImGui::Text(actionName.c_str());
+          ImGui::TableNextColumn(); ImGui::Text("%p", actionDelegate.Instance);
+          ImGui::TableNextColumn(); ImGui::Text("%p", actionDelegate.Delegate);
+        }
+        ImGui::EndTable();
+      }
       ImGui::End();
     }
   }

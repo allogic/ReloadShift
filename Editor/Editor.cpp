@@ -34,10 +34,12 @@ I32 main()
     {
       // Disable V-Sync
       glfwSwapInterval(0);
+      // Get current glad GL context
+      GladGLContext* gladContext = gladGetGLContext();
       // Initialize ImGui
       IMGUI_CHECKVERSION();
       ImGuiContext* imGuiContext = ImGui::CreateContext();
-      ImGuiIO& io = ImGui::GetIO(); (void)io;
+      ImGuiIO& io = ImGui::GetIO();
       io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
       io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
       io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
@@ -53,10 +55,11 @@ I32 main()
       bool imguiOGLinitialized = ImGui_ImplOpenGL3_Init("#version 460 core");
       if (imGuiContext && imguiGLFWInitialized && imguiOGLinitialized)
       {
-        // Create global world object
+        // Initialize globals
         World& world = World::Instance();
+        EventRegistry& eventRegistry = EventRegistry::Instance();
         // Create file browser and hot-reloader
-        HotLoader hotLoader = HotLoader{ window, &world, "C:\\Users\\Michael\\Downloads\\Redshift\\Streaming\\" };
+        HotLoader hotLoader = HotLoader{ window, "C:\\Users\\Michael\\Downloads\\Redshift\\Streaming\\" };
         FileBrowser fileBrowser = FileBrowser{ "" };
         // Create deferred renderer
         DeferredRenderer* deferredRenderer = world.CreateRenderer<DeferredRenderer>("Deferred");
@@ -107,7 +110,7 @@ I32 main()
             ImGui_ImplGlfw_NewFrame();
             ImGui::NewFrame();
             // Draw editor imgui
-            UI::Draw(&world);
+            UI::Draw();
             // Tick modules and draw inline imgui
             for (auto const& [name, proxy] : world.GetModules())
             {
@@ -135,8 +138,7 @@ I32 main()
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();
-        // clear world
-        // clear hotloads
+        // Destroy globals
       }
     }
     else

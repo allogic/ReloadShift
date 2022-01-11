@@ -231,41 +231,12 @@ public:
     mActors.emplace(actorName, proxy);
     // Create actor after proxy in order to initialize components inside the constructor
     A* actor = new A{ this, proxy, actorName, std::forward<Args>(args) ... };
+    // Link actor and proxy
     proxy->SetActor(actor);
+    // Register input mapping
+
     return actor;
   }
-
-  //template<typename A>
-  //requires std::is_base_of_v<Actor, A>
-  //void DestroyActor(std::vector<A*> const& actors)
-  //{
-  //  for (auto actor : actors)
-  //  {
-  //    auto it = mActors.begin();
-  //    while (it != mActors.end())
-  //    {
-  //      if (actor == it->second->GetActor())
-  //      {
-  //        // Cleanup component handle references
-  //        for (U32 i = 0; i < RS_MAX_COMPONENTS; ++i)
-  //        {
-  //          if (Component* component = it->second->GetComponent(i))
-  //          {
-  //            component->UnMountHandles();
-  //          }
-  //        }
-  //        // Destroy actor and proxy
-  //        delete actor;
-  //        delete it->second;
-  //        it = mActors.erase(it);
-  //      }
-  //      if (it != mActors.end())
-  //      {
-  //        ++it;
-  //      }
-  //    }
-  //  }
-  //}
 
   template<typename ... Cs>
   requires (std::is_base_of_v<Component, typename TypeProxy<Cs>::Type> && ...)

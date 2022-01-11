@@ -87,14 +87,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(SolutionDir)Vendor\Include;$(SolutionDir)Editor\Include;$(SolutionDir)ImGui\Include;$(SolutionDir)Redshift\Include;$(ProjectDir)Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Vendor\Library;$(SolutionDir)$(IntDir);$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)$(IntDir);$(SolutionDir)Vendor\Library\$(Configuration);$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)Streaming\Modules\</OutDir>
     <SourcePath>$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(SolutionDir)Vendor\Include;$(SolutionDir)Editor\Include;$(SolutionDir)ImGui\Include;$(SolutionDir)Redshift\Include;$(ProjectDir)Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Vendor\Library;$(SolutionDir)$(IntDir);$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)$(IntDir);$(SolutionDir)Vendor\Library\$(Configuration);$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)Streaming\Modules\</OutDir>
     <SourcePath>$(SourcePath)</SourcePath>
   </PropertyGroup>
@@ -147,7 +147,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>glfw3.lib;ImGui.lib;Redshift.lib;OptickCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;ImGui.lib;Redshift.lib;OptickCore.lib;BulletDynamics.lib;BulletCollision.lib;LinearMath.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -173,7 +173,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>glfw3.lib;ImGui.lib;Redshift.lib;OptickCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;ImGui.lib;Redshift.lib;OptickCore.lib;BulletDynamics.lib;BulletCollision.lib;LinearMath.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>

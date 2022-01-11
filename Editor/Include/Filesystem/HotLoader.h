@@ -4,13 +4,13 @@
 #include <Module.h>
 #include <HotRef.h>
 
+#include <Globals/World.h>
+
 #include <Resources/MeshResource.h>
 #include <Resources/ShaderResource.h>
 #include <Resources/TextureResource.h>
 
 #include <Filesystem/Watchdog.h>
-
-#include <World.h>
 
 class HotLoader
 {
@@ -18,7 +18,6 @@ public:
 
   HotLoader(
     GLFWwindow* window,
-    World* world,
     std::filesystem::path const& searchPath);
 
 public:
@@ -57,7 +56,7 @@ private:
 private:
 
   GLFWwindow* mWindow;
-  World* mWorld;
+  World& mWorld;
 
   std::filesystem::path mTempFolder;
 

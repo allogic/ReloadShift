@@ -21,20 +21,19 @@ public:
     Module::Tick(deltaTime);
 
     static R32 roll = 0.0f;
-    roll += 0.03f * deltaTime;
+    roll += 0.3f * deltaTime;
     if (roll >= 360.0f) roll = 0.0f;
-    mWorld->DispatchFor<
+    World::DispatchFor<
       Transform,
       Camera>(mWorld, [=](Transform* transform, Camera* camera)
         {
-          transform->SetWorldPosition(R32V3{ 0.0f, 0.0f, -10.0f });
+          transform->SetWorldPosition(R32V3{ 0.0f, 0.0f, -50.0f });
         });
-    mWorld->DispatchFor<
+    World::DispatchFor<
       Transform,
       Brain>(mWorld, [=](Transform* transform, Brain* brain)
         {
-          transform->SetWorldPosition(R32V3{ 0.0f, 3.5f, 0.0f });
-          transform->SetWorldRotation(R32V3{ -90.0f, 0.0f, roll });
+          //transform->SetWorldRotation(R32V3{ -90.0f, 0.0f, roll });
         });
 
     ImGui::Begin("Debug");
@@ -55,7 +54,7 @@ public:
           for (U32 k = 0; k < 10; ++k)
           {
             Enemy* enemy = mWorld->CreateActor<Enemy>("Enemy");
-            enemy->GetTransform()->SetWorldPosition((R32V3{ i, j, k } * 3.0f) - 15.0f);
+            enemy->GetTransform()->SetWorldPosition((R32V3{ i, j, k } * 3.0f) - 13.5f);
             mEnemies.emplace_back(enemy);
           }
         }

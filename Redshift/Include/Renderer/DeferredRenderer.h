@@ -53,7 +53,7 @@ public:
   {
     OPTICK_FRAME("DeferredRender");
     // Submit render tasks for all renderables
-    mWorld->DispatchFor<
+    World::DispatchFor<
       Transform,
       Renderable>(mWorld, [=](Transform* transform, Renderable* renderable)
         {
@@ -63,7 +63,7 @@ public:
     mUniformProjection.Get()->Bind();
     mUniformProjection.Get()->Mount(0);
     // Update projection uniform
-    mWorld->DispatchFor<
+    World::DispatchFor<
       Transform,
       Camera>(mWorld, [&](Transform* transform, Camera* camera)
         {
@@ -120,7 +120,7 @@ private:
       for (auto const& task : tasks)
       {
         // Update projection
-        mProjection.Model = task.GetTransform()->GetMatrix();
+        mProjection.Model = task.GetTransform()->GetModelMatrix();
         mUniformProjection.Get()->Set(&mProjection);
         // Bind textures
         if (task.GetTextureAlbedo()) { task.GetTextureAlbedo()->Bind(); task.GetTextureAlbedo()->Mount(0); }

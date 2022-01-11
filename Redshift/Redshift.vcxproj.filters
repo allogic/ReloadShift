@@ -18,7 +18,7 @@
     <ClInclude Include="Include\Core.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\World.h">
+    <ClInclude Include="Include\Globals\World.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Resources\TextureResource.h">
@@ -106,6 +106,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Physics\PhysicsWorld.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Components\Rigidbody.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Components\Collider\BoxCollider.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Components\Collider\SphereCollider.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Globals\EventRegistry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

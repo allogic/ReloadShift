@@ -1,5 +1,6 @@
 #include <Module.h>
-#include <World.h>
+
+#include <Globals/World.h>
 
 Module::Module(World* world)
   : mWorld{ world }

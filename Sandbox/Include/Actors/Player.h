@@ -23,6 +23,54 @@ public:
   inline Renderable* GetRenderable() const { return mRenderable; }
   inline Camera* GetCamera() const { return mCamera; }
 
+public:
+
+  virtual void SetupInput(EventRegistry* eventRegistry) const
+  {
+    eventRegistry->BindAxis("MoveForward", this, &Player::MoveForward);
+    eventRegistry->BindAxis("MoveRight", this, &Player::MoveRight);
+
+    eventRegistry->BindAxis("TurnHorizontal", this, &Player::TurnHorizontal);
+    eventRegistry->BindAxis("TurnVertical", this, &Player::TurnVertical);
+
+    eventRegistry->BindAction("G", EInputType::Pressed, this, &Player::OnButtonPressed);
+    eventRegistry->BindAction("G", EInputType::Held, this, &Player::OnButtonHeld);
+    eventRegistry->BindAction("G", EInputType::Released, this, &Player::OnButtonReleased);
+  }
+
+private:
+
+  void MoveForward(float value)
+  {
+    std::printf("Forward: %f\n", value);
+  }
+  void MoveRight(float value)
+  {
+    std::printf("Right: %f\n", value);
+  }
+
+  void TurnHorizontal(float value)
+  {
+    std::printf("Horizontal: %f\n", value);
+  }
+  void TurnVertical(float value)
+  {
+    std::printf("Vertical: %f\n", value);
+  }
+
+  void OnButtonPressed()
+  {
+    std::printf("G Pressed\n");
+  }
+  void OnButtonHeld()
+  {
+    std::printf("G Held\n");
+  }
+  void OnButtonReleased()
+  {
+    std::printf("G Released\n");
+  }
+
 private:
 
   Transform* mTransform;

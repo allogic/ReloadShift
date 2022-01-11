@@ -4,6 +4,8 @@
 #include <ActorProxy.h>
 #include <Component.h>
 
+#include <Globals/EventRegistry.h>
+
 class World;
 
 class Actor
@@ -51,6 +53,10 @@ public:
     mProxy->mComponents[componentHash] = value;
     return (C*)value;
   }
+
+public:
+
+  virtual void SetupInput(EventRegistry* eventRegistry) const {}
 
 private:
 

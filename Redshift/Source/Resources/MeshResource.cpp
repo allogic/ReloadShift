@@ -2,7 +2,7 @@
 
 #include <Handles/GenericBuffer.h>
 
-#include <World.h>
+#include <Globals/World.h>
 
 MeshResource::MeshResource(
   World* world,
