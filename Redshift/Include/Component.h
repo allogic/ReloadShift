@@ -2,13 +2,13 @@
 
 #include <Core.h>
 
-class World;
+#include <Globals/World.h>
 
 class Component
 {
 public:
 
-  Component(World* world)
+  Component(World& world)
     : mWorld{ world }
   {
 
@@ -17,5 +17,5 @@ public:
 
 protected:
 
-  World* mWorld;
+  World& mWorld;
 };

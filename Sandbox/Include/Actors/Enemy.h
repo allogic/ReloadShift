@@ -10,13 +10,13 @@ class Enemy : public Actor
 public:
 
   Enemy(
-    World* world,
+    World& world,
     ActorProxy* proxy,
     std::string const& name)
     : Actor(world, proxy, name)
-    , mTransform{ world->AttachComponent<Transform>(this, R32V3{ 0.0f }, R32V3{ 0.0f }, R32V3{ 1.0f }) }
-    , mRenderable{ world->AttachComponent<Renderable>(this, "Cube", "Lit", "PukerAlbedo", "PukerNormal", "PukerSpecular", "PukerMetallic", "PukerRoughness")}
-    , mBrain{ world->AttachComponent<Brain>(this) }
+    , mTransform{ World::AttachComponent<Transform>(world, this, R32V3{ 0.0f }, R32V3{ 0.0f }, R32V3{ 1.0f }) }
+    , mRenderable{ World::AttachComponent<Renderable>(world, this, "Cube", "Lit", "PukerAlbedo", "PukerNormal", "PukerSpecular", "PukerMetallic", "PukerRoughness")}
+    , mBrain{ World::AttachComponent<Brain>(world, this) }
   {
 
   }

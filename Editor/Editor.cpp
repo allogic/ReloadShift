@@ -55,14 +55,13 @@ I32 main()
       bool imguiOGLinitialized = ImGui_ImplOpenGL3_Init("#version 460 core");
       if (imGuiContext && imguiGLFWInitialized && imguiOGLinitialized)
       {
-        // Initialize globals
+        // Initialize world
         World& world = World::Instance();
-        EventRegistry& eventRegistry = EventRegistry::Instance();
         // Create file browser and hot-reloader
         HotLoader hotLoader = HotLoader{ window, "C:\\Users\\Michael\\Downloads\\Redshift\\Streaming\\" };
         FileBrowser fileBrowser = FileBrowser{ "" };
         // Create deferred renderer
-        DeferredRenderer* deferredRenderer = world.CreateRenderer<DeferredRenderer>("Deferred");
+        DeferredRenderer* deferredRenderer = World::CreateRenderer<DeferredRenderer>(world, "Deferred");
         // Create physics world
         PhysicsWorld physicsWorld = PhysicsWorld{};
         // Setup timer stuff
@@ -138,7 +137,7 @@ I32 main()
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();
-        // Destroy globals
+        // Destroy world
       }
     }
     else

@@ -8,7 +8,7 @@ class Sandbox : public Module
 {
 public:
 
-  Sandbox(World* world)
+  Sandbox(World& world)
     : Module(world)
   {
 
@@ -27,23 +27,23 @@ public:
       Transform,
       Camera>(mWorld, [=](Transform* transform, Camera* camera)
         {
-          transform->SetWorldPosition(R32V3{ 0.0f, 0.0f, -50.0f });
+          //transform->SetWorldPosition(R32V3{ 0.0f, 0.0f, -50.0f });
         });
     World::DispatchFor<
       Transform,
       Brain>(mWorld, [=](Transform* transform, Brain* brain)
         {
-          //transform->SetWorldRotation(R32V3{ -90.0f, 0.0f, roll });
+          transform->SetWorldRotation(R32V3{ -90.0f, 0.0f, roll });
         });
 
     ImGui::Begin("Debug");
     if (ImGui::Button("Create Player"))
     {
-      mPlayers.emplace_back(mWorld->CreateActor<Player>("Player"));
+      mPlayers.emplace_back(World::CreateActor<Player>(mWorld, "Player"));
     }
     if (ImGui::Button("Create Enemy"))
     {
-      mEnemies.emplace_back(mWorld->CreateActor<Enemy>("Enemy"));
+      mEnemies.emplace_back(World::CreateActor<Enemy>(mWorld, "Enemy"));
     }
     if (ImGui::Button("Create 1000 Enemies"))
     {
@@ -53,7 +53,7 @@ public:
         {
           for (U32 k = 0; k < 10; ++k)
           {
-            Enemy* enemy = mWorld->CreateActor<Enemy>("Enemy");
+            Enemy* enemy = mWorld.CreateActor<Enemy>(mWorld, "Enemy");
             enemy->GetTransform()->SetWorldPosition((R32V3{ i, j, k } * 3.0f) - 13.5f);
             mEnemies.emplace_back(enemy);
           }

@@ -58,7 +58,7 @@ void HotLoader::UpdateModules()
   for (auto const& file : mWatchdogModule.FilesToDelete())
   {
     std::filesystem::path tempFilePath = mTempFolder / "Modules" / file.filename().string();
-    if (mWorld.DestroyModule(file.stem().string()))
+    if (World::DestroyModule(mWorld, file.stem().string()))
     {
       std::filesystem::remove(tempFilePath);
     }
@@ -67,11 +67,11 @@ void HotLoader::UpdateModules()
   for (auto const& file : mWatchdogModule.FilesToChange())
   {
     std::filesystem::path tempFilePath = mTempFolder / "Modules" / file.filename().string();
-    if (mWorld.DestroyModule(file.stem().string()))
+    if (World::DestroyModule(mWorld, file.stem().string()))
     {
       std::filesystem::remove(tempFilePath);
       std::filesystem::copy(file, tempFilePath);
-      if (mWorld.CreateModule(tempFilePath))
+      if (World::CreateModule(mWorld, tempFilePath))
       {
 
       }
@@ -82,7 +82,7 @@ void HotLoader::UpdateModules()
   {
     std::filesystem::path tempFilePath = mTempFolder / "Modules" / file.filename().string();
     std::filesystem::copy(file, tempFilePath);
-    if (mWorld.CreateModule(tempFilePath))
+    if (World::CreateModule(mWorld, tempFilePath))
     {
 
     }
@@ -96,28 +96,28 @@ void HotLoader::UpdateTexturesAssets()
   for (auto const& file : mWatchdogTexture.FilesToDelete())
   {
     std::string assetName = file.stem().string();
-    mWorld.DestroyResource<TextureResource>(assetName);
-    mWorld.TrySetDirty<Texture2DU8RGB>(assetName);
-    mWorld.TrySetDirty<Texture2DU8RGBA>(assetName);
-    mWorld.TrySetDirty<Texture2DR32RGB>(assetName);
-    mWorld.TrySetDirty<Texture2DR32RGBA>(assetName);
+    World::DestroyResource<TextureResource>(mWorld, assetName);
+    World::TrySetDirty<Texture2DU8RGB>(mWorld, assetName);
+    World::TrySetDirty<Texture2DU8RGBA>(mWorld, assetName);
+    World::TrySetDirty<Texture2DR32RGB>(mWorld, assetName);
+    World::TrySetDirty<Texture2DR32RGBA>(mWorld, assetName);
   }
 
   for (auto const& file : mWatchdogTexture.FilesToChange())
   {
     std::string assetName = file.stem().string();
-    mWorld.DestroyResource<TextureResource>(assetName);
-    mWorld.TrySetDirty<Texture2DU8RGB>(assetName);
-    mWorld.TrySetDirty<Texture2DU8RGBA>(assetName);
-    mWorld.TrySetDirty<Texture2DR32RGB>(assetName);
-    mWorld.TrySetDirty<Texture2DR32RGBA>(assetName);
-    mWorld.CreateResource<TextureResource>(assetName, file);
+    World::DestroyResource<TextureResource>(mWorld, assetName);
+    World::TrySetDirty<Texture2DU8RGB>(mWorld, assetName);
+    World::TrySetDirty<Texture2DU8RGBA>(mWorld, assetName);
+    World::TrySetDirty<Texture2DR32RGB>(mWorld, assetName);
+    World::TrySetDirty<Texture2DR32RGBA>(mWorld, assetName);
+    World::CreateResource<TextureResource>(mWorld, assetName, file);
   }
 
   for (auto const& file : mWatchdogTexture.FilesToCreate())
   {
     std::string assetName = file.stem().string();
-    mWorld.CreateResource<TextureResource>(assetName, file);
+    World::CreateResource<TextureResource>(mWorld, assetName, file);
   }
 }
 void HotLoader::UpdateMesheAssets()
@@ -127,29 +127,29 @@ void HotLoader::UpdateMesheAssets()
   for (auto const& file : mWatchdogMesh.FilesToDelete())
   {
     std::string assetName = file.stem().string();
-    mWorld.DestroyResource<MeshResource>(assetName);
-    mWorld.TrySetDirty<VertexBuffer<Vertex>>(assetName);
-    mWorld.TrySetDirty<ElementBuffer<U32>>(assetName);
-    mWorld.TrySetDirty<DefaultMesh>(assetName);
+    World::DestroyResource<MeshResource>(mWorld, assetName);
+    World::TrySetDirty<VertexBuffer<Vertex>>(mWorld, assetName);
+    World::TrySetDirty<ElementBuffer<U32>>(mWorld, assetName);
+    World::TrySetDirty<DefaultMesh>(mWorld, assetName);
     ProduceMeshHandles();
   }
 
   for (auto const& file : mWatchdogMesh.FilesToChange())
   {
     std::string assetName = file.stem().string();
-    mWorld.DestroyResource<MeshResource>(assetName);
-    mWorld.TrySetDirty<VertexBuffer<Vertex>>(assetName);
-    mWorld.TrySetDirty<ElementBuffer<U32>>(assetName);
-    mWorld.TrySetDirty<DefaultMesh>(assetName);
+    World::DestroyResource<MeshResource>(mWorld, assetName);
+    World::TrySetDirty<VertexBuffer<Vertex>>(mWorld, assetName);
+    World::TrySetDirty<ElementBuffer<U32>>(mWorld, assetName);
+    World::TrySetDirty<DefaultMesh>(mWorld, assetName);
     ProduceMeshHandles();
-    mWorld.CreateResource<MeshResource>(assetName, file);
+    World::CreateResource<MeshResource>(mWorld, assetName, file);
     ProduceMeshHandles();
   }
 
   for (auto const& file : mWatchdogMesh.FilesToCreate())
   {
     std::string assetName = file.stem().string();
-    mWorld.CreateResource<MeshResource>(assetName, file);
+    World::CreateResource<MeshResource>(mWorld, assetName, file);
     ProduceMeshHandles();
   }
 }
@@ -162,75 +162,75 @@ void HotLoader::UpdateShadersAssets()
   for (auto const& file : mWatchdogVertexShader.FilesToDelete())
   {
     std::string assetName = file.stem().string();
-    mWorld.DestroyResource<ShaderResource<EShaderType::Vertex>>(assetName);
-    mWorld.TrySetDirty<VertexShader>(assetName);
-    mWorld.TrySetDirty<RenderProgram>(assetName);
+    World::DestroyResource<ShaderResource<EShaderType::Vertex>>(mWorld, assetName);
+    World::TrySetDirty<VertexShader>(mWorld, assetName);
+    World::TrySetDirty<RenderProgram>(mWorld, assetName);
     ProduceRenderProgramHandles();
   }
   for (auto const& file : mWatchdogFragmentShader.FilesToDelete())
   {
     std::string assetName = file.stem().string();
-    mWorld.DestroyResource<ShaderResource<EShaderType::Fragment>>(assetName);
-    mWorld.TrySetDirty<FragmentShader>(assetName);
-    mWorld.TrySetDirty<RenderProgram>(assetName);
+    World::DestroyResource<ShaderResource<EShaderType::Fragment>>(mWorld, assetName);
+    World::TrySetDirty<FragmentShader>(mWorld, assetName);
+    World::TrySetDirty<RenderProgram>(mWorld, assetName);
     ProduceRenderProgramHandles();
   }
   for (auto const& file : mWatchdogComputeShader.FilesToDelete())
   {
     std::string assetName = file.stem().string();
-    mWorld.DestroyResource<ShaderResource<EShaderType::Compute>>(assetName);
-    mWorld.TrySetDirty<ComputeShader>(assetName);
-    mWorld.TrySetDirty<ComputeProgram>(assetName);
+    World::DestroyResource<ShaderResource<EShaderType::Compute>>(mWorld, assetName);
+    World::TrySetDirty<ComputeShader>(mWorld, assetName);
+    World::TrySetDirty<ComputeProgram>(mWorld, assetName);
     ProduceComputeProgramHandles();
   }
 
   for (auto const& file : mWatchdogVertexShader.FilesToChange())
   {
     std::string assetName = file.stem().string();
-    mWorld.DestroyResource<ShaderResource<EShaderType::Vertex>>(assetName);
-    mWorld.TrySetDirty<VertexShader>(assetName);
-    mWorld.TrySetDirty<RenderProgram>(assetName);
+    World::DestroyResource<ShaderResource<EShaderType::Vertex>>(mWorld, assetName);
+    World::TrySetDirty<VertexShader>(mWorld, assetName);
+    World::TrySetDirty<RenderProgram>(mWorld, assetName);
     ProduceRenderProgramHandles();
-    mWorld.CreateResource<ShaderResource<EShaderType::Vertex>>(assetName, file);
+    World::CreateResource<ShaderResource<EShaderType::Vertex>>(mWorld, assetName, file);
     ProduceRenderProgramHandles();
   }
   for (auto const& file : mWatchdogFragmentShader.FilesToChange())
   {
     std::string assetName = file.stem().string();
-    mWorld.DestroyResource<ShaderResource<EShaderType::Fragment>>(assetName);
-    mWorld.TrySetDirty<FragmentShader>(assetName);
-    mWorld.TrySetDirty<RenderProgram>(assetName);
+    World::DestroyResource<ShaderResource<EShaderType::Fragment>>(mWorld, assetName);
+    World::TrySetDirty<FragmentShader>(mWorld, assetName);
+    World::TrySetDirty<RenderProgram>(mWorld, assetName);
     ProduceRenderProgramHandles();
-    mWorld.CreateResource<ShaderResource<EShaderType::Fragment>>(assetName, file);
+    World::CreateResource<ShaderResource<EShaderType::Fragment>>(mWorld, assetName, file);
     ProduceRenderProgramHandles();
   }
   for (auto const& file : mWatchdogComputeShader.FilesToChange())
   {
     std::string assetName = file.stem().string();
-    mWorld.DestroyResource<ShaderResource<EShaderType::Compute>>(assetName);
-    mWorld.TrySetDirty<ComputeShader>(assetName);
-    mWorld.TrySetDirty<ComputeProgram>(assetName);
+    World::DestroyResource<ShaderResource<EShaderType::Compute>>(mWorld, assetName);
+    World::TrySetDirty<ComputeShader>(mWorld, assetName);
+    World::TrySetDirty<ComputeProgram>(mWorld, assetName);
     ProduceComputeProgramHandles();
-    mWorld.CreateResource<ShaderResource<EShaderType::Compute>>(assetName, file);
+    World::CreateResource<ShaderResource<EShaderType::Compute>>(mWorld, assetName, file);
     ProduceComputeProgramHandles();
   }
 
   for (auto const& file : mWatchdogVertexShader.FilesToCreate())
   {
     std::string assetName = file.stem().string();
-    mWorld.CreateResource<ShaderResource<EShaderType::Vertex>>(assetName, file);
+    World::CreateResource<ShaderResource<EShaderType::Vertex>>(mWorld, assetName, file);
     ProduceRenderProgramHandles();
   }
   for (auto const& file : mWatchdogFragmentShader.FilesToCreate())
   {
     std::string assetName = file.stem().string();
-    mWorld.CreateResource<ShaderResource<EShaderType::Fragment>>(assetName, file);
+    World::CreateResource<ShaderResource<EShaderType::Fragment>>(mWorld, assetName, file);
     ProduceRenderProgramHandles();
   }
   for (auto const& file : mWatchdogComputeShader.FilesToCreate())
   {
     std::string assetName = file.stem().string();
-    mWorld.CreateResource<ShaderResource<EShaderType::Compute>>(assetName, file);
+    World::CreateResource<ShaderResource<EShaderType::Compute>>(mWorld, assetName, file);
     ProduceComputeProgramHandles();
   }
 }
@@ -239,16 +239,16 @@ void HotLoader::ProduceRenderProgramHandles()
 {
   // Find non dirty render shader names
   std::set<std::string> nonDirtyShaderList;
-  mWorld.ConsumeNonDirtyHandleNames<VertexShader>(nonDirtyShaderList);
-  mWorld.ConsumeNonDirtyHandleNames<FragmentShader>(nonDirtyShaderList);
+  World::ConsumeNonDirtyHandleNames<VertexShader>(mWorld, nonDirtyShaderList);
+  World::ConsumeNonDirtyHandleNames<FragmentShader>(mWorld, nonDirtyShaderList);
   // Push new render program handles
   for (auto const& name : nonDirtyShaderList)
   {
-    HotRef<VertexShader>& vertexShaderRef = mWorld.GetHandle<VertexShader>(name);
-    HotRef<FragmentShader>& fragmentShaderRef = mWorld.GetHandle<FragmentShader>(name);
+    HotRef<VertexShader>& vertexShaderRef = World::GetHandle<VertexShader>(mWorld, name);
+    HotRef<FragmentShader>& fragmentShaderRef = World::GetHandle<FragmentShader>(mWorld, name);
     if (vertexShaderRef.Get() && fragmentShaderRef.Get())
     {
-      HotRef<RenderProgram>& programRef = mWorld.GetHandle<RenderProgram>(name);
+      HotRef<RenderProgram>& programRef = World::GetHandle<RenderProgram>(mWorld, name);
       if (programRef.Get())
       {
         // Compare old values and decide if it has been changed at all
@@ -346,16 +346,16 @@ void HotLoader::ProduceMeshHandles()
 {
   // Find non dirty buffer names
   std::set<std::string> nonDirtyBufferList;
-  mWorld.ConsumeNonDirtyHandleNames<VertexBuffer<Vertex>>(nonDirtyBufferList);
-  mWorld.ConsumeNonDirtyHandleNames<ElementBuffer<U32>>(nonDirtyBufferList);
+  World::ConsumeNonDirtyHandleNames<VertexBuffer<Vertex>>(mWorld, nonDirtyBufferList);
+  World::ConsumeNonDirtyHandleNames<ElementBuffer<U32>>(mWorld, nonDirtyBufferList);
   // Push new mesh handles
   for (auto const& name : nonDirtyBufferList)
   {
-    HotRef<VertexBuffer<Vertex>>& vertexBufferRef = mWorld.GetHandle<VertexBuffer<Vertex>>(name);
-    HotRef<ElementBuffer<U32>>& elementBufferRef = mWorld.GetHandle<ElementBuffer<U32>>(name);
+    HotRef<VertexBuffer<Vertex>>& vertexBufferRef = World::GetHandle<VertexBuffer<Vertex>>(mWorld, name);
+    HotRef<ElementBuffer<U32>>& elementBufferRef = World::GetHandle<ElementBuffer<U32>>(mWorld, name);
     if (vertexBufferRef.Get() && elementBufferRef.Get())
     {
-      HotRef<DefaultMesh>& meshRef = mWorld.GetHandle<DefaultMesh>(name);
+      HotRef<DefaultMesh>& meshRef = World::GetHandle<DefaultMesh>(mWorld, name);
       if (meshRef.Get())
       {
         // Compare old values and decide if it has been changed at all

@@ -2,10 +2,9 @@
 
 #include <Core.h>
 #include <ActorProxy.h>
-#include <Component.h>
+#include <EventRegistry.h>
 
-#include <Globals/EventRegistry.h>
-
+class Component;
 class World;
 
 class Actor
@@ -16,16 +15,7 @@ public:
 
 public:
 
-  Actor(
-    World* world,
-    ActorProxy* proxy,
-    std::string const& name)
-    : mWorld{ world }
-    , mProxy{ proxy }
-    , mName{ name }
-  {
-
-  }
+  Actor(World& world, ActorProxy* proxy, std::string const& name);
   virtual ~Actor() = default;
 
 public:
@@ -56,11 +46,14 @@ public:
 
 public:
 
-  virtual void SetupInput(EventRegistry* eventRegistry) const {}
+  virtual void SetupInput(EventRegistry& eventRegistry) const {}
+
+protected:
+
+  World& mWorld;
 
 private:
 
-  World* mWorld;
   ActorProxy* mProxy;
 
   std::string mName = "";

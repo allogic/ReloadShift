@@ -2,8 +2,8 @@
 
 #include <Core.h>
 #include <Resource.h>
+#include <EventRegistry.h>
 
-#include <Globals/EventRegistry.h>
 #include <Globals/World.h>
 
 class UI
@@ -180,7 +180,7 @@ private:
   {
     if (open)
     {
-      EventRegistry& registry = EventRegistry::Instance();
+      EventRegistry& registry = World::Instance().GetEventRegistry();
       open = ImGui::Begin("Mapping", &open);
       if (ImGui::BeginTable("Axis", 3))
       {
@@ -200,11 +200,17 @@ private:
         ImGui::TableNextColumn(); ImGui::Text("Name");
         ImGui::TableNextColumn(); ImGui::Text("Instance");
         ImGui::TableNextColumn(); ImGui::Text("Delegate");
-        for (auto const& [actionName, actionDelegate] : registry.GetActionDelegates())
+        for (auto const& [actionKey, actionsByType] : registry.GetActionDelegates())
         {
-          ImGui::TableNextColumn(); ImGui::Text(actionName.c_str());
-          ImGui::TableNextColumn(); ImGui::Text("%p", actionDelegate.Instance);
-          ImGui::TableNextColumn(); ImGui::Text("%p", actionDelegate.Delegate);
+          for (auto const& [actionType, actionInfos] : actionsByType)
+          {
+            for (auto const& actionInfo : actionInfos)
+            {
+              ImGui::TableNextColumn(); ImGui::Text("%c", actionKey);
+              ImGui::TableNextColumn(); ImGui::Text("%p", actionInfo.Instance);
+              ImGui::TableNextColumn(); ImGui::Text("%p", actionInfo.Delegate);
+            }
+          }
         }
         ImGui::EndTable();
       }

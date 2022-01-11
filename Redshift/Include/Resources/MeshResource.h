@@ -9,7 +9,6 @@ class MeshResource : public Resource
 public:
 
   MeshResource(
-    World* world,
     std::string const& name,
     std::filesystem::path const& filePath);
 

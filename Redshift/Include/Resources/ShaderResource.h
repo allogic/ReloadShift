@@ -5,18 +5,15 @@
 
 #include <Handles/GenericShader.h>
 
-#include <World.h>
-
 template<EShaderType::Type Type>
 class ShaderResource : public Resource
 {
 public:
 
   ShaderResource(
-    World* world,
     std::string const& name,
     std::filesystem::path const& filePath)
-    : Resource(world, name, filePath)
+    : Resource(name, filePath)
   {
 
   }
@@ -57,7 +54,7 @@ public:
     glGetShaderiv(SID, GL_COMPILE_STATUS, &compileStatus);
     if (compileStatus)
     {
-      HotRef<GenericShader<Type>>& hotRef = mWorld->GetHandle<GenericShader<Type>>(GetName());
+      HotRef<GenericShader<Type>>& hotRef = World::GetHandle<GenericShader<Type>>(mWorld, GetName());
       if (hotRef.Get())
       {
         // Compare old values and decide if it has been changed at all

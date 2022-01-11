@@ -1,9 +1,9 @@
 #pragma once
 
 #include <Core.h>
-#include <Component.h>
 
 class Actor;
+class Component;
 
 class ActorProxy
 {

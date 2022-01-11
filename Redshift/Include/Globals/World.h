@@ -6,10 +6,11 @@
 #include <ModuleProxy.h>
 #include <HotRef.h>
 #include <Utility.h>
-#include <Component.h>
 #include <Resource.h>
 #include <Renderer.h>
+#include <EventRegistry.h>
 
+class Component;
 class HotLoader;
 class ActorProxy;
 
@@ -37,7 +38,7 @@ public:
   // Singleton
   ////////////////////////////////////////////////////////
 
-  static inline World& Instance() { static World world; return world; }
+  static World& Instance();
 
 public:
 
@@ -53,6 +54,7 @@ public:
   // Getter
   ////////////////////////////////////////////////////////
 
+  inline GLFWwindow* GetGlfwWindow() const { return mGlfwWindow; }
   inline GladGLContext* GetGladContext() const { return mGladContext; }
   inline ImGuiContext* GetImGuiContext() const { return mImGuiContext; }
 
@@ -65,6 +67,8 @@ public:
 
   inline PermutationTable& GetPermutationTable() { return mPermutationTable; }
 
+  inline EventRegistry& GetEventRegistry() { return mEventRegistry; }
+
 public:
 
   ////////////////////////////////////////////////////////
@@ -73,13 +77,13 @@ public:
 
   template<typename R, typename ... Args>
   requires std::is_base_of_v<Resource, R>
-  R* CreateResource(std::string const& resourceName, Args &&... args)
+  static R* CreateResource(World& world, std::string const& resourceName, Args &&... args)
   {
-    Resource*& resource = mResources[resourceName + typeid(R).name()];
+    Resource*& resource = world.mResources[resourceName + typeid(R).name()];
     // Probe if resource already exists
     if (!resource)
     {
-      resource = new R{ this, resourceName, std::forward<Args>(args) ... };
+      resource = new R{ resourceName, std::forward<Args>(args) ... };
       // Enable auto load file and produce handles
       if (resource->LoadFile())
       {
@@ -92,9 +96,9 @@ public:
 
   template<typename R>
   requires std::is_base_of_v<Resource, R>
-  bool DestroyResource(std::string const& resourceName)
+  static bool DestroyResource(World& world, std::string const& resourceName)
   {
-    Resource*& resource = mResources[resourceName + typeid(R).name()];
+    Resource*& resource = world.mResources[resourceName + typeid(R).name()];
     // Check if resource exists, if so, destroy it
     if (resource)
     {
@@ -112,9 +116,9 @@ public:
 
   template<typename H>
   requires std::is_base_of_v<Handle, H>
-  void ConsumeDirtyHandleNames(std::set<std::string>& handleNames) noexcept
+  static void ConsumeDirtyHandleNames(World& world, std::set<std::string>& handleNames) noexcept
   {
-    for (auto const& [name, hotRef] : mHandles[typeid(H).hash_code()])
+    for (auto const& [name, hotRef] : world.mHandles[typeid(H).hash_code()])
     {
       if (hotRef.Get() && hotRef.Get()->GetDirty())
       {
@@ -125,9 +129,9 @@ public:
 
   template<typename H>
   requires std::is_base_of_v<Handle, H>
-  void ConsumeNonDirtyHandleNames(std::set<std::string>& handleNames) noexcept
+  static void ConsumeNonDirtyHandleNames(World& world, std::set<std::string>& handleNames) noexcept
   {
-    for (auto const& [name, hotRef] : mHandles[typeid(H).hash_code()])
+    for (auto const& [name, hotRef] : world.mHandles[typeid(H).hash_code()])
     {
       if (hotRef.Get() && !hotRef.Get()->GetDirty())
       {
@@ -144,9 +148,9 @@ public:
 
   template<typename H, typename ... Args>
   requires std::is_base_of_v<Handle, H>
-  HotRef<H>& LinkHandle(std::string const& handleName, Args &&... args)
+  static HotRef<H>& LinkHandle(World& world, std::string const& handleName, Args &&... args)
   {
-    HotRef<H>& hotRef = (HotRef<H>&)mHandles[typeid(H).hash_code()][handleName];
+    HotRef<H>& hotRef = (HotRef<H>&)world.mHandles[typeid(H).hash_code()][handleName];
     // Probe if reference already exists
     if (!hotRef.Get())
     {
@@ -158,17 +162,17 @@ public:
 
   template<typename H, typename ... Args>
   requires std::is_base_of_v<Handle, H>
-  HotRef<H>& GetHandle(std::string const& handleName)
+  static HotRef<H>& GetHandle(World& world, std::string const& handleName)
   {
-    return (HotRef<H>&)mHandles[typeid(H).hash_code()][handleName];
+    return (HotRef<H>&)world.mHandles[typeid(H).hash_code()][handleName];
   }
 
   template<typename H, typename ... Args>
   requires std::is_base_of_v<Handle, H>
-  void TrySetDirty(std::string const& handleName)
+  static void TrySetDirty(World& world, std::string const& handleName)
   {
-    auto const outerIt = mHandles.find(typeid(H).hash_code());
-    if (outerIt != mHandles.end())
+    auto const outerIt = world.mHandles.find(typeid(H).hash_code());
+    if (outerIt != world.mHandles.end())
     {
       auto const innerIt = outerIt->second.find(handleName);
       if (innerIt != outerIt->second.end())
@@ -189,19 +193,19 @@ public:
 
   template<typename C, typename ... Args>
   requires std::is_base_of_v<Component, C>
-  C* AttachComponent(Actor* actor, Args && ... args)
+  static C* AttachComponent(World& world, Actor* actor, Args && ... args)
   {
     // Check if component already exists
     C* component = actor->GetComponent<C>(typeid(C).hash_code());
     if (!component)
     {
       // Update actor
-      component = actor->CreateComponent<C>(new C{ this, std::forward<Args>(args) ... });
+      component = actor->CreateComponent<C>(new C{ world, std::forward<Args>(args) ... });
       // Register proxy for all single types
       auto permutations = actor->GetInOrderComponentHashes();
       for (auto const& typHash : permutations)
       {
-        mPermutationTable[typHash].emplace(actor->GetProxy());
+        world.mPermutationTable[typHash].emplace(actor->GetProxy());
       }
       // Complete transaction by computing all type permutations
       // and insert the proxy in their respective buckets
@@ -214,7 +218,7 @@ public:
           for (U32 j = i; j < permutations.size(); ++j)
           {
             permutationHash ^= permutations[j];
-            mPermutationTable[permutationHash].emplace(actor->GetProxy());
+            world.mPermutationTable[permutationHash].emplace(actor->GetProxy());
           }
         }
       } while (std::next_permutation(permutations.begin(), permutations.end()));
@@ -224,28 +228,28 @@ public:
 
   template<typename A, typename ... Args>
   requires std::is_base_of_v<Actor, A>
-  A* CreateActor(std::string const& actorName, Args && ... args)
+  static A* CreateActor(World& world, std::string const& actorName, Args && ... args)
   {
     // Create actor proxy
     ActorProxy* proxy = new ActorProxy{};
-    mActors.emplace(actorName, proxy);
+    world.mActors.emplace(actorName, proxy);
     // Create actor after proxy in order to initialize components inside the constructor
-    A* actor = new A{ this, proxy, actorName, std::forward<Args>(args) ... };
+    A* actor = new A{ world, proxy, actorName, std::forward<Args>(args) ... };
+    // Register input mapping
+    actor->SetupInput(world.mEventRegistry);
     // Link actor and proxy
     proxy->SetActor(actor);
-    // Register input mapping
-
     return actor;
   }
 
   template<typename ... Cs>
   requires (std::is_base_of_v<Component, typename TypeProxy<Cs>::Type> && ...)
-  static void DispatchFor(World* world, std::function<void(typename TypeProxy<Cs>::Ptr ...)>&& predicate)
+  static void DispatchFor(World& world, std::function<void(typename TypeProxy<Cs>::Ptr ...)>&& predicate)
   {
     // Compute hash
     U64 bucketHash = ((U64)0 ^ ... ^ typeid(Cs).hash_code());
     // Execute predicate over actors in bucket
-    for (auto const& proxy : world->GetPermutationTable()[bucketHash])
+    for (auto const& proxy : world.mPermutationTable[bucketHash])
     {
       predicate
       (
@@ -261,8 +265,8 @@ public:
   // Module interface
   ////////////////////////////////////////////////////////
 
-  bool CreateModule(std::filesystem::path const& filePath);
-  bool DestroyModule(std::string const& moduleName);
+  static bool CreateModule(World& world, std::filesystem::path const& filePath);
+  static bool DestroyModule(World& world, std::string const& moduleName);
 
 public:
 
@@ -272,13 +276,13 @@ public:
 
   template<typename R, typename ... Args>
   requires std::is_base_of_v<Renderer, R>
-  R* CreateRenderer(std::string const& rendererName, Args &&... args)
+  static R* CreateRenderer(World& world, std::string const& rendererName, Args &&... args)
   {
-    Renderer*& renderer = mRenderer[rendererName];
+    Renderer*& renderer = world.mRenderer[rendererName];
     // Probe if renderer already exists
     if (!renderer)
     {
-      renderer = new R{ this, rendererName, std::forward<Args>(args) ... };
+      renderer = new R{ rendererName, std::forward<Args>(args) ... };
       return (R*)renderer;
     }
     return (R*)renderer;
@@ -286,9 +290,9 @@ public:
 
   template<typename R>
   requires std::is_base_of_v<Renderer, R>
-  bool DestroyRenderer(std::string const& rendererName)
+  static bool DestroyRenderer(World& world, std::string const& rendererName)
   {
-    Renderer*& renderer = mResources[rendererName];
+    Renderer*& renderer = world.mResources[rendererName];
     // Check if resource exists, if so, destroy it
     if (renderer)
     {
@@ -300,8 +304,11 @@ public:
 
 private:
 
-  GladGLContext* mGladContext = nullptr;
-  ImGuiContext* mImGuiContext = nullptr;
+  GLFWwindow* mGlfwWindow;
+  GladGLContext* mGladContext;
+  ImGuiContext* mImGuiContext;
+
+  EventRegistry mEventRegistry = EventRegistry{ mGlfwWindow };
 
   ModulesByName mModules = ModulesByName{};
   ResourcesByName mResources = ResourcesByName{};

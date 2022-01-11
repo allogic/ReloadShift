@@ -23,19 +23,17 @@ public:
 
 public:
 
-  DeferredRenderer(
-    World* world,
-    std::string const& name)
-    : Renderer(world, name)
-    , mUniformProjection{ mWorld->LinkHandle<UniformBuffer<Projection>>("Projection", 1u) }
-    , mTextureDepthStencil{ mWorld->LinkHandle<Texture2DU24U8DS>("DeferredDepthStencil", 1280u, 720u, ETextureWrap::ClampToEdge, ETextureFilter::Nearest) }
-    , mTexturePosition{ mWorld->LinkHandle<Texture2DR32RGBA>("DeferredPosition", 1280u, 720u, ETextureWrap::ClampToEdge, ETextureFilter::Nearest) }
-    , mTextureAlbedo{ mWorld->LinkHandle<Texture2DR32RGBA>("DeferredAlbedo", 1280u, 720u, ETextureWrap::ClampToEdge, ETextureFilter::Nearest) }
-    , mTextureNormal{ mWorld->LinkHandle<Texture2DR32RGBA>("DeferredNormal", 1280u, 720u, ETextureWrap::ClampToEdge, ETextureFilter::Nearest) }
-    , mTextureSpecular{ mWorld->LinkHandle<Texture2DR32RGBA>("DeferredSpecular", 1280u, 720u, ETextureWrap::ClampToEdge, ETextureFilter::Nearest) }
-    , mTextureMetallic{ mWorld->LinkHandle<Texture2DR32RGBA>("DeferredMetallic", 1280u, 720u, ETextureWrap::ClampToEdge, ETextureFilter::Nearest) }
-    , mTextureRoughness{ mWorld->LinkHandle<Texture2DR32RGBA>("DeferredRoughness", 1280u, 720u, ETextureWrap::ClampToEdge, ETextureFilter::Nearest) }
-    , mFrameBuffer{ mWorld->LinkHandle<DeferredFrameBuffer>("DeferredFrameBuffer", mTextureDepthStencil.Get(), mTexturePosition.Get(), mTextureAlbedo.Get(), mTextureNormal.Get(), mTextureSpecular.Get(), mTextureMetallic.Get(), mTextureRoughness.Get()) }
+  DeferredRenderer(std::string const& name)
+    : Renderer(name)
+    , mUniformProjection{ World::LinkHandle<UniformBuffer<Projection>>(mWorld, "Projection", 1u) }
+    , mTextureDepthStencil{ World::LinkHandle<Texture2DU24U8DS>(mWorld, "DeferredDepthStencil", 1280u, 720u, ETextureWrap::ClampToEdge, ETextureFilter::Nearest) }
+    , mTexturePosition{ World::LinkHandle<Texture2DR32RGBA>(mWorld, "DeferredPosition", 1280u, 720u, ETextureWrap::ClampToEdge, ETextureFilter::Nearest) }
+    , mTextureAlbedo{ World::LinkHandle<Texture2DR32RGBA>(mWorld, "DeferredAlbedo", 1280u, 720u, ETextureWrap::ClampToEdge, ETextureFilter::Nearest) }
+    , mTextureNormal{ World::LinkHandle<Texture2DR32RGBA>(mWorld, "DeferredNormal", 1280u, 720u, ETextureWrap::ClampToEdge, ETextureFilter::Nearest) }
+    , mTextureSpecular{ World::LinkHandle<Texture2DR32RGBA>(mWorld, "DeferredSpecular", 1280u, 720u, ETextureWrap::ClampToEdge, ETextureFilter::Nearest) }
+    , mTextureMetallic{ World::LinkHandle<Texture2DR32RGBA>(mWorld, "DeferredMetallic", 1280u, 720u, ETextureWrap::ClampToEdge, ETextureFilter::Nearest) }
+    , mTextureRoughness{ World::LinkHandle<Texture2DR32RGBA>(mWorld, "DeferredRoughness", 1280u, 720u, ETextureWrap::ClampToEdge, ETextureFilter::Nearest) }
+    , mFrameBuffer{ World::LinkHandle<DeferredFrameBuffer>(mWorld, "DeferredFrameBuffer", mTextureDepthStencil.Get(), mTexturePosition.Get(), mTextureAlbedo.Get(), mTextureNormal.Get(), mTextureSpecular.Get(), mTextureMetallic.Get(), mTextureRoughness.Get()) }
   {
     // Mapping required for UI
     mBuffers[mTextureDepthStencil.Get()->GetName()] = mTextureDepthStencil.Get()->GetID();

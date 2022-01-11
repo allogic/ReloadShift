@@ -2,6 +2,7 @@
 
 #include <Core.h>
 #include <Handle.h>
+#include <Utility.h>
 
 #include <Handles/GenericTexture.h>
 

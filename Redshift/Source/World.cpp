@@ -1,17 +1,25 @@
-#include <World.h>
+#include <Globals/World.h>
+
 #include <Module.h>
 
+World& World::Instance()
+{
+  static World world;
+  return world;
+}
+
 World::World()
-  : mGladContext{ gladGetGLContext() }
+  : mGlfwWindow{ glfwGetCurrentContext() }
+  , mGladContext{ gladGetGLContext() }
   , mImGuiContext{ ImGui::GetCurrentContext() }
 {
 
 }
 
-bool World::CreateModule(std::filesystem::path const& filePath)
+bool World::CreateModule(World& world, std::filesystem::path const& filePath)
 {
-  auto const moduleIt = mModules.find(filePath.stem().string());
-  if (moduleIt == mModules.end())
+  auto const moduleIt = world.mModules.find(filePath.stem().string());
+  if (moduleIt == world.mModules.end())
   {
     HINSTANCE libraryInstance = LoadLibraryA(filePath.string().c_str());
     if (libraryInstance)
@@ -20,10 +28,10 @@ bool World::CreateModule(std::filesystem::path const& filePath)
       Module::DestroyProc destroyProc = (Module::DestroyProc)GetProcAddress(libraryInstance, "DestroyModule");
       if (createProc && destroyProc)
       {
-        Module* moduleInstance = createProc(this);
+        Module* moduleInstance = createProc(world);
         if (moduleInstance)
         {
-          auto const& [emplaceIt, inserted] = mModules.emplace(filePath.stem().string(), new ModuleProxy{ libraryInstance, moduleInstance, createProc, destroyProc });
+          auto const& [emplaceIt, inserted] = world.mModules.emplace(filePath.stem().string(), new ModuleProxy{ libraryInstance, moduleInstance, createProc, destroyProc });
           return inserted;
         }
       }
@@ -31,16 +39,16 @@ bool World::CreateModule(std::filesystem::path const& filePath)
   }
   return false;
 }
-bool World::DestroyModule(std::string const& moduleName)
+bool World::DestroyModule(World& world, std::string const& moduleName)
 {
-  auto const moduleIt = mModules.find(moduleName);
-  if (moduleIt != mModules.end())
+  auto const moduleIt = world.mModules.find(moduleName);
+  if (moduleIt != world.mModules.end())
   {
     ModuleProxy* proxy = moduleIt->second;
     proxy->GetDestroyProx()(proxy->GetModInstance());
     FreeLibrary(proxy->GetWinInstance());
     delete proxy;
-    mModules.erase(moduleIt);
+    world.mModules.erase(moduleIt);
     return true;
   }
   return false;

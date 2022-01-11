@@ -7,12 +7,12 @@ class Player : public Actor
 public:
 
   Player(
-    World* world,
+    World& world,
     ActorProxy* proxy,
     std::string const& name)
     : Actor(world, proxy, name)
-    , mTransform{ world->AttachComponent<Transform>(this, R32V3{ 0.0f, 0.0f, -5.0f }, R32V3{ 0.0f }, R32V3{ 1.0f }) }
-    , mCamera{ world->AttachComponent<Camera>(this, 45.0f, 0.001f, 1000.0f) }
+    , mTransform{ World::AttachComponent<Transform>(world, this, R32V3{ 0.0f, 0.0f, -5.0f }, R32V3{ 0.0f }, R32V3{ 1.0f }) }
+    , mCamera{ World::AttachComponent<Camera>(world, this, 45.0f, 0.001f, 1000.0f) }
   {
 
   }
@@ -25,17 +25,18 @@ public:
 
 public:
 
-  virtual void SetupInput(EventRegistry* eventRegistry) const
+  virtual void SetupInput(EventRegistry& eventRegistry) const
   {
-    eventRegistry->BindAxis("MoveForward", this, &Player::MoveForward);
-    eventRegistry->BindAxis("MoveRight", this, &Player::MoveRight);
+    //eventRegistry.BindAxis("MoveForward", this, &Player::MoveForward);
+    //eventRegistry.BindAxis("MoveRight", this, &Player::MoveRight);
 
-    eventRegistry->BindAxis("TurnHorizontal", this, &Player::TurnHorizontal);
-    eventRegistry->BindAxis("TurnVertical", this, &Player::TurnVertical);
+    //eventRegistry.BindAxis("TurnHorizontal", this, &Player::TurnHorizontal);
+    //eventRegistry.BindAxis("TurnVertical", this, &Player::TurnVertical);
 
-    eventRegistry->BindAction("G", EInputType::Pressed, this, &Player::OnButtonPressed);
-    eventRegistry->BindAction("G", EInputType::Held, this, &Player::OnButtonHeld);
-    eventRegistry->BindAction("G", EInputType::Released, this, &Player::OnButtonReleased);
+    eventRegistry.BindAction('W', EInputType::Held, this, &Player::OnMoveForward);
+    eventRegistry.BindAction('S', EInputType::Held, this, &Player::OnMoveBackward);
+    eventRegistry.BindAction('D', EInputType::Held, this, &Player::OnMoveRight);
+    eventRegistry.BindAction('A', EInputType::Held, this, &Player::OnMoveLeft);
   }
 
 private:
@@ -58,17 +59,21 @@ private:
     std::printf("Vertical: %f\n", value);
   }
 
-  void OnButtonPressed()
+  void OnMoveForward()
   {
-    std::printf("G Pressed\n");
+    mTransform->AddWorldPosition(R32V3{ 0.0f, 0.0f, 1.0f } * 0.02f);
   }
-  void OnButtonHeld()
+  void OnMoveBackward()
   {
-    std::printf("G Held\n");
+    mTransform->AddWorldPosition(R32V3{ 0.0f, 0.0f, -1.0f } * 0.02f);
   }
-  void OnButtonReleased()
+  void OnMoveRight()
   {
-    std::printf("G Released\n");
+    mTransform->AddWorldPosition(R32V3{ 1.0f, 0.0f, 0.0f } * 0.02f);
+  }
+  void OnMoveLeft()
+  {
+    mTransform->AddWorldPosition(R32V3{ -1.0f, 0.0f, 0.0f } * 0.02f);
   }
 
 private:

@@ -8,7 +8,6 @@ class TextureResource : public Resource
 public:
 
   TextureResource(
-    World* world,
     std::string const& name,
     std::filesystem::path const& filePath);
 

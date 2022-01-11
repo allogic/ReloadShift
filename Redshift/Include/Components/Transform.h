@@ -8,7 +8,7 @@ class Transform : public Component
 public:
 
   Transform(
-    World* world,
+    World& world,
     R32V3 worldPosition,
     R32V3 worldRotation,
     R32V3 worldScale)
@@ -71,6 +71,10 @@ public:
   inline void SetWorldPosition(R32V3 const& value) { mTransform.setOrigin(btVector3{ value.x, value.y, value.z }); }
   inline void SetWorldRotation(R32V3 const& value) { mTransform.setRotation(btQuaternion{ value.x, value.y, value.z }); }
   inline void SetWorldScale(R32V3 const& value) { mScale = value; }
+
+  inline void AddWorldPosition(R32V3 const& value) { mTransform.setOrigin(mTransform.getOrigin() + btVector3{ value.x, value.y, value.z }); }
+  inline void AddWorldRotation(R32V3 const& value) { mTransform.setRotation(mTransform.getRotation() + btQuaternion{ value.x, value.y, value.z }); }
+  inline void AddWorldScale(R32V3 const& value) { mScale += value; }
 
 private:
 

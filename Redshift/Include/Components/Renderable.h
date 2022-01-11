@@ -3,7 +3,6 @@
 #include <Core.h>
 #include <Component.h>
 #include <HotRef.h>
-#include <World.h>
 
 #include <Handles/GenericMesh.h>
 #include <Handles/GenericProgram.h>
@@ -18,7 +17,7 @@ class Renderable : public Component
 public:
 
   Renderable(
-    World* world,
+    World& world,
     std::string const& meshName,
     std::string const& programName,
     std::string const& textureAlbedoName = "",
@@ -27,13 +26,13 @@ public:
     std::string const& textureMetallicName = "",
     std::string const& textureRoughnessName = "")
     : Component(world)
-    , mMesh{ mWorld->GetHandle<DefaultMesh>(meshName) }
-    , mProgram{ mWorld->GetHandle<RenderProgram>(programName) }
-    , mTextureAlbedo{ mWorld->GetHandle<Texture2DR32RGBA>(textureAlbedoName) }
-    , mTextureNormal{ mWorld->GetHandle<Texture2DR32RGBA>(textureNormalName) }
-    , mTextureSpecular{ mWorld->GetHandle<Texture2DR32RGBA>(textureSpecularName) }
-    , mTextureMetallic{ mWorld->GetHandle<Texture2DR32RGBA>(textureMetallicName) }
-    , mTextureRoughness{ mWorld->GetHandle<Texture2DR32RGBA>(textureRoughnessName) }
+    , mMesh{ World::GetHandle<DefaultMesh>(mWorld, meshName) }
+    , mProgram{ World::GetHandle<RenderProgram>(mWorld, programName) }
+    , mTextureAlbedo{ World::GetHandle<Texture2DR32RGBA>(mWorld, textureAlbedoName) }
+    , mTextureNormal{ World::GetHandle<Texture2DR32RGBA>(mWorld, textureNormalName) }
+    , mTextureSpecular{ World::GetHandle<Texture2DR32RGBA>(mWorld, textureSpecularName) }
+    , mTextureMetallic{ World::GetHandle<Texture2DR32RGBA>(mWorld, textureMetallicName) }
+    , mTextureRoughness{ World::GetHandle<Texture2DR32RGBA>(mWorld, textureRoughnessName) }
   {
 
   }

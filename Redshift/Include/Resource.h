@@ -2,6 +2,7 @@
 
 #include <Core.h>
 #include <Types.h>
+#include <HotRef.h>
 
 class World;
 
@@ -9,16 +10,7 @@ class Resource
 {
 public:
 
-  Resource(
-    World* world,
-    std::string const& name,
-    std::filesystem::path const& filePath)
-    : mWorld{ world }
-    , mName{ name }
-    , mFilePath{ filePath }
-  {
-
-  }
+  Resource(std::string const& name, std::filesystem::path const& filePath);
   virtual ~Resource()
   {
     if (mBytes)
@@ -50,7 +42,7 @@ public:
 
 protected:
 
-  World* mWorld;
+  World& mWorld;
 
   std::string mName;
 

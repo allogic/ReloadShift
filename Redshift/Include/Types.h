@@ -68,9 +68,9 @@ namespace EInputType
 {
   enum Type : U32
   {
-    Pressed,
-    Held,
-    Released,
+    Pressed = 1,
+    Held = 2,
+    Released = 0,
   };
 }
 

@@ -8,7 +8,7 @@ class Camera : public Component
 public:
 
   Camera(
-    World* world,
+    World& world,
     R32 FOV,
     R32 near,
     R32 far)

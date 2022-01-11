@@ -1,14 +1,13 @@
 #include <Resources/MeshResource.h>
 
-#include <Handles/GenericBuffer.h>
-
 #include <Globals/World.h>
 
+#include <Handles/GenericBuffer.h>
+
 MeshResource::MeshResource(
-  World* world,
   std::string const& name,
   std::filesystem::path const& filePath)
-  : Resource(world, name, filePath)
+  : Resource(name, filePath)
 {
 
 }
@@ -38,7 +37,7 @@ bool MeshResource::ProduceHandles()
   if (ParseScene())
   {
     {
-      HotRef<VertexBuffer<Vertex>>& hotRef = mWorld->GetHandle<VertexBuffer<Vertex>>(GetName());
+      HotRef<VertexBuffer<Vertex>>& hotRef = World::GetHandle<VertexBuffer<Vertex>>(mWorld, GetName());
       if (hotRef.Get())
       {
         // Compare old values and decide if it has been changed at all
@@ -55,7 +54,7 @@ bool MeshResource::ProduceHandles()
     }
 
     {
-      HotRef<ElementBuffer<U32>>& hotRef = mWorld->GetHandle<ElementBuffer<U32>>(GetName());
+      HotRef<ElementBuffer<U32>>& hotRef = World::GetHandle<ElementBuffer<U32>>(mWorld, GetName());
       if (hotRef.Get())
       {
         // Compare old values and decide if it has been changed at all

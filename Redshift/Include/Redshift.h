@@ -12,11 +12,11 @@
 #include <ActorProxy.h>
 #include <Component.h>
 #include <Renderer.h>
+#include <EventRegistry.h>
 
 #include <Components/Camera.h>
 #include <Components/Transform.h>
 
-#include <Globals/EventRegistry.h>
 #include <Globals/World.h>
 
 #include <Handles/GenericBuffer.h>

@@ -154,7 +154,7 @@
     <ClInclude Include="Include\Components\Renderable.h" />
     <ClInclude Include="Include\Components\Rigidbody.h" />
     <ClInclude Include="Include\Components\Transform.h" />
-    <ClInclude Include="Include\Globals\EventRegistry.h" />
+    <ClInclude Include="Include\EventRegistry.h" />
     <ClInclude Include="Include\Handles\GenericBuffer.h" />
     <ClInclude Include="Include\Handle.h" />
     <ClInclude Include="Include\Core.h" />
@@ -186,7 +186,10 @@
     <ClCompile Include="..\Vendor\Source\gl.c" />
     <ClCompile Include="..\Vendor\Source\miniz.c" />
     <ClCompile Include="..\Vendor\Source\ofbx.cpp" />
+    <ClCompile Include="Source\Actor.cpp" />
     <ClCompile Include="Source\Module.cpp" />
+    <ClCompile Include="Source\Renderer.cpp" />
+    <ClCompile Include="Source\Resource.cpp" />
     <ClCompile Include="Source\Resources\MeshResource.cpp" />
     <ClCompile Include="Source\Resources\TextureResource.cpp" />
     <ClCompile Include="Source\World.cpp" />

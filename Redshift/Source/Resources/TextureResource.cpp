@@ -1,12 +1,13 @@
 #include <Resources/TextureResource.h>
-#include <World.h>
+
+#include <Globals/World.h>
+
 #include <Handles/GenericTexture.h>
 
 TextureResource::TextureResource(
-  World* world,
   std::string const& name,
   std::filesystem::path const& filePath)
-  : Resource(world, name, filePath)
+  : Resource(name, filePath)
 {
 
 }
@@ -41,7 +42,7 @@ bool TextureResource::ProduceHandles()
     {
       case 3:
       {
-        HotRef<Texture2DR32RGB>& hotRef = mWorld->GetHandle<Texture2DR32RGB>(GetName());
+        HotRef<Texture2DR32RGB>& hotRef = World::GetHandle<Texture2DR32RGB>(mWorld, GetName());
         if (hotRef.Get())
         {
           // Compare old values and decide if it has been changed at all
@@ -58,7 +59,7 @@ bool TextureResource::ProduceHandles()
       }
       case 4:
       {
-        HotRef<Texture2DR32RGBA>& hotRef = mWorld->GetHandle<Texture2DR32RGBA>(GetName());
+        HotRef<Texture2DR32RGBA>& hotRef = World::GetHandle<Texture2DR32RGBA>(mWorld, GetName());
         if (hotRef.Get())
         {
           // Compare old values and decide if it has been changed at all

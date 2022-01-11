@@ -6,7 +6,7 @@ class Brain : public Component
 {
 public:
 
-  Brain(World* world)
+  Brain(World& world)
     : Component(world)
   {
 

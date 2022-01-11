@@ -12,14 +12,7 @@ class Renderer
 {
 public:
 
-  Renderer(
-    World* world,
-    std::string const& name)
-    : mWorld{ world }
-    , mName{ name }
-  {
-
-  }
+  Renderer(std::string const& name);
   virtual ~Renderer() = default;
 
 public:
@@ -48,7 +41,7 @@ public:
 
 protected:
 
-  World* mWorld;
+  World& mWorld;
   std::string mName;
 
   R32V2 mViewportSize = R32V2{};
