@@ -2,6 +2,7 @@
 #include <Redshift.h>
 
 #include <Actors/Enemy.h>
+#include <Actors/Gate.h>
 #include <Actors/Player.h>
 
 class Sandbox : public Module
@@ -23,30 +24,43 @@ public:
     static R32 roll = 0.0f;
     roll += 0.3f * deltaTime;
     if (roll >= 360.0f) roll = 0.0f;
+
+    //for (auto& actor : mActors)
+    //{
+    //  World::DestroyActor(mWorld, actor);
+    //}
+    //mActors.clear();
+
+    //mActors.emplace_back(World::CreateActor<Player>(mWorld, "Player"));
+    //mActors.emplace_back(World::CreateActor<Enemy>(mWorld, "Enemy"));
+    //mActors.emplace_back(World::CreateActor<Gate>(mWorld, "Gate"));
+
     World::DispatchFor<
       Transform,
       Camera>(mWorld, [=](Transform* transform, Camera* camera)
         {
-          //transform->SetWorldPosition(R32V3{ 0.0f, 0.0f, -50.0f });
+          transform->SetWorldPosition(R32V3{ 0.0f, -2.5f, -10.0f });
         });
+
     World::DispatchFor<
       Transform,
-      Renderable,
-      Brain>(mWorld, [=](Transform* transform, Renderable* renderable, Brain* brain)
+      Renderable>(mWorld, [=](Transform* transform, Renderable* renderable)
         {
-          void* ptr = renderable->mTextureAlbedo.Get() ? (void*)(U64)renderable->mTextureAlbedo.Get()->GetID() : nullptr;
-          ImGui::Image(ptr, ImVec2{ 512, 512 });
           transform->SetWorldRotation(R32V3{ 0.0f, 90.0f, roll });
         });
 
     ImGui::Begin("Debug");
     if (ImGui::Button("Create Player"))
     {
-      mPlayers.emplace_back(World::CreateActor<Player>(mWorld, "Player"));
+      mActors.emplace_back(World::CreateActor<Player>(mWorld, "Player"));
     }
     if (ImGui::Button("Create Enemy"))
     {
-      mEnemies.emplace_back(World::CreateActor<Enemy>(mWorld, "Enemy"));
+      mActors.emplace_back(World::CreateActor<Enemy>(mWorld, "Enemy"));
+    }
+    if (ImGui::Button("Create Gate"))
+    {
+      mActors.emplace_back(World::CreateActor<Gate>(mWorld, "Gate"));
     }
     if (ImGui::Button("Create 1000 Enemies"))
     {
@@ -58,32 +72,25 @@ public:
           {
             Enemy* enemy = mWorld.CreateActor<Enemy>(mWorld, "Enemy");
             enemy->GetTransform()->SetWorldPosition((R32V3{ i, j, k } * 3.0f) - 13.5f);
-            mEnemies.emplace_back(enemy);
+            mActors.emplace_back(enemy);
           }
         }
       }
     }
-    if (ImGui::Button("Destroy Players"))
+    if (ImGui::Button("Destroy Actors"))
     {
-      //mWorld->DestroyActor<Player>(mPlayers);
-      //mPlayers.clear();
-    }
-    if (ImGui::Button("Destroy Enemies"))
-    {
-      //mWorld->DestroyActor<Enemy>(mEnemies);
-      //mEnemies.clear();
+      for (auto& actor : mActors)
+      {
+        World::DestroyActor(mWorld, actor);
+      }
+      mActors.clear();
     }
     ImGui::End();
-  }
-  virtual void Render() override
-  {
-    
   }
 
 private:
 
-  std::vector<Player*> mPlayers = {};
-  std::vector<Enemy*> mEnemies = {};
+  std::vector<Actor*> mActors = {};
 };
 
 DECLARE_MODULE_IMPL(Sandbox)

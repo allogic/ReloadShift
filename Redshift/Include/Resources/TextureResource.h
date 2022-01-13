@@ -18,11 +18,8 @@ public:
 public:
 
   virtual bool LoadFile() override;
-  virtual bool ProduceHandles() override;
-
-private:
-
-  bool ParseFile();
+  virtual void LinkHandle() override;
+  virtual void Cleanup() override;
 
 private:
 
@@ -34,6 +31,6 @@ private:
   U32 mGLFormat = 0;
   U32 mGLFormatInternal = 0;
 
-  std::vector<U8> mIntRepresentation;
-  std::vector<R32> mRealRepresentation;
+  U8* mIntRepresentation = nullptr;
+  R32* mRealRepresentation = nullptr;
 };

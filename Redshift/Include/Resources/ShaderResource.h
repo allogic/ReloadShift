@@ -26,57 +26,59 @@ public:
 
   virtual bool LoadFile() override
   {
-    if (!mBytes)
+    FILE* file = nullptr;
+    errno_t error = fopen_s(&file, mFilePath.string().c_str(), "rb");
+    if (error == 0 && file)
     {
-      FILE* file = nullptr;
-      errno_t error = fopen_s(&file, mFilePath.string().c_str(), "rb");
-      if (error == 0 && file)
+      fseek(file, 0, SEEK_END);
+      mFileSize = ftell(file);
+      fseek(file, 0, SEEK_SET);
+      mShaderBytes = new U8[mFileSize];
+      fread(mShaderBytes, 1, mFileSize, file);
+      fclose(file);
+      // Create shader
+      mID = glCreateShader(Type);
+      glShaderBinary(1, &mID, GL_SHADER_BINARY_FORMAT_SPIR_V, mShaderBytes, mFileSize);
+      glSpecializeShader(mID, "main", 0, nullptr, nullptr);
+      I32 compileStatus = 0;
+      glGetShaderiv(mID, GL_COMPILE_STATUS, &compileStatus);
+      if (!compileStatus)
       {
-        fseek(file, 0, SEEK_END);
-        U32 fileSize = ftell(file);
-        fseek(file, 0, SEEK_SET);
-        mBytes = new U8[fileSize];
-        mBytesSize = fileSize;
-        fread(mBytes, 1, fileSize, file);
-        fclose(file);
-        return mBytes;
+        I32 infoLogLength = 0;
+        glGetShaderiv(mID, GL_INFO_LOG_LENGTH, &infoLogLength);
+        std::string infoLog;
+        infoLog.resize(infoLogLength);
+        glGetShaderInfoLog(mID, infoLogLength, &infoLogLength, infoLog.data());
+        std::printf("%s\n", infoLog.c_str());
+        glDeleteShader(mID);
       }
+      return compileStatus;
     }
     return false;
   }
-  virtual bool ProduceHandles() override
+  virtual void LinkHandle() override
   {
-    U32 SID;
-    SID = glCreateShader(Type);
-    glShaderBinary(1, &SID, GL_SHADER_BINARY_FORMAT_SPIR_V, mBytes, (I32)mBytesSize);
-    glSpecializeShader(SID, "main", 0, nullptr, nullptr);
-    I32 compileStatus = 0;
-    glGetShaderiv(SID, GL_COMPILE_STATUS, &compileStatus);
-    if (compileStatus)
+    HotRef<GenericShader<Type>>& hotRef = World::GetHandle<GenericShader<Type>>(mWorld, GetName());
+    if (hotRef.Get())
     {
-      HotRef<GenericShader<Type>>& hotRef = World::GetHandle<GenericShader<Type>>(mWorld, GetName());
-      if (hotRef.Get())
-      {
-        // Compare old values and decide if it has been changed at all
-      }
-      else
-      {
-        GenericShader<Type>* shader = new GenericShader<Type>{ GetName(), SID };
-        shader->AddReference(this);
-        hotRef.Set(shader);
-      }
-      mDirty = false;
+      // Compare old values and decide if it has been changed at all
     }
     else
     {
-      I32 infoLogLength = 0;
-      glGetShaderiv(SID, GL_INFO_LOG_LENGTH, &infoLogLength);
-      std::string infoLog;
-      infoLog.resize(infoLogLength);
-      glGetShaderInfoLog(SID, infoLogLength, &infoLogLength, infoLog.data());
-      std::printf("%s\n", infoLog.c_str());
-      glDeleteShader(SID);
+      GenericShader<Type>* shader = new GenericShader<Type>{ GetName(), mID };
+      shader->AddReference(this);
+      hotRef.Set(shader);
     }
-    return compileStatus;
   }
+  virtual void Cleanup() override
+  {
+    delete mShaderBytes; mShaderBytes = nullptr;
+    mDirty = false;
+  }
+
+private:
+
+  U32 mID = 0;
+
+  U8* mShaderBytes = nullptr;
 };

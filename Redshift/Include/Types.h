@@ -64,13 +64,14 @@ namespace EProgramType
 // Event types
 ////////////////////////////////////////////////////////
 
-namespace EInputType
+namespace EInputState
 {
   enum Type : U32
   {
-    Pressed = 1,
-    Held = 2,
-    Released = 0,
+    None,
+    Pressed,
+    Held,
+    Released,
   };
 }
 

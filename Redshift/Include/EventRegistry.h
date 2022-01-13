@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Core.h>
+#include <Types.h>
 
 class Actor;
 
@@ -28,8 +29,22 @@ public:
     bool operator < (ActionInfo const& other) const { return Instance < other.Instance; }
   };
 
+  struct ActionKey
+  {
+    U32 Key;
+    EInputState::Type State;
+
+    bool operator < (ActionKey const& other) const { return Key < other.Key; }
+  };
+
   using AxisDelegates = std::unordered_map<std::string, AxisInfo>;
-  using ActionDelegates = std::map<U8, std::map<U32, std::multiset<ActionInfo>>>;
+  using ActionDelegates = std::map<ActionKey, std::multiset<ActionInfo>>;
+
+  struct Event
+  {
+    EInputState::Type Current;
+    EInputState::Type Previous;
+  };
 
 public:
 
@@ -37,13 +52,7 @@ public:
   // Constructor
   ////////////////////////////////////////////////////////
 
-  EventRegistry(GLFWwindow* window)
-  {
-    // Set custom user pointer
-    glfwSetWindowUserPointer(window, this);
-    glfwSetCursorPosCallback(window, MouseCallback);
-    glfwSetKeyCallback(window, KeyCallback);
-  }
+  EventRegistry(GLFWwindow* context);
 
 public:
 
@@ -53,6 +62,10 @@ public:
 
   inline AxisDelegates const& GetAxisDelegates() const { return mAxisDelegates; }
   inline ActionDelegates const& GetActionDelegates() const { return mActionDelegates; }
+
+public:
+
+  void Poll();
 
 public:
 
@@ -70,38 +83,18 @@ public:
 
   template<typename A>
   requires std::is_base_of_v<Actor, A>
-  void BindAction(U8 actionKey, EInputType::Type inputType, A const* actor, void(A::*actionDelegate)())
+  void BindAction(U32 key, EInputState::Type state, A const* actor, void(A::*actionDelegate)())
   {
-    mActionDelegates[actionKey][inputType].emplace(ActionInfo{ (Actor*)actor, (ActionDelegate)actionDelegate });
+    mActionDelegates[ActionKey{ key, state }].emplace(ActionInfo{ (Actor*)actor, (ActionDelegate)actionDelegate });
   }
 
 private:
 
-  ////////////////////////////////////////////////////////
-  // Window callbacks
-  ////////////////////////////////////////////////////////
-
-  static void MouseCallback(GLFWwindow* window, R64 x, R64 y)
-  {
-    EventRegistry* registry = (EventRegistry*)glfwGetWindowUserPointer(window);
-  }
-  static void KeyCallback(GLFWwindow* window, I32 key, I32 scanCode, I32 action, I32 mods)
-  {
-    EventRegistry* registry = (EventRegistry*)glfwGetWindowUserPointer(window);
-    std::printf("key:%d scanCode:%d action:%d mods:%d\n", key, scanCode, action, mods);
-    // Search delegate
-    for (auto const& actionInfo : registry->mActionDelegates[key][action])
-    {
-      // Execute delegate if possible
-      if (actionInfo.Instance && actionInfo.Delegate)
-      {
-        ((*actionInfo.Instance).*(actionInfo.Delegate))();
-      }
-    }
-  }
-
-private:
+  GLFWwindow* mGlfwContext;
 
   AxisDelegates mAxisDelegates = AxisDelegates{};
   ActionDelegates mActionDelegates = ActionDelegates{};
+
+  Event mMouseKeyStates[GLFW_MOUSE_BUTTON_LAST] = {};
+  Event mKeyboardKeyStates[GLFW_KEY_LAST] = {};
 };

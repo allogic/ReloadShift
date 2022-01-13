@@ -19,12 +19,14 @@ public:
 public:
 
   virtual bool LoadFile() override;
-  virtual bool ProduceHandles() override;
-
-  bool ParseScene();
+  virtual void LinkHandle() override;
+  virtual void Cleanup() override;
 
 private:
 
-  std::vector<Vertex> mVertices = {};
-  std::vector<U32> mElements = {};
+  U32 mVertexCount = 0;
+  U32 mElementCount = 0;
+
+  Vertex* mVertices = nullptr;
+  U32* mElements = nullptr;
 };

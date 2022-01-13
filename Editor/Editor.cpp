@@ -32,6 +32,18 @@ I32 main()
     // Load GL
     if (gladLoadGL(glfwGetProcAddress))
     {
+      // Set global GL debug callback
+      glEnable(GL_DEBUG_OUTPUT);
+      glDebugMessageCallback([](U32 source, U32 type, U32 id, U32 severity, I32 length, I8 const* msg, void const* userParam)
+        {
+          switch (severity)
+          {
+            case GL_DEBUG_SEVERITY_NOTIFICATION: break;
+            case GL_DEBUG_SEVERITY_LOW: std::printf("Severity:Low Type:0x%x Message:%s\n", type, msg); break;
+            case GL_DEBUG_SEVERITY_MEDIUM: std::printf("Severity:Medium Type:0x%x Message:%s\n", type, msg); break;
+            case GL_DEBUG_SEVERITY_HIGH: std::printf("Severity:High Type:0x%x Message:%s\n", type, msg); break;
+          }
+        }, 0);
       // Disable V-Sync
       glfwSwapInterval(0);
       // Get current glad GL context
@@ -96,11 +108,6 @@ I32 main()
             {
               // Render deferred
               deferredRenderer->Render();
-              // Render modules
-              for (auto const& [name, proxy] : world.GetModules())
-              {
-                proxy->GetModInstance()->Render();
-              }
               // Safe prev render time
               prevRenderTime = time;
             }
@@ -136,7 +143,7 @@ I32 main()
             // Swap buffers as fast as possible
             glfwSwapBuffers(window);
             // Poll occuring events
-            glfwPollEvents();
+            world.GetEventRegistry().Poll();
             // Safe prev time
             prevTime = time;
           }

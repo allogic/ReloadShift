@@ -9,7 +9,7 @@ World& World::Instance()
 }
 
 World::World()
-  : mGlfwWindow{ glfwGetCurrentContext() }
+  : mGlfwContext{ glfwGetCurrentContext() }
   , mGladContext{ gladGetGLContext() }
   , mImGuiContext{ ImGui::GetCurrentContext() }
 {

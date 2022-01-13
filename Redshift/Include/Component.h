@@ -2,7 +2,7 @@
 
 #include <Core.h>
 
-#include <Globals/World.h>
+class World;
 
 class Component
 {

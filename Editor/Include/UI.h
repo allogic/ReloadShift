@@ -65,13 +65,12 @@ private:
     {
       World& world = World::Instance();
       ImGui::Begin("Resources", &open);
-      if (ImGui::BeginTable("Resources", 7))
+      if (ImGui::BeginTable("Resources", 6))
       {
         ImGui::TableNextColumn(); ImGui::Text("Type");
         ImGui::TableNextColumn(); ImGui::Text("Name");
         ImGui::TableNextColumn(); ImGui::Text("Address");
-        ImGui::TableNextColumn(); ImGui::Text("Bytes");
-        ImGui::TableNextColumn(); ImGui::Text("BytesSize");
+        ImGui::TableNextColumn(); ImGui::Text("FileSize");
         ImGui::TableNextColumn(); ImGui::Text("Dirty");
         ImGui::TableNextColumn(); ImGui::Text("FilePath");
         for (auto& [name, resource] : world.GetResources())
@@ -81,8 +80,7 @@ private:
             ImGui::TableNextColumn(); ImGui::Text("%s", resource->GetType().c_str());
             ImGui::TableNextColumn(); ImGui::Text(resource->GetName().c_str());
             ImGui::TableNextColumn(); ImGui::Text("%p", resource);
-            ImGui::TableNextColumn(); ImGui::Text("%p", resource->GetBytes());
-            ImGui::TableNextColumn(); ImGui::Text("%u", resource->GetBytesSize());
+            ImGui::TableNextColumn(); ImGui::Text("%u", resource->GetFileSize());
             ImGui::TableNextColumn(); ImGui::Text("%u", resource->GetDirty());
             ImGui::TableNextColumn(); ImGui::Text(resource->GetFilePath().string().c_str());
           }
@@ -104,12 +102,12 @@ private:
         ImGui::TableNextColumn(); ImGui::Text("Address");
         ImGui::TableNextColumn(); ImGui::Text("Hash");
         ImGui::TableNextColumn(); ImGui::Text("ComponentCount");
-        for (auto const& [name, proxy] : world.GetActors())
+        for (auto const& [actor, proxy] : world.GetActors())
         {
-          ImGui::TableNextColumn(); ImGui::Text(proxy->GetActor()->GetName().c_str());
-          ImGui::TableNextColumn(); ImGui::Text("%p", proxy->GetActor());
-          ImGui::TableNextColumn(); ImGui::Text("%s", std::bitset<8>(proxy->GetActor()->GetCurrentHash()).to_string().c_str());
-          ImGui::TableNextColumn(); ImGui::Text("%u", proxy->GetActor()->GetComponentCount());
+          ImGui::TableNextColumn(); ImGui::Text(actor->GetName().c_str());
+          ImGui::TableNextColumn(); ImGui::Text("%p", actor);
+          ImGui::TableNextColumn(); ImGui::Text("%s", std::bitset<8>(actor->GetCurrentHash()).to_string().c_str());
+          ImGui::TableNextColumn(); ImGui::Text("%u", actor->GetComponentCount());
         }
         ImGui::EndTable();
       }
@@ -129,11 +127,11 @@ private:
         ImGui::TableNextColumn(); ImGui::Text("Address");
         ImGui::TableNextColumn(); ImGui::Text("Dirty");
         ImGui::TableNextColumn(); ImGui::Text("ReferenceCount");
-        for (auto const& [type, handlesByName] : world.GetHandles())
+        for (auto const& [type, hotRefs] : world.GetHandles())
         {
-          for (auto const& [name, hotRef] : handlesByName)
+          for (auto const& [name, hotRef] : hotRefs)
           {
-            ImGui::TableNextColumn(); ImGui::Text(hotRef.Get() ? hotRef.Get()->GetType().c_str() : "<invalid>");
+            ImGui::TableNextColumn(); ImGui::Text(hotRef.Get() ? hotRef.Get()->GetType().c_str() : "");
             ImGui::TableNextColumn(); ImGui::Text(name.c_str());
             ImGui::TableNextColumn(); ImGui::Text("%p", hotRef.Get());
             ImGui::TableNextColumn(); ImGui::Text("%d", hotRef.Get() ? hotRef.Get()->GetDirty() : -1);
@@ -198,16 +196,13 @@ private:
         ImGui::TableNextColumn(); ImGui::Text("Name");
         ImGui::TableNextColumn(); ImGui::Text("Instance");
         ImGui::TableNextColumn(); ImGui::Text("Delegate");
-        for (auto const& [actionKey, actionsByType] : registry.GetActionDelegates())
+        for (auto const& [actionKey, actionInfos] : registry.GetActionDelegates())
         {
-          for (auto const& [actionType, actionInfos] : actionsByType)
+          for (auto const& actionInfo : actionInfos)
           {
-            for (auto const& actionInfo : actionInfos)
-            {
-              ImGui::TableNextColumn(); ImGui::Text("%c", actionKey);
-              ImGui::TableNextColumn(); ImGui::Text("%p", actionInfo.Instance);
-              ImGui::TableNextColumn(); ImGui::Text("%p", actionInfo.Delegate);
-            }
+            ImGui::TableNextColumn(); ImGui::Text("%c", actionKey.Key);
+            ImGui::TableNextColumn(); ImGui::Text("%p", actionInfo.Instance);
+            ImGui::TableNextColumn(); ImGui::Text("%p", actionInfo.Delegate);
           }
         }
         ImGui::EndTable();
@@ -225,7 +220,7 @@ private:
       {
         ImGui::TableNextColumn(); ImGui::Text("Key");
         ImGui::TableNextColumn(); ImGui::Text("Value");
-        for (auto const& [key, value] : world.GetStringRegistry())
+        for (auto const& [key, value] : world.GetStrings())
         {
           ImGui::TableNextColumn(); ImGui::Text(key.c_str());
           ImGui::TableNextColumn(); ImGui::Text(value.c_str());

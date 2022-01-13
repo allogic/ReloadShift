@@ -52,16 +52,9 @@ public:
     m[2][2] = b[2][2];
 
     // Scale
-    m[0][3] = 0.0f;
-    m[1][3] = 0.0f;
-    m[2][3] = 0.0f;
-    m[3][3] = 1.0f;
-
-    //matrix = glm::translate(matrix, mWorldPosition);
-    //matrix = glm::rotate(matrix, glm::degrees(mWorldRotation.x), R32V3{ 1.0f, 0.0f, 0.0f });
-    //matrix = glm::rotate(matrix, glm::degrees(mWorldRotation.y), R32V3{ 0.0f, 1.0f, 0.0f });
-    //matrix = glm::rotate(matrix, glm::degrees(mWorldRotation.z), R32V3{ 0.0f, 0.0f, 1.0f });
-    //matrix = glm::scale(matrix, mScale);
+    m[0] *= mScale.x;
+    m[1] *= mScale.y;
+    m[2] *= mScale.z;
 
     return m;
   }
@@ -72,12 +65,9 @@ public:
   inline void SetWorldRotation(R32V3 const& value) { mTransform.setRotation(btQuaternion{ value.x, value.y, value.z }); }
   inline void SetWorldScale(R32V3 const& value) { mScale = value; }
 
-  inline void AddWorldPosition(R32V3 const& value) { mTransform.setOrigin(mTransform.getOrigin() + btVector3{ value.x, value.y, value.z }); }
-  inline void AddWorldRotation(R32V3 const& value) { mTransform.setRotation(mTransform.getRotation() + btQuaternion{ value.x, value.y, value.z }); }
-  inline void AddWorldScale(R32V3 const& value) { mScale += value; }
-
 private:
 
-  btTransform mTransform;
   R32V3 mScale;
+
+  btTransform mTransform;
 };

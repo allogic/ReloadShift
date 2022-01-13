@@ -22,17 +22,15 @@ public:
   // Primitives
   ////////////////////////////////////////////////////////
 
-  using ModulesByName = std::map<std::string, ModuleProxy*>;
-  using ResourcesByName = std::map<std::string, Resource*>;
-  using ActorsByName = std::unordered_multimap<std::string, ActorProxy*>;
-  using RendererByName = std::map<std::string, Renderer*>;
+  using ModuleMap = std::map<std::string, ModuleProxy*>;
+  using ResourceMap = std::map<std::string, Resource*>;
+  using ActorMap = std::map<Actor*, ActorProxy*>;
+  using RendererMap = std::map<std::string, Renderer*>;
+  using StringMap = std::map<std::string, std::string>;
 
-  using HandlesByName = std::unordered_map<std::string, HotRef<Handle>>;
-  using HandlesByNameByType = std::unordered_map<U64, HandlesByName>;
-
-  using PermutationTable = std::unordered_map<U64, std::set<ActorProxy*>>;
-
-  using StringRegistry = std::map<std::string, std::string>;
+  using HotRefMapUnordered = std::unordered_map<std::string, HotRef<Handle>>;
+  using HandleMapUnordered = std::unordered_map<U64, HotRefMapUnordered>;
+  using PermutationMapUnordered = std::unordered_map<U64, std::set<ActorProxy*>>;
 
 public:
 
@@ -56,21 +54,20 @@ public:
   // Getter
   ////////////////////////////////////////////////////////
 
-  inline GLFWwindow* GetGlfwWindow() const { return mGlfwWindow; }
+  inline GLFWwindow* GetGlfwContext() const { return mGlfwContext; }
   inline GladGLContext* GetGladContext() const { return mGladContext; }
   inline ImGuiContext* GetImGuiContext() const { return mImGuiContext; }
 
-  inline ModulesByName& GetModules() { return mModules; }
-  inline ResourcesByName& GetResources() { return mResources; }
-  inline ActorsByName& GetActors() { return mActors; }
-  inline RendererByName& GetRenderer() { return mRenderer; }
+  inline ModuleMap& GetModules() { return mModules; }
+  inline ResourceMap& GetResources() { return mResources; }
+  inline ActorMap& GetActors() { return mActors; }
+  inline RendererMap& GetRenderer() { return mRenderer; }
+  inline StringMap& GetStrings() { return mStrings; }
 
-  inline HandlesByNameByType& GetHandles() { return mHandles; }
-  inline PermutationTable& GetPermutationTable() { return mPermutationTable; }
+  inline HandleMapUnordered& GetHandles() { return mHandles; }
+  inline PermutationMapUnordered& GetPermutations() { return mPermutations; }
 
   inline EventRegistry& GetEventRegistry() { return mEventRegistry; }
-
-  inline StringRegistry& GetStringRegistry() { return mStringRegistry; }
 
 public:
 
@@ -82,7 +79,7 @@ public:
   requires std::is_base_of_v<Resource, R>
   static R* CreateResource(World& world, std::string const& resourceName, Args &&... args)
   {
-    Resource*& resource = world.mResources[resourceName + typeid(R).name()];
+    Resource*& resource = world.mResources[resourceName + ':' + typeid(R).name()];
     // Probe if resource already exists
     if (!resource)
     {
@@ -90,8 +87,9 @@ public:
       // Enable auto load file and produce handles
       if (resource->LoadFile())
       {
-        resource->ProduceHandles();
+        resource->LinkHandle();
       }
+      resource->Cleanup();
       return (R*)resource;
     }
     return (R*)resource;
@@ -188,6 +186,62 @@ public:
     }
   }
 
+private:
+
+  ////////////////////////////////////////////////////////
+  // Component utilities
+  ////////////////////////////////////////////////////////
+
+  static void RegisterProxyForAllPermutations(World& world, Actor* actor) noexcept
+  {
+    auto inOrderComponentHashes = actor->GetInOrderComponentHashes();
+    // Register proxy for all single components
+    for (auto const& componentHash : inOrderComponentHashes)
+    {
+      world.mPermutations[componentHash].emplace(actor->GetProxy());
+    }
+    // Complete transaction by computing all type permutations
+    // and insert the proxy in their respective buckets
+    do
+    {
+      // Sequencially compute hashes from current permutation
+      for (U32 i = 0; i < inOrderComponentHashes.size(); ++i)
+      {
+        U64 permutationHash = 0;
+        for (U32 j = i; j < inOrderComponentHashes.size(); ++j)
+        {
+          permutationHash ^= inOrderComponentHashes[j];
+          world.mPermutations[permutationHash].emplace(actor->GetProxy());
+        }
+      }
+    } while (std::next_permutation(inOrderComponentHashes.begin(), inOrderComponentHashes.end()));
+  }
+
+  static void DeRegisterProxyForAllPermutations(World& world, Actor* actor) noexcept
+  {
+    auto inOrderComponentHashes = actor->GetInOrderComponentHashes();
+    // DeRegister proxy from all single components
+    for (auto const& componentHash : inOrderComponentHashes)
+    {
+      world.mPermutations[componentHash].erase(actor->GetProxy());
+    }
+    // Complete transaction by computing all type permutations
+    // and remove the proxy from their respective buckets
+    do
+    {
+      // Sequencially compute hashes from current permutation
+      for (U32 i = 0; i < inOrderComponentHashes.size(); ++i)
+      {
+        U64 permutationHash = 0;
+        for (U32 j = i; j < inOrderComponentHashes.size(); ++j)
+        {
+          permutationHash ^= inOrderComponentHashes[j];
+          world.mPermutations[permutationHash].erase(actor->GetProxy());
+        }
+      }
+    } while (std::next_permutation(inOrderComponentHashes.begin(), inOrderComponentHashes.end()));
+  }
+
 public:
 
   ////////////////////////////////////////////////////////
@@ -204,27 +258,8 @@ public:
     {
       // Update actor
       component = actor->CreateComponent<C>(new C{ world, std::forward<Args>(args) ... });
-      // Register proxy for all single types
-      auto permutations = actor->GetInOrderComponentHashes();
-      for (auto const& typHash : permutations)
-      {
-        world.mPermutationTable[typHash].emplace(actor->GetProxy());
-      }
-      // Complete transaction by computing all type permutations
-      // and insert the proxy in their respective buckets
-      do
-      {
-        // Sequencially compute hashes from current permutation
-        for (U32 i = 0; i < permutations.size(); ++i)
-        {
-          U64 permutationHash = 0;
-          for (U32 j = i; j < permutations.size(); ++j)
-          {
-            permutationHash ^= permutations[j];
-            world.mPermutationTable[permutationHash].emplace(actor->GetProxy());
-          }
-        }
-      } while (std::next_permutation(permutations.begin(), permutations.end()));
+      // Register proxy in permutation table
+      RegisterProxyForAllPermutations(world, actor);
     }
     return component;
   }
@@ -235,14 +270,35 @@ public:
   {
     // Create actor proxy
     ActorProxy* proxy = new ActorProxy{};
-    world.mActors.emplace(actorName, proxy);
     // Create actor after proxy in order to initialize components inside the constructor
     A* actor = new A{ world, proxy, actorName, std::forward<Args>(args) ... };
     // Register input mapping
     actor->SetupInput(world.mEventRegistry);
     // Link actor and proxy
     proxy->SetActor(actor);
+    // Register actor
+    world.mActors.emplace(actor, proxy);
     return actor;
+  }
+
+  template<typename A>
+  requires std::is_base_of_v<Actor, A>
+  static void DestroyActor(World& world, A* actor)
+  {
+    auto const actorIt = world.mActors.find(actor);
+    if (actorIt != world.mActors.end())
+    {
+      // DeRegister actor
+      world.mActors.erase(actor);
+      // Destroy components
+      actor->GetProxy()->DestroyAllComponents();
+      // DeRegister proxy in permutation table
+      DeRegisterProxyForAllPermutations(world, actor);
+      // DeRegister event delegates
+      // Delete actor and proxy
+      delete actor->GetProxy();
+      delete actor;
+    }
   }
 
   template<typename ... Cs>
@@ -252,7 +308,7 @@ public:
     // Compute hash
     U64 bucketHash = ((U64)0 ^ ... ^ typeid(Cs).hash_code());
     // Execute predicate over actors in bucket
-    for (auto const& proxy : world.mPermutationTable[bucketHash])
+    for (auto const& proxy : world.mPermutations[bucketHash])
     {
       predicate
       (
@@ -308,33 +364,32 @@ public:
 public:
 
   ////////////////////////////////////////////////////////
-  // Renderer interface
+  // String interface
   ////////////////////////////////////////////////////////
 
   static void SetStringValue(World& world, std::string const& stringName, std::string const& stringValue)
   {
-    world.mStringRegistry[stringName] = stringValue;
+    world.mStrings[stringName] = stringValue;
   }
   static std::string const& GetStringValue(World& world, std::string const& stringName)
   {
-    return world.mStringRegistry[stringName];
+    return world.mStrings[stringName];
   }
 
 private:
 
-  GLFWwindow* mGlfwWindow;
+  GLFWwindow* mGlfwContext;
   GladGLContext* mGladContext;
   ImGuiContext* mImGuiContext;
 
-  EventRegistry mEventRegistry = EventRegistry{ mGlfwWindow };
+  EventRegistry mEventRegistry = EventRegistry{ mGlfwContext };
 
-  ModulesByName mModules = ModulesByName{};
-  ResourcesByName mResources = ResourcesByName{};
-  ActorsByName mActors = ActorsByName{};
-  RendererByName mRenderer = RendererByName{};
+  ModuleMap mModules = ModuleMap{};
+  ResourceMap mResources = ResourceMap{};
+  ActorMap mActors = ActorMap{};
+  RendererMap mRenderer = RendererMap{};
+  StringMap mStrings = StringMap{};
 
-  HandlesByNameByType mHandles = HandlesByNameByType{};
-  PermutationTable mPermutationTable = PermutationTable{};
-
-  StringRegistry mStringRegistry = StringRegistry{};
+  HandleMapUnordered mHandles = HandleMapUnordered{};
+  PermutationMapUnordered mPermutations = PermutationMapUnordered{};
 };

@@ -11,8 +11,8 @@ public:
     ActorProxy* proxy,
     std::string const& name)
     : Actor(world, proxy, name)
-    , mTransform{ World::AttachComponent<Transform>(world, this, R32V3{ 0.0f, 0.0f, -5.0f }, R32V3{ 0.0f }, R32V3{ 1.0f }) }
-    , mCamera{ World::AttachComponent<Camera>(world, this, 45.0f, 0.1f, 1000.0f) }
+    , mTransform{ World::AttachComponent<Transform>(world, this, R32V3{ 0.0f }, R32V3{ 0.0f }, R32V3{ 1.0f }) }
+    , mCamera{ World::AttachComponent<Camera>(world, this, 45.0f, 0.1f, 10000.0f) }
   {
 
   }
@@ -33,17 +33,10 @@ public:
     //eventRegistry.BindAxis("TurnHorizontal", this, &Player::TurnHorizontal);
     //eventRegistry.BindAxis("TurnVertical", this, &Player::TurnVertical);
 
-    eventRegistry.BindAction('W', EInputType::Pressed, this, &Player::OnMoveForward);
-    eventRegistry.BindAction('W', EInputType::Held, this, &Player::OnMoveForward);
-
-    eventRegistry.BindAction('S', EInputType::Pressed, this, &Player::OnMoveBackward);
-    eventRegistry.BindAction('S', EInputType::Held, this, &Player::OnMoveBackward);
-
-    eventRegistry.BindAction('D', EInputType::Pressed, this, &Player::OnMoveRight);
-    eventRegistry.BindAction('D', EInputType::Held, this, &Player::OnMoveRight);
-
-    eventRegistry.BindAction('A', EInputType::Pressed, this, &Player::OnMoveLeft);
-    eventRegistry.BindAction('A', EInputType::Held, this, &Player::OnMoveLeft);
+    eventRegistry.BindAction(GLFW_KEY_W, EInputState::Held, this, &Player::OnMoveForward);
+    eventRegistry.BindAction(GLFW_KEY_S, EInputState::Held, this, &Player::OnMoveBackward);
+    eventRegistry.BindAction(GLFW_KEY_D, EInputState::Held, this, &Player::OnMoveRight);
+    eventRegistry.BindAction(GLFW_KEY_A, EInputState::Held, this, &Player::OnMoveLeft);
   }
 
 private:
@@ -68,19 +61,21 @@ private:
 
   void OnMoveForward()
   {
-    mTransform->AddWorldPosition(R32V3{ 0.0f, 0.0f, 1.0f } * 1.0f);
+    std::printf("Forward\n");
+    //mTransform->AddWorldPosition(R32V3{ 0.0f, 0.0f, 1.0f } * 1.0f);
   }
   void OnMoveBackward()
   {
-    mTransform->AddWorldPosition(R32V3{ 0.0f, 0.0f, -1.0f } * 1.0f);
+    std::printf("Backward\n");
+    //mTransform->AddWorldPosition(R32V3{ 0.0f, 0.0f, -1.0f } * 1.0f);
   }
   void OnMoveRight()
   {
-    mTransform->AddWorldPosition(R32V3{ -1.0f, 0.0f, 0.0f } * 1.0f);
+    //mTransform->AddWorldPosition(R32V3{ -1.0f, 0.0f, 0.0f } * 1.0f);
   }
   void OnMoveLeft()
   {
-    mTransform->AddWorldPosition(R32V3{ 1.0f, 0.0f, 0.0f } * 1.0f);
+    //mTransform->AddWorldPosition(R32V3{ 1.0f, 0.0f, 0.0f } * 1.0f);
   }
 
 private:

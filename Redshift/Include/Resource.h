@@ -11,13 +11,7 @@ class Resource
 public:
 
   Resource(std::string const& name, std::filesystem::path const& filePath);
-  virtual ~Resource()
-  {
-    if (mBytes)
-    {
-      delete mBytes;
-    }
-  }
+  virtual ~Resource() = default;
 
 public:
 
@@ -26,9 +20,8 @@ public:
 public:
 
   inline std::string const& GetName() const { return mName; }
-  inline std::filesystem::path GetFilePath() const { return mFilePath; }
-  inline U8 const* GetBytes() const { return mBytes; }
-  inline U32 GetBytesSize() const { return mBytesSize; }
+  inline std::filesystem::path const& GetFilePath() const { return mFilePath; }
+  inline U32 GetFileSize() const { return mFileSize; }
   inline bool GetDirty() const { return mDirty; }
 
 public:
@@ -38,7 +31,8 @@ public:
 public:
 
   virtual bool LoadFile() { return false; }
-  virtual bool ProduceHandles() { return false; }
+  virtual void LinkHandle() {}
+  virtual void Cleanup() {}
 
 protected:
 
@@ -48,8 +42,7 @@ protected:
 
   std::filesystem::path mFilePath;
 
-  U8* mBytes = nullptr;
-  U32 mBytesSize = 0;
+  U32 mFileSize = 0;
 
   bool mDirty = true;
 };

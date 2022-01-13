@@ -23,6 +23,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Actors\Enemy.h" />
+    <ClInclude Include="Include\Actors\Gate.h" />
     <ClInclude Include="Include\Actors\Player.h" />
     <ClInclude Include="Include\Components\Brain.h" />
   </ItemGroup>
