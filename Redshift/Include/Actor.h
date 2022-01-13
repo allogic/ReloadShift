@@ -46,7 +46,7 @@ public:
 
 public:
 
-  virtual void SetupInput(EventRegistry& eventRegistry) const {}
+  virtual void SetupInput(EventRegistry& eventRegistry) {}
 
 protected:
 

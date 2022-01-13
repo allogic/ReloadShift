@@ -187,7 +187,6 @@
     <ClCompile Include="..\Vendor\Source\miniz.c" />
     <ClCompile Include="..\Vendor\Source\ofbx.cpp" />
     <ClCompile Include="Source\Actor.cpp" />
-    <ClCompile Include="Source\EventRegistry.cpp" />
     <ClCompile Include="Source\Module.cpp" />
     <ClCompile Include="Source\Renderer.cpp" />
     <ClCompile Include="Source\Resource.cpp" />

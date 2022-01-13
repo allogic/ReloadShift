@@ -272,10 +272,10 @@ public:
     ActorProxy* proxy = new ActorProxy{};
     // Create actor after proxy in order to initialize components inside the constructor
     A* actor = new A{ world, proxy, actorName, std::forward<Args>(args) ... };
-    // Register input mapping
-    actor->SetupInput(world.mEventRegistry);
     // Link actor and proxy
     proxy->SetActor(actor);
+    // Register input mapping
+    actor->SetupInput(world.mEventRegistry);
     // Register actor
     world.mActors.emplace(actor, proxy);
     return actor;

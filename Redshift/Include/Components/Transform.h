@@ -25,38 +25,45 @@ public:
   inline R32V3 GetWorldRotation() const { return R32V3{ mTransform.getRotation().x(), mTransform.getRotation().y(), mTransform.getRotation().z() }; }
   inline R32V3 GetWorldScale() const { return mScale; }
 
+  inline R32V3 GetLocalRight() const { return mLocalRight; }
+  inline R32V3 GetLocalUp() const { return mLocalUp; }
+  inline R32V3 GetLocalForward() const { return mLocalForward; }
+
 public:
 
-  inline R32M4 GetModelMatrix() const
+  R32M4 ComputeModelMatrix()
   {
-    R32M4 m = glm::identity<R32M4>();
-
     // Translation
     btVector3 const& o = mTransform.getOrigin();
-    m[3][0] = o.getX();
-    m[3][1] = o.getY();
-    m[3][2] = o.getZ();
+    mMatrix[3][0] = o.getX();
+    mMatrix[3][1] = o.getY();
+    mMatrix[3][2] = o.getZ();
 
     // Rotation
     btMatrix3x3 const& b = mTransform.getBasis();
-    m[0][0] = b[0][0];
-    m[1][0] = b[0][1];
-    m[2][0] = b[0][2];
+    mMatrix[0][0] = b[0][0];
+    mMatrix[0][1] = b[0][1];
+    mMatrix[0][2] = b[0][2];
     
-    m[0][1] = b[1][0];
-    m[1][1] = b[1][1];
-    m[2][1] = b[1][2];
+    mMatrix[1][0] = b[1][0];
+    mMatrix[1][1] = b[1][1];
+    mMatrix[1][2] = b[1][2];
     
-    m[0][2] = b[2][0];
-    m[1][2] = b[2][1];
-    m[2][2] = b[2][2];
+    mMatrix[2][0] = b[2][0];
+    mMatrix[2][1] = b[2][1];
+    mMatrix[2][2] = b[2][2];
 
     // Scale
-    m[0] *= mScale.x;
-    m[1] *= mScale.y;
-    m[2] *= mScale.z;
+    mMatrix[0] *= mScale.x;
+    mMatrix[1] *= mScale.y;
+    mMatrix[2] *= mScale.z;
 
-    return m;
+    // Extract local directions
+    mLocalRight =   R32V3{ mMatrix[0][0], mMatrix[0][1], mMatrix[0][2] };
+    mLocalUp =      R32V3{ mMatrix[1][0], mMatrix[1][1], mMatrix[1][2] };
+    mLocalForward = R32V3{ mMatrix[2][0], mMatrix[2][1], mMatrix[2][2] };
+
+    return mMatrix;
   }
 
 public:
@@ -67,7 +74,13 @@ public:
 
 private:
 
+  R32M4 mMatrix = glm::identity<R32M4>();
+
   R32V3 mScale;
+
+  R32V3 mLocalRight;
+  R32V3 mLocalUp;
+  R32V3 mLocalForward;
 
   btTransform mTransform;
 };

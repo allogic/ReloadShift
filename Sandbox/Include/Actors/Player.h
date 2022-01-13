@@ -25,7 +25,7 @@ public:
 
 public:
 
-  virtual void SetupInput(EventRegistry& eventRegistry) const
+  virtual void SetupInput(EventRegistry& eventRegistry)
   {
     //eventRegistry.BindAxis("MoveForward", this, &Player::MoveForward);
     //eventRegistry.BindAxis("MoveRight", this, &Player::MoveRight);
@@ -37,6 +37,8 @@ public:
     eventRegistry.BindAction(GLFW_KEY_S, EInputState::Held, this, &Player::OnMoveBackward);
     eventRegistry.BindAction(GLFW_KEY_D, EInputState::Held, this, &Player::OnMoveRight);
     eventRegistry.BindAction(GLFW_KEY_A, EInputState::Held, this, &Player::OnMoveLeft);
+    eventRegistry.BindAction(GLFW_KEY_Q, EInputState::Held, this, &Player::OnMoveUp);
+    eventRegistry.BindAction(GLFW_KEY_E, EInputState::Held, this, &Player::OnMoveDown);
   }
 
 private:
@@ -61,21 +63,33 @@ private:
 
   void OnMoveForward()
   {
-    std::printf("Forward\n");
-    //mTransform->AddWorldPosition(R32V3{ 0.0f, 0.0f, 1.0f } * 1.0f);
+    R32V3 worldPosition = mTransform->GetWorldPosition();
+    mTransform->SetWorldPosition(worldPosition + R32V3{ 0.0f, 0.0f, 1.0f } * 0.02f);
   }
   void OnMoveBackward()
   {
-    std::printf("Backward\n");
-    //mTransform->AddWorldPosition(R32V3{ 0.0f, 0.0f, -1.0f } * 1.0f);
+    R32V3 worldPosition = mTransform->GetWorldPosition();
+    mTransform->SetWorldPosition(worldPosition + R32V3{ 0.0f, 0.0f, -1.0f } * 0.02f);
   }
   void OnMoveRight()
   {
-    //mTransform->AddWorldPosition(R32V3{ -1.0f, 0.0f, 0.0f } * 1.0f);
+    R32V3 worldPosition = mTransform->GetWorldPosition();
+    mTransform->SetWorldPosition(worldPosition + R32V3{ -1.0f, 0.0f, 0.0f } * 0.02f);
   }
   void OnMoveLeft()
   {
-    //mTransform->AddWorldPosition(R32V3{ 1.0f, 0.0f, 0.0f } * 1.0f);
+    R32V3 worldPosition = mTransform->GetWorldPosition();
+    mTransform->SetWorldPosition(worldPosition + R32V3{ 1.0f, 0.0f, 0.0f } * 0.02f);
+  }
+  void OnMoveUp()
+  {
+    R32V3 worldPosition = mTransform->GetWorldPosition();
+    mTransform->SetWorldPosition(worldPosition + R32V3{ 0.0f, 1.0f, 0.0f } * 0.02f);
+  }
+  void OnMoveDown()
+  {
+    R32V3 worldPosition = mTransform->GetWorldPosition();
+    mTransform->SetWorldPosition(worldPosition + R32V3{ 0.0f, -1.0f, 0.0f } * 0.02f);
   }
 
 private:

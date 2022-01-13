@@ -115,14 +115,14 @@ private:
       for (auto const& task : tasks)
       {
         // Update projection
-        mProjection.Model = task.GetTransform()->GetModelMatrix();
+        mProjection.Model = task.GetTransform()->ComputeModelMatrix();
         mUniformProjection.Get()->Set(&mProjection);
         // Mount textures
-        if (Texture2DR32RGBA* texture = task.GetTextureAlbedo()) { texture->Mount(0); }
-        if (Texture2DR32RGBA * texture = task.GetTextureNormal()) { texture->Mount(1); }
-        if (Texture2DR32RGBA * texture = task.GetTextureSpecular()) { texture->Mount(2); }
-        if (Texture2DR32RGBA* texture = task.GetTextureMetallic()) { texture->Mount(3); }
-        if (Texture2DR32RGBA* texture = task.GetTextureRoughness()) { texture->Mount(4); }
+        if (Texture2DR32RGBA* texture = task.GetTextureAlbedo()) texture->Mount(0);
+        if (Texture2DR32RGBA* texture = task.GetTextureNormal()) texture->Mount(1);
+        if (Texture2DR32RGBA* texture = task.GetTextureSpecular()) texture->Mount(2);
+        if (Texture2DR32RGBA* texture = task.GetTextureMetallic()) texture->Mount(3);
+        if (Texture2DR32RGBA* texture = task.GetTextureRoughness()) texture->Mount(4);
         // Draw mesh
         task.GetMesh()->Bind();
         task.GetMesh()->Draw();

@@ -37,13 +37,6 @@ public:
 
     World::DispatchFor<
       Transform,
-      Camera>(mWorld, [=](Transform* transform, Camera* camera)
-        {
-          transform->SetWorldPosition(R32V3{ 0.0f, -2.5f, -10.0f });
-        });
-
-    World::DispatchFor<
-      Transform,
       Renderable>(mWorld, [=](Transform* transform, Renderable* renderable)
         {
           transform->SetWorldRotation(R32V3{ 0.0f, 90.0f, roll });
