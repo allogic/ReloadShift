@@ -27,69 +27,81 @@ public:
 
   virtual void SetupInput(EventRegistry& eventRegistry)
   {
-    //eventRegistry.BindAxis("MoveForward", this, &Player::MoveForward);
-    //eventRegistry.BindAxis("MoveRight", this, &Player::MoveRight);
+    eventRegistry.BindAxis("Horizontal", this, &Player::TurnHorizontal);
+    eventRegistry.BindAxis("Vertical", this, &Player::TurnVertical);
 
-    //eventRegistry.BindAxis("TurnHorizontal", this, &Player::TurnHorizontal);
-    //eventRegistry.BindAxis("TurnVertical", this, &Player::TurnVertical);
+    eventRegistry.BindAction(GLFW_MOUSE_BUTTON_RIGHT, EInputState::Pressed, this, &Player::OnMouseButtonRightPressed);
+    eventRegistry.BindAction(GLFW_MOUSE_BUTTON_RIGHT, EInputState::Released, this, &Player::OnMouseButtonRightReleased);
 
     eventRegistry.BindAction(GLFW_KEY_W, EInputState::Held, this, &Player::OnMoveForward);
     eventRegistry.BindAction(GLFW_KEY_S, EInputState::Held, this, &Player::OnMoveBackward);
-    eventRegistry.BindAction(GLFW_KEY_D, EInputState::Held, this, &Player::OnMoveRight);
     eventRegistry.BindAction(GLFW_KEY_A, EInputState::Held, this, &Player::OnMoveLeft);
+    eventRegistry.BindAction(GLFW_KEY_D, EInputState::Held, this, &Player::OnMoveRight);
     eventRegistry.BindAction(GLFW_KEY_Q, EInputState::Held, this, &Player::OnMoveUp);
     eventRegistry.BindAction(GLFW_KEY_E, EInputState::Held, this, &Player::OnMoveDown);
   }
 
 private:
 
-  void MoveForward(float value)
+  void TurnHorizontal(R32 value)
   {
-    std::printf("Forward: %f\n", value);
+    if (mEnableRotation)
+    {
+      R32V3 worldRotation = mTransform->GetWorldRotation();
+      if (worldRotation.y > 360.0f) worldRotation.y = 0.0f;
+      if (worldRotation.y < 0.0f) worldRotation.y = 360.0f;
+      mTransform->SetWorldRotation(worldRotation + R32V3{ 0.0f, 1.0f, 0.0f } * value * 0.2f);
+    }
   }
-  void MoveRight(float value)
+  void TurnVertical(R32 value)
   {
-    std::printf("Right: %f\n", value);
+    if (mEnableRotation)
+    {
+      R32V3 worldRotation = mTransform->GetWorldRotation();
+      if (worldRotation.x > 90.0f) worldRotation.x = 90.0f;
+      if (worldRotation.x < -90.0f) worldRotation.x = -90.0f;
+      mTransform->SetWorldRotation(worldRotation + R32V3{ 1.0f, 0.0f, 0.0f } * value * 0.3f);
+    }
   }
 
-  void TurnHorizontal(float value)
+  void OnMouseButtonRightPressed()
   {
-    std::printf("Horizontal: %f\n", value);
+    mEnableRotation = true;
   }
-  void TurnVertical(float value)
+  void OnMouseButtonRightReleased()
   {
-    std::printf("Vertical: %f\n", value);
+    mEnableRotation = false;
   }
 
   void OnMoveForward()
   {
     R32V3 worldPosition = mTransform->GetWorldPosition();
-    mTransform->SetWorldPosition(worldPosition + R32V3{ 0.0f, 0.0f, 1.0f } * 0.02f);
+    mTransform->SetWorldPosition(worldPosition + mTransform->GetLocalForward() * 0.02f);
   }
   void OnMoveBackward()
   {
     R32V3 worldPosition = mTransform->GetWorldPosition();
-    mTransform->SetWorldPosition(worldPosition + R32V3{ 0.0f, 0.0f, -1.0f } * 0.02f);
-  }
-  void OnMoveRight()
-  {
-    R32V3 worldPosition = mTransform->GetWorldPosition();
-    mTransform->SetWorldPosition(worldPosition + R32V3{ -1.0f, 0.0f, 0.0f } * 0.02f);
+    mTransform->SetWorldPosition(worldPosition + -mTransform->GetLocalForward() * 0.02f);
   }
   void OnMoveLeft()
   {
     R32V3 worldPosition = mTransform->GetWorldPosition();
-    mTransform->SetWorldPosition(worldPosition + R32V3{ 1.0f, 0.0f, 0.0f } * 0.02f);
+    mTransform->SetWorldPosition(worldPosition + mTransform->GetLocalRight() * 0.02f);
+  }
+  void OnMoveRight()
+  {
+    R32V3 worldPosition = mTransform->GetWorldPosition();
+    mTransform->SetWorldPosition(worldPosition + -mTransform->GetLocalRight() * 0.02f);
   }
   void OnMoveUp()
   {
     R32V3 worldPosition = mTransform->GetWorldPosition();
-    mTransform->SetWorldPosition(worldPosition + R32V3{ 0.0f, 1.0f, 0.0f } * 0.02f);
+    mTransform->SetWorldPosition(worldPosition + mTransform->GetLocalUp() * 0.02f);
   }
   void OnMoveDown()
   {
     R32V3 worldPosition = mTransform->GetWorldPosition();
-    mTransform->SetWorldPosition(worldPosition + R32V3{ 0.0f, -1.0f, 0.0f } * 0.02f);
+    mTransform->SetWorldPosition(worldPosition + -mTransform->GetLocalUp() * 0.02f);
   }
 
 private:
@@ -97,4 +109,6 @@ private:
   Transform* mTransform;
   Renderable* mRenderable;
   Camera* mCamera;
+
+  bool mEnableRotation = false;
 };

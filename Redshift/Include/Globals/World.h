@@ -9,6 +9,7 @@
 #include <Resource.h>
 #include <Renderer.h>
 #include <EventRegistry.h>
+#include <Window.h>
 
 class Component;
 class HotLoader;
@@ -376,6 +377,21 @@ public:
     return world.mStrings[stringName];
   }
 
+public:
+
+  ////////////////////////////////////////////////////////
+  // Window interface
+  ////////////////////////////////////////////////////////
+
+  static void HideCursor(World& world)
+  {
+    world.mWindow.HideCursor(); // only works within main thread
+  }
+  static void ShowCursor(World& world)
+  {
+    world.mWindow.ShowCursor(); // only works within main thread
+  }
+
 private:
 
   GLFWwindow* mGlfwContext;
@@ -383,6 +399,7 @@ private:
   ImGuiContext* mImGuiContext;
 
   EventRegistry mEventRegistry = EventRegistry{ mGlfwContext };
+  Window mWindow = Window{ mGlfwContext };
 
   ModuleMap mModules = ModuleMap{};
   ResourceMap mResources = ResourceMap{};

@@ -9,78 +9,69 @@ public:
 
   Transform(
     World& world,
-    R32V3 worldPosition,
-    R32V3 worldRotation,
-    R32V3 worldScale)
+    R32V3 position,
+    R32V3 rotation,
+    R32V3 scale)
     : Component(world)
+    , mPosition{ position }
+    , mRotation{ rotation }
+    , mScale{ scale }
   {
-    SetWorldPosition(worldPosition);
-    SetWorldRotation(worldRotation);
-    SetWorldScale(worldScale);
+
   }
 
 public:
 
-  inline R32V3 GetWorldPosition() const { return R32V3{ mTransform.getOrigin().x(), mTransform.getOrigin().y(), mTransform.getOrigin().z() }; }
-  inline R32V3 GetWorldRotation() const { return R32V3{ mTransform.getRotation().x(), mTransform.getRotation().y(), mTransform.getRotation().z() }; }
-  inline R32V3 GetWorldScale() const { return mScale; }
+  inline R32V3 const& GetWorldPosition() const { return mPosition; }
+  inline R32V3 const& GetWorldRotation() const { return mRotation; }
+  inline R32V3 const& GetWorldScale() const { return mScale; }
 
-  inline R32V3 GetLocalRight() const { return mLocalRight; }
-  inline R32V3 GetLocalUp() const { return mLocalUp; }
-  inline R32V3 GetLocalForward() const { return mLocalForward; }
+  inline R32V3 const& GetLocalRight() const { return mLocalRight; }
+  inline R32V3 const& GetLocalUp() const { return mLocalUp; }
+  inline R32V3 const& GetLocalForward() const { return mLocalForward; }
+
+  inline R32M4 const& GetMatrix() const { return mMatrix; }
 
 public:
 
-  R32M4 ComputeModelMatrix()
+  void Update()
   {
-    // Translation
-    btVector3 const& o = mTransform.getOrigin();
-    mMatrix[3][0] = o.getX();
-    mMatrix[3][1] = o.getY();
-    mMatrix[3][2] = o.getZ();
+    R32M4 matrix = glm::identity<R32M4>();
 
-    // Rotation
-    btMatrix3x3 const& b = mTransform.getBasis();
-    mMatrix[0][0] = b[0][0];
-    mMatrix[0][1] = b[0][1];
-    mMatrix[0][2] = b[0][2];
-    
-    mMatrix[1][0] = b[1][0];
-    mMatrix[1][1] = b[1][1];
-    mMatrix[1][2] = b[1][2];
-    
-    mMatrix[2][0] = b[2][0];
-    mMatrix[2][1] = b[2][1];
-    mMatrix[2][2] = b[2][2];
+    // Translate
+    matrix = glm::translate(matrix, mPosition);
+
+    // Rotate
+    matrix = glm::rotate(matrix, glm::radians(mRotation.x), R32V3{ 1.0f, 0.0f, 0.0f });
+    matrix = glm::rotate(matrix, glm::radians(mRotation.y), R32V3{ 0.0f, 1.0f, 0.0f });
+    matrix = glm::rotate(matrix, glm::radians(mRotation.z), R32V3{ 0.0f, 0.0f, 1.0f });
+  
+    // Compute new local directions
+    mLocalRight = glm::normalize(R32V3{ matrix[0][0], matrix[1][0], matrix[2][0] });
+    mLocalUp = glm::normalize(R32V3{ matrix[0][1], matrix[1][1], matrix[2][1] });
+    mLocalForward = glm::normalize(R32V3{ matrix[0][2], matrix[1][2], matrix[2][2] });
 
     // Scale
-    mMatrix[0] *= mScale.x;
-    mMatrix[1] *= mScale.y;
-    mMatrix[2] *= mScale.z;
+    matrix = glm::scale(matrix, mScale);
 
-    // Extract local directions
-    mLocalRight =   R32V3{ mMatrix[0][0], mMatrix[0][1], mMatrix[0][2] };
-    mLocalUp =      R32V3{ mMatrix[1][0], mMatrix[1][1], mMatrix[1][2] };
-    mLocalForward = R32V3{ mMatrix[2][0], mMatrix[2][1], mMatrix[2][2] };
-
-    return mMatrix;
+    mMatrix = matrix;
   }
 
 public:
 
-  inline void SetWorldPosition(R32V3 const& value) { mTransform.setOrigin(btVector3{ value.x, value.y, value.z }); }
-  inline void SetWorldRotation(R32V3 const& value) { mTransform.setRotation(btQuaternion{ value.x, value.y, value.z }); }
+  inline void SetWorldPosition(R32V3 const& value) { mPosition = value; }
+  inline void SetWorldRotation(R32V3 const& value) { mRotation = value; }
   inline void SetWorldScale(R32V3 const& value) { mScale = value; }
 
 private:
 
-  R32M4 mMatrix = glm::identity<R32M4>();
-
+  R32V3 mPosition;
+  R32V3 mRotation;
   R32V3 mScale;
 
-  R32V3 mLocalRight;
-  R32V3 mLocalUp;
-  R32V3 mLocalForward;
+  R32V3 mLocalRight = R32V3{ 1.0f, 0.0f, 0.0f };
+  R32V3 mLocalUp = R32V3{ 0.0f, 1.0f, 0.0f };
+  R32V3 mLocalForward = R32V3{ 0.0f, 0.0f, 1.0f };
 
-  btTransform mTransform;
+  R32M4 mMatrix = glm::identity<R32M4>();
 };

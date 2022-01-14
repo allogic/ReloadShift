@@ -81,7 +81,7 @@
     <ClInclude Include="Include\Handles\GenericMesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Uniforms\Projection.h">
+    <ClInclude Include="Include\Uniforms\UniformCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Component.h">
@@ -118,6 +118,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\EventRegistry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Uniforms\UniformModel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

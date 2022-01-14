@@ -14,7 +14,7 @@ public:
     ActorProxy* proxy,
     std::string const& name)
     : Actor(world, proxy, name)
-    , mTransform{ World::AttachComponent<Transform>(world, this, R32V3{ 0.0f }, R32V3{ 0.0f, -90.0f, 0.0f }, R32V3{ 0.008f }) }
+    , mTransform{ World::AttachComponent<Transform>(world, this, R32V3{ 0.0f }, R32V3{ 0.0f }, R32V3{ 0.008f }) }
     , mRenderable{ World::AttachComponent<Renderable>(world, this, "Puker", "Lit", "PukerAlbedo", "PukerNormal")}
     , mBrain{ World::AttachComponent<Brain>(world, this) }
   {

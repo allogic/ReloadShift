@@ -22,7 +22,7 @@ public:
     Module::Tick(deltaTime);
 
     static R32 roll = 0.0f;
-    roll += 0.3f * deltaTime;
+    roll += 10.0f * deltaTime;
     if (roll >= 360.0f) roll = 0.0f;
 
     //for (auto& actor : mActors)
@@ -37,9 +37,16 @@ public:
 
     World::DispatchFor<
       Transform,
+      Camera>(mWorld, [=](Transform* transform, Camera* camera)
+        {
+          //transform->SetWorldRotation(R32V3{ 0.0f, 0.0f, roll });
+        });
+
+    World::DispatchFor<
+      Transform,
       Renderable>(mWorld, [=](Transform* transform, Renderable* renderable)
         {
-          transform->SetWorldRotation(R32V3{ 0.0f, 90.0f, roll });
+          transform->SetWorldRotation(R32V3{ 90.0f, 0.0f, 0.0f });
         });
 
     ImGui::Begin("Debug");

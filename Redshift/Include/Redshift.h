@@ -13,6 +13,7 @@
 #include <Component.h>
 #include <Renderer.h>
 #include <EventRegistry.h>
+#include <Window.h>
 
 #include <Components/Camera.h>
 #include <Components/Transform.h>
@@ -35,4 +36,5 @@
 #include <Resources/TextureResource.h>
 #include <Resources/MeshResource.h>
 
-#include <Uniforms/Projection.h>
+#include <Uniforms/UniformCamera.h>
+#include <Uniforms/UniformModel.h>

@@ -183,11 +183,14 @@ private:
         ImGui::TableNextColumn(); ImGui::Text("Name");
         ImGui::TableNextColumn(); ImGui::Text("Instance");
         ImGui::TableNextColumn(); ImGui::Text("Delegate");
-        for (auto const& [axisName, axisDelegate] : registry.GetAxisDelegates())
+        for (auto const& [axisName, axisInfos] : registry.GetAxisDelegates())
         {
-          ImGui::TableNextColumn(); ImGui::Text(axisName.c_str());
-          ImGui::TableNextColumn(); ImGui::Text("%p", axisDelegate.Instance);
-          ImGui::TableNextColumn(); ImGui::Text("%p", axisDelegate.Delegate);
+          for (auto const& axisInfo : axisInfos)
+          {
+            ImGui::TableNextColumn(); ImGui::Text(axisName.c_str());
+            ImGui::TableNextColumn(); ImGui::Text("%p", axisInfo.Instance);
+            ImGui::TableNextColumn(); ImGui::Text("%p", axisInfo.Delegate);
+          }
         }
         ImGui::EndTable();
       }

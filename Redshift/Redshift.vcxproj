@@ -174,13 +174,15 @@
     <ClInclude Include="Include\Module.h" />
     <ClInclude Include="Include\Redshift.h" />
     <ClInclude Include="Include\Resource.h" />
-    <ClInclude Include="Include\Uniforms\Projection.h" />
+    <ClInclude Include="Include\Uniforms\UniformCamera.h" />
+    <ClInclude Include="Include\Uniforms\UniformModel.h" />
     <ClInclude Include="Include\Utility.h" />
     <ClInclude Include="Include\Vertex.h" />
     <ClInclude Include="Include\Globals\World.h" />
     <ClInclude Include="Include\Resources\ShaderResource.h" />
     <ClInclude Include="Include\Resources\TextureResource.h" />
     <ClInclude Include="Include\Types.h" />
+    <ClInclude Include="Include\Window.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Vendor\Source\gl.c" />

@@ -7,7 +7,8 @@
 
 #include <Renderer/DeferredRenderTask.h>
 
-#include <Uniforms/Projection.h>
+#include <Uniforms/UniformCamera.h>
+#include <Uniforms/UniformModel.h>
 
 class DeferredRenderer : public Renderer
 {
@@ -25,7 +26,8 @@ public:
 
   DeferredRenderer(std::string const& name)
     : Renderer(name)
-    , mUniformProjection{ World::LinkHandle<UniformBuffer<Projection>>(mWorld, "Projection", 1u) }
+    , mUniformCameraBuffer{ World::LinkHandle<UniformBuffer<CameraUniform>>(mWorld, "CameraUniform", 1u) }
+    , mUniformModelBuffer{ World::LinkHandle<UniformBuffer<ModelUniform>>(mWorld, "ModelUniform", 1u) }
     , mTextureDepthStencil{ World::LinkHandle<Texture2DU24U8DS>(mWorld, "DeferredDepthStencil", 1280u, 720u, ETextureWrap::ClampToEdge, ETextureFilter::Nearest) }
     , mTexturePosition{ World::LinkHandle<Texture2DR32RGBA>(mWorld, "DeferredPosition", 1280u, 720u, ETextureWrap::ClampToEdge, ETextureFilter::Nearest) }
     , mTextureAlbedo{ World::LinkHandle<Texture2DR32RGBA>(mWorld, "DeferredAlbedo", 1280u, 720u, ETextureWrap::ClampToEdge, ETextureFilter::Nearest) }
@@ -55,19 +57,21 @@ public:
       Transform,
       Renderable>(mWorld, [=](Transform* transform, Renderable* renderable)
         {
+          transform->Update();
           renderable->SubmitRenderTask(transform, mRenderQueue);
         });
-    // Bind uniforms
-    mUniformProjection.Get()->Bind();
-    mUniformProjection.Get()->Mount(0);
     // Update projection uniform
+    mUniformCameraBuffer.Get()->Bind();
     World::DispatchFor<
       Transform,
       Camera>(mWorld, [&](Transform* transform, Camera* camera)
         {
-          mProjection.Projection = glm::perspective(glm::radians(camera->GetFOV()), mViewportSize.x / mViewportSize.y, camera->GetNear(), camera->GetFar());
-          mProjection.View = glm::lookAt(transform->GetWorldPosition(), transform->GetWorldPosition() + R32V3{ 0.0f, 0.0f, 1.0f }, R32V3{ 0.0f, 1.0f, 0.0f });
+          transform->Update();
+          mUniformCamera.Projection = glm::perspective(glm::radians(camera->GetFOV()), mViewportSize.x / mViewportSize.y, camera->GetNear(), camera->GetFar());
+          mUniformCamera.View = glm::lookAt(transform->GetWorldPosition(), transform->GetWorldPosition() + transform->GetLocalForward(), transform->GetLocalUp());
+          mUniformCameraBuffer.Get()->Set(&mUniformCamera);
         });
+    mUniformCameraBuffer.Get()->UnBind();
     // Render geometry into framebuffer
     mFrameBuffer.Get()->BindWrite();
     glClearColor(0.1f, 0.0f, 0.0f, 1.0f);
@@ -82,8 +86,6 @@ public:
     //mFrameBuffer->BindRead();
     //glBlitFramebuffer(0, 0, 1280, 720, 0, 0, 1280, 720, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
     //mFrameBuffer->UnBind();
-    // UnBind uniforms
-    mUniformProjection.Get()->UnBind();
   }
   virtual void ResizeViewport() override
   {
@@ -108,15 +110,20 @@ private:
       mDrawCalls[task.GetProgram()].emplace(task);
       mRenderQueue.pop();
     }
+    // Bind model uniform
+    mUniformModelBuffer.Get()->Bind();
+    // Mount uniforms
+    mUniformCameraBuffer.Get()->Mount(0);
+    mUniformModelBuffer.Get()->Mount(1);
     // Dispatch all draw calls
     for (auto const& [program, tasks] : mDrawCalls)
     {
       program->Bind();
       for (auto const& task : tasks)
       {
-        // Update projection
-        mProjection.Model = task.GetTransform()->ComputeModelMatrix();
-        mUniformProjection.Get()->Set(&mProjection);
+        // Update model uniform
+        mUniformModel.Model = task.GetTransform()->GetMatrix();
+        mUniformModelBuffer.Get()->Set(&mUniformModel);
         // Mount textures
         if (Texture2DR32RGBA* texture = task.GetTextureAlbedo()) texture->Mount(0);
         if (Texture2DR32RGBA* texture = task.GetTextureNormal()) texture->Mount(1);
@@ -132,11 +139,14 @@ private:
     }
     // Cleanup drawcalls
     mDrawCalls.clear();
+    // UnBind model uniform
+    mUniformModelBuffer.Get()->UnBind();
   }
 
 private:
 
-  HotRef<UniformBuffer<Projection>> const& mUniformProjection;
+  HotRef<UniformBuffer<CameraUniform>> const& mUniformCameraBuffer;
+  HotRef<UniformBuffer<ModelUniform>> const& mUniformModelBuffer;
 
   HotRef<Texture2DU24U8DS> const& mTextureDepthStencil;
   HotRef<Texture2DR32RGBA> const& mTexturePosition;
@@ -148,7 +158,8 @@ private:
 
   HotRef<DeferredFrameBuffer> const& mFrameBuffer;
 
-  Projection mProjection = {};
+  CameraUniform mUniformCamera = {};
+  ModelUniform mUniformModel = {};
 
   std::queue<DeferredRenderTask> mRenderQueue = {};
   std::unordered_map<RenderProgram*, std::multiset<DeferredRenderTask>> mDrawCalls = {};

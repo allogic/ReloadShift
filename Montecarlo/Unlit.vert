@@ -1,9 +1,12 @@
 #version 460 core
 
-layout (binding = 0) uniform ProjectionUniform
+layout (binding = 0) uniform CameraUniform
 {
   mat4 uProjection;
   mat4 uView;
+};
+layout (binding = 1) uniform ModelUniform
+{
   mat4 uModel;
 };
 

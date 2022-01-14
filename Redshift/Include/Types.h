@@ -28,10 +28,19 @@ using R32V2 = glm::fvec2;
 using R32V3 = glm::fvec3;
 using R32V4 = glm::fvec4;
 
+using R64V2 = glm::dvec2;
+using R64V3 = glm::dvec3;
+using R64V4 = glm::dvec4;
+
 using R32M3 = glm::fmat3;
 using R32M4 = glm::fmat4;
 
+using R64M3 = glm::dmat3;
+using R64M4 = glm::dmat4;
+
 using R32Q = glm::fquat;
+
+using R64Q = glm::dquat;
 
 ////////////////////////////////////////////////////////
 // Shader types

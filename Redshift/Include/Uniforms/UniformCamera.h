@@ -3,10 +3,9 @@
 #include <Core.h>
 
 #pragma pack(push, 1)
-struct Projection
+struct CameraUniform
 {
   R32M4 Projection;
   R32M4 View;
-  R32M4 Model;
 };
 #pragma pack(pop)

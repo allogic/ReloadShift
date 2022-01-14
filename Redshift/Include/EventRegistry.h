@@ -20,6 +20,8 @@ public:
   {
     Actor* Instance;
     AxisDelegate Delegate;
+
+    bool operator < (AxisInfo const& other) const { return Instance < other.Instance; }
   };
   struct ActionInfo
   {
@@ -36,13 +38,18 @@ public:
 
     bool operator == (ActionKey const& other) const { return Key == other.Key && State == other.State; }
   };
-
   struct ActionHasher
   {
     U64 operator () (ActionKey const& actionKey) const { return actionKey.Key ^ actionKey.State; }
   };
 
-  using AxisDelegates = std::unordered_map<std::string, AxisInfo>;
+  struct MouseInfo
+  {
+    R64V2 Current;
+    R64V2 Previous;
+  };
+
+  using AxisDelegates = std::unordered_map<std::string, std::multiset<AxisInfo>>;
   using ActionDelegates = std::unordered_map<ActionKey, std::multiset<ActionInfo>, ActionHasher>;
 
   struct Event
@@ -77,7 +84,8 @@ public:
   ////////////////////////////////////////////////////////
   // Event forwarding
   // Note: Do not put this function inside source file
-  //       otherwise it cannot execute delegates properly
+  //       otherwise it breaks ABI and cannot execute
+  //       delegates properly (for whatever reason..)
   ////////////////////////////////////////////////////////
 
   void Poll()
@@ -144,7 +152,25 @@ public:
         }
       }
     }
-    // Forward keyboard & mouse key states
+    // Update mouse position
+    mMouseInfo.Previous = mMouseInfo.Current;
+    glfwGetCursorPos(mGlfwContext, &mMouseInfo.Current.x, &mMouseInfo.Current.y);
+    // Forward axis delegates
+    if (mMouseInfo.Current.x != mMouseInfo.Previous.x)
+    {
+      for (auto const& axisInfo : mAxisDelegates["Horizontal"])
+      {
+        ((*axisInfo.Instance).*(axisInfo.Delegate))(R32(mMouseInfo.Current.x - mMouseInfo.Previous.x));
+      }
+    }
+    if (mMouseInfo.Current.y != mMouseInfo.Previous.y)
+    {
+      for (auto const& axisInfo : mAxisDelegates["Vertical"])
+      {
+        ((*axisInfo.Instance).*(axisInfo.Delegate))(R32(mMouseInfo.Current.y - mMouseInfo.Previous.y));
+      }
+    }
+    // Forward action delegates
     for (auto const& [actionKey, actionInfos] : mActionDelegates)
     {
       if (mMouseKeyStates[actionKey.Key].Current == actionKey.State)
@@ -176,8 +202,7 @@ public:
   requires std::is_base_of_v<Actor, A>
   void BindAxis(std::string const& axisName, A* actor, void(A::* axisDelegate)(float))
   {
-    mAxisDelegates[axisName].Instance = (Actor*)actor;
-    mAxisDelegates[axisName].Delegate = (AxisDelegate)axisDelegate;
+    mAxisDelegates[axisName].emplace(AxisInfo{ (Actor*)actor, (AxisDelegate)axisDelegate });
   }
 
   template<typename A>
@@ -193,6 +218,8 @@ private:
 
   AxisDelegates mAxisDelegates = AxisDelegates{};
   ActionDelegates mActionDelegates = ActionDelegates{};
+
+  MouseInfo mMouseInfo = MouseInfo{};
 
   Event mMouseKeyStates[GLFW_MOUSE_BUTTON_LAST] = {};
   Event mKeyboardKeyStates[GLFW_KEY_LAST] = {};
