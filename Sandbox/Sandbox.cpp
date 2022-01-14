@@ -4,6 +4,8 @@
 #include <Actors/Enemy.h>
 #include <Actors/Gate.h>
 #include <Actors/Player.h>
+#include <Actors/Sphere.h>
+#include <Actors/DeathBox.h>
 
 class Sandbox : public Module
 {
@@ -21,9 +23,17 @@ public:
   {
     Module::Tick(deltaTime);
 
-    static R32 roll = 0.0f;
-    roll += 10.0f * deltaTime;
-    if (roll >= 360.0f) roll = 0.0f;
+    static R32 spawnTime = 0.0f;
+    spawnTime += 1.0 * deltaTime;
+    if (spawnTime > 1.0f)
+    {
+      spawnTime = 0.0f;
+      mActors.emplace_back(World::CreateActor<Sphere>(mWorld, "Sphere"));
+    }
+
+    //static R32 roll = 0.0f;
+    //roll += 10.0f * deltaTime;
+    //if (roll >= 360.0f) roll = 0.0f;
 
     //for (auto& actor : mActors)
     //{
@@ -35,21 +45,25 @@ public:
     //mActors.emplace_back(World::CreateActor<Enemy>(mWorld, "Enemy"));
     //mActors.emplace_back(World::CreateActor<Gate>(mWorld, "Gate"));
 
-    World::DispatchFor<
-      Transform,
-      Camera>(mWorld, [=](Transform* transform, Camera* camera)
-        {
-          //transform->SetWorldRotation(R32V3{ 0.0f, 0.0f, roll });
-        });
-
-    World::DispatchFor<
-      Transform,
-      Renderable>(mWorld, [=](Transform* transform, Renderable* renderable)
-        {
-          transform->SetWorldRotation(R32V3{ 90.0f, 0.0f, 0.0f });
-        });
+    //World::DispatchFor<
+    //  Transform,
+    //  Camera>(mWorld, [=](Transform* transform, Camera* camera)
+    //    {
+    //      //transform->SetWorldRotation(R32V3{ 0.0f, 0.0f, roll });
+    //    });
+    //
+    //World::DispatchFor<
+    //  Transform,
+    //  Renderable>(mWorld, [=](Transform* transform, Renderable* renderable)
+    //    {
+    //      transform->SetWorldRotation(R32V3{ 90.0f, 0.0f, 0.0f });
+    //    });
 
     ImGui::Begin("Debug");
+    if (ImGui::Button("Create DeathBox"))
+    {
+      mActors.emplace_back(World::CreateActor<DeathBox>(mWorld, "DeathBox"));
+    }
     if (ImGui::Button("Create Player"))
     {
       mActors.emplace_back(World::CreateActor<Player>(mWorld, "Player"));

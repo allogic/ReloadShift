@@ -11,6 +11,8 @@
 #include <EventRegistry.h>
 #include <Window.h>
 
+#include <Physics/PhysicsWorld.h>
+
 class Component;
 class HotLoader;
 class ActorProxy;
@@ -392,6 +394,21 @@ public:
     world.mWindow.ShowCursor(); // only works within main thread
   }
 
+public:
+
+  ////////////////////////////////////////////////////////
+  // Physics interface
+  ////////////////////////////////////////////////////////
+
+  static void CreatePhysicsBody(World& world)
+  {
+
+  }
+  static void DestroyPhysicsBody(World& world)
+  {
+
+  }
+
 private:
 
   GLFWwindow* mGlfwContext;
@@ -400,6 +417,7 @@ private:
 
   EventRegistry mEventRegistry = EventRegistry{ mGlfwContext };
   Window mWindow = Window{ mGlfwContext };
+  PhysicsWorld mPhysicsWorld = PhysicsWorld{};
 
   ModuleMap mModules = ModuleMap{};
   ResourceMap mResources = ResourceMap{};

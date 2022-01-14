@@ -74,8 +74,6 @@ I32 main()
         FileBrowser fileBrowser = FileBrowser{ "" };
         // Create deferred renderer
         DeferredRenderer* deferredRenderer = World::CreateRenderer<DeferredRenderer>(world, "Deferred");
-        // Create physics world
-        PhysicsWorld physicsWorld = PhysicsWorld{};
         // Setup timer stuff
         R32 prevTime = 0.0f;
         R32 renderRate = 1.0f / 60.0f;
