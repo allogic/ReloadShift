@@ -16,6 +16,7 @@ public:
     , mPosition{ position }
     , mRotation{ rotation }
     , mScale{ scale }
+    , mTransform{ btQuaternion{ mRotation.y, mRotation.x, mRotation.z }, btVector3{ mPosition.x, mPosition.y, mPosition.z } }
   {
 
   }
@@ -31,6 +32,8 @@ public:
   inline R32V3 const& GetLocalForward() const { return mLocalForward; }
 
   inline R32M4 const& GetMatrix() const { return mMatrix; }
+
+  inline btTransform const& GetTransform() const { return mTransform; }
 
 public:
 
@@ -54,6 +57,11 @@ public:
     // Scale
     matrix = glm::scale(matrix, mScale);
 
+    // Update physics transform
+    mTransform.setIdentity();
+    mTransform.setOrigin(btVector3{ mPosition.x, mPosition.y, mPosition.z });
+    mTransform.setRotation(btQuaternion{ mRotation.y, mRotation.x, mRotation.z });
+
     mMatrix = matrix;
   }
 
@@ -68,6 +76,7 @@ private:
   R32V3 mPosition;
   R32V3 mRotation;
   R32V3 mScale;
+  btTransform mTransform;
 
   R32V3 mLocalRight = R32V3{ 1.0f, 0.0f, 0.0f };
   R32V3 mLocalUp = R32V3{ 0.0f, 1.0f, 0.0f };

@@ -2,7 +2,7 @@
 
 #include <Core.h>
 #include <Resource.h>
-#include <EventRegistry.h>
+#include <Delegates.h>
 
 #include <Globals/World.h>
 
@@ -24,8 +24,8 @@ private:
     static bool openActors = true;
     static bool openHandles = true;
     static bool openViewport = true;
-    static bool openEventMapping = true;
-    static bool openStringRegistry = true;
+    static bool openDelegates = true;
+    static bool openRegistry = true;
 
     if (ImGui::BeginMainMenuBar())
     {
@@ -42,24 +42,23 @@ private:
         if (ImGui::MenuItem("Actors")) openActors = true;
         if (ImGui::MenuItem("Handles")) openHandles = true;
         if (ImGui::MenuItem("Viewport")) openViewport = true;
-        if (ImGui::MenuItem("Event Mapping")) openEventMapping = true;
-        if (ImGui::MenuItem("String Registry")) openStringRegistry = true;
+        if (ImGui::MenuItem("Delegates")) openDelegates = true;
+        if (ImGui::MenuItem("Registry")) openRegistry = true;
         ImGui::EndMenu();
       }
 
       ImGui::EndMainMenuBar();
     }
 
-    DrawResourcesWindow(openResources);
-    DrawActorsWindow(openActors);
-    DrawHandlesWindow(openHandles);
+    DrawResourceWindow(openResources);
+    DrawActorWindow(openActors);
+    DrawHandleWindow(openHandles);
     DrawViewportWindow(openViewport);
-
-    DrawEventMapping(openEventMapping);
-    DrawStringRegistry(openStringRegistry);
+    DrawDelegateWindow(openDelegates);
+    DrawRegistryWindow(openRegistry);
   }
 
-  static void DrawResourcesWindow(bool& open)
+  static void DrawResourceWindow(bool& open)
   {
     if (open)
     {
@@ -90,7 +89,7 @@ private:
       ImGui::End();
     }
   }
-  static void DrawActorsWindow(bool& open)
+  static void DrawActorWindow(bool& open)
   {
     if (open)
     {
@@ -114,7 +113,7 @@ private:
       ImGui::End();
     }
   }
-  static void DrawHandlesWindow(bool& open)
+  static void DrawHandleWindow(bool& open)
   {
     if (open)
     {
@@ -172,12 +171,13 @@ private:
       }
     }
   }
-  static void DrawEventMapping(bool& open)
+  static void DrawDelegateWindow(bool& open)
   {
+    World& world = World::Instance();
+    Delegates& registry = world.GetDelegates();
     if (open)
     {
-      EventRegistry& registry = World::Instance().GetEventRegistry();
-      open = ImGui::Begin("Event Mapping", &open);
+      open = ImGui::Begin("Delegates", &open);
       if (ImGui::BeginTable("Axis", 3))
       {
         ImGui::TableNextColumn(); ImGui::Text("Name");
@@ -194,7 +194,7 @@ private:
         }
         ImGui::EndTable();
       }
-      if (ImGui::BeginTable("Action", 3))
+      if (ImGui::BeginTable("Actions", 3))
       {
         ImGui::TableNextColumn(); ImGui::Text("Name");
         ImGui::TableNextColumn(); ImGui::Text("Instance");
@@ -203,7 +203,7 @@ private:
         {
           for (auto const& actionInfo : actionInfos)
           {
-            ImGui::TableNextColumn(); ImGui::Text("%c", actionKey.Key);
+            ImGui::TableNextColumn(); ImGui::Text("%u", actionKey.Key);
             ImGui::TableNextColumn(); ImGui::Text("%p", actionInfo.Instance);
             ImGui::TableNextColumn(); ImGui::Text("%p", actionInfo.Delegate);
           }
@@ -213,20 +213,34 @@ private:
       ImGui::End();
     }
   }
-  static void DrawStringRegistry(bool& open)
+  static void DrawRegistryWindow(bool& open)
   {
+    Registry& registry = Registry::Instance();
     if (open)
     {
-      World& world = World::Instance();
-      open = ImGui::Begin("String Registry", &open);
-      if (ImGui::BeginTable("Strings", 2))
+      open = ImGui::Begin("Registry", &open);
+      if (ImGui::BeginTable("Registry", 3))
       {
-        ImGui::TableNextColumn(); ImGui::Text("Key");
+        ImGui::TableNextColumn(); ImGui::Text("Type");
+        ImGui::TableNextColumn(); ImGui::Text("Name");
         ImGui::TableNextColumn(); ImGui::Text("Value");
-        for (auto const& [key, value] : world.GetStrings())
+        for (auto const& [key, value] : registry.GetRegistryFor<I32>())
         {
+          ImGui::TableNextColumn(); ImGui::Text("I32");
           ImGui::TableNextColumn(); ImGui::Text(key.c_str());
-          ImGui::TableNextColumn(); ImGui::Text(value.c_str());
+          ImGui::TableNextColumn(); ImGui::Text("%d", value);
+        }
+        for (auto const& [key, value] : registry.GetRegistryFor<U32>())
+        {
+          ImGui::TableNextColumn(); ImGui::Text("U32");
+          ImGui::TableNextColumn(); ImGui::Text(key.c_str());
+          ImGui::TableNextColumn(); ImGui::Text("%u", value);
+        }
+        for (auto const& [key, value] : registry.GetRegistryFor<R32>())
+        {
+          ImGui::TableNextColumn(); ImGui::Text("R32");
+          ImGui::TableNextColumn(); ImGui::Text(key.c_str());
+          ImGui::TableNextColumn(); ImGui::Text("%f", value);
         }
         ImGui::EndTable();
       }

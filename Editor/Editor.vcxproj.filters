@@ -38,7 +38,7 @@
     <ClInclude Include="Include\Filesystem\FileBrowser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\UI.h">
+    <ClInclude Include="Include\UI\UI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

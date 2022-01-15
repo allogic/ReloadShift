@@ -8,10 +8,11 @@
 #include <Utility.h>
 #include <Resource.h>
 #include <Renderer.h>
-#include <EventRegistry.h>
+#include <Delegates.h>
 #include <Window.h>
 
-#include <Physics/PhysicsWorld.h>
+#include <Components/Transform.h>
+#include <Components/Rigidbody.h>
 
 class Component;
 class HotLoader;
@@ -29,7 +30,6 @@ public:
   using ResourceMap = std::map<std::string, Resource*>;
   using ActorMap = std::map<Actor*, ActorProxy*>;
   using RendererMap = std::map<std::string, Renderer*>;
-  using StringMap = std::map<std::string, std::string>;
 
   using HotRefMapUnordered = std::unordered_map<std::string, HotRef<Handle>>;
   using HandleMapUnordered = std::unordered_map<U64, HotRefMapUnordered>;
@@ -41,7 +41,7 @@ public:
   // Singleton
   ////////////////////////////////////////////////////////
 
-  static World& Instance();
+  static inline World& Instance() { static World world; return world; }
 
 public:
 
@@ -65,12 +65,11 @@ public:
   inline ResourceMap& GetResources() { return mResources; }
   inline ActorMap& GetActors() { return mActors; }
   inline RendererMap& GetRenderer() { return mRenderer; }
-  inline StringMap& GetStrings() { return mStrings; }
 
   inline HandleMapUnordered& GetHandles() { return mHandles; }
   inline PermutationMapUnordered& GetPermutations() { return mPermutations; }
 
-  inline EventRegistry& GetEventRegistry() { return mEventRegistry; }
+  inline Delegates& GetDelegates() { return mDelegates; }
 
 public:
 
@@ -219,7 +218,6 @@ private:
       }
     } while (std::next_permutation(inOrderComponentHashes.begin(), inOrderComponentHashes.end()));
   }
-
   static void DeRegisterProxyForAllPermutations(World& world, Actor* actor) noexcept
   {
     auto inOrderComponentHashes = actor->GetInOrderComponentHashes();
@@ -253,7 +251,7 @@ public:
 
   template<typename C, typename ... Args>
   requires std::is_base_of_v<Component, C>
-  static C* AttachComponent(World& world, Actor* actor, Args && ... args)
+  static C* AttachComponent(World& world, Actor* actor, Args &&... args)
   {
     // Check if component already exists
     C* component = actor->GetComponent<C>(typeid(C).hash_code());
@@ -269,7 +267,7 @@ public:
 
   template<typename A, typename ... Args>
   requires std::is_base_of_v<Actor, A>
-  static A* CreateActor(World& world, std::string const& actorName, Args && ... args)
+  static A* CreateActor(World& world, std::string const& actorName, Args &&... args)
   {
     // Create actor proxy
     ActorProxy* proxy = new ActorProxy{};
@@ -277,8 +275,8 @@ public:
     A* actor = new A{ world, proxy, actorName, std::forward<Args>(args) ... };
     // Link actor and proxy
     proxy->SetActor(actor);
-    // Register input mapping
-    actor->SetupInput(world.mEventRegistry);
+    // Register input delegates
+    actor->SetupInput(world.mDelegates);
     // Register actor
     world.mActors.emplace(actor, proxy);
     return actor;
@@ -298,6 +296,7 @@ public:
       // DeRegister proxy in permutation table
       DeRegisterProxyForAllPermutations(world, actor);
       // DeRegister event delegates
+      world.mDelegates.UnBindAll(actor);
       // Delete actor and proxy
       delete actor->GetProxy();
       delete actor;
@@ -327,6 +326,13 @@ public:
   // Module interface
   ////////////////////////////////////////////////////////
 
+  static void UpdateModules(World& world, R32 deltaTime)
+  {
+    for (auto const& [name, proxy] : world.mModules)
+    {
+      proxy->GetModInstance()->Tick(deltaTime);
+    }
+  }
   static bool CreateModule(World& world, std::filesystem::path const& filePath);
   static bool DestroyModule(World& world, std::string const& moduleName);
 
@@ -336,6 +342,14 @@ public:
   // Renderer interface
   ////////////////////////////////////////////////////////
 
+  static void UpdateRenderer(World& world)
+  {
+    for (auto const& [name, renderer] : world.mRenderer)
+    {
+      renderer->Render();
+    }
+  }
+
   template<typename R, typename ... Args>
   requires std::is_base_of_v<Renderer, R>
   static R* CreateRenderer(World& world, std::string const& rendererName, Args &&... args)
@@ -344,7 +358,7 @@ public:
     // Probe if renderer already exists
     if (!renderer)
     {
-      renderer = new R{ rendererName, std::forward<Args>(args) ... };
+      renderer = new R{ world, rendererName, std::forward<Args>(args) ... };
       return (R*)renderer;
     }
     return (R*)renderer;
@@ -362,21 +376,6 @@ public:
       return true;
     }
     return false;
-  }
-
-public:
-
-  ////////////////////////////////////////////////////////
-  // String interface
-  ////////////////////////////////////////////////////////
-
-  static void SetStringValue(World& world, std::string const& stringName, std::string const& stringValue)
-  {
-    world.mStrings[stringName] = stringValue;
-  }
-  static std::string const& GetStringValue(World& world, std::string const& stringName)
-  {
-    return world.mStrings[stringName];
   }
 
 public:
@@ -400,31 +399,72 @@ public:
   // Physics interface
   ////////////////////////////////////////////////////////
 
-  static void CreatePhysicsBody(World& world)
+  static void UpdatePhysics(World& world, R32 timeStep)
   {
-
+    // Update physics world
+    world.mDynamicsWorld.stepSimulation(timeStep);
+    // Update actor transforms
+    DispatchFor<
+      Transform,
+      Rigidbody>(world, [](Transform* transform, Rigidbody* rigidbody)
+        {
+          btMotionState* motionState = rigidbody->GetBody()->getMotionState();
+          if (motionState)
+          {
+            btTransform worldTransform;
+            motionState->getWorldTransform(worldTransform);
+            btVector3 const& worldPosition = worldTransform.getOrigin();
+            btQuaternion const& worldRotation = worldTransform.getRotation();
+            transform->SetWorldPosition(R32V3{ worldPosition.x(), -worldPosition.y(), worldPosition.z() });
+            transform->SetWorldRotation(R32V3{ worldRotation.y(), worldRotation.x(), worldRotation.z() });
+          }
+        });
   }
-  static void DestroyPhysicsBody(World& world)
+  static void CreatePhysicsBody(World& world, Rigidbody* rigidbody)
   {
-
+    world.mDynamicsWorld.addRigidBody(rigidbody->GetBody());
+  }
+  static void DestroyPhysicsBody(World& world, Rigidbody* rigidbody)
+  {
+    world.mDynamicsWorld.removeRigidBody(rigidbody->GetBody());
   }
 
 private:
+
+  ////////////////////////////////////////////////////////
+  // Saved context
+  ////////////////////////////////////////////////////////
 
   GLFWwindow* mGlfwContext;
   GladGLContext* mGladContext;
   ImGuiContext* mImGuiContext;
 
-  EventRegistry mEventRegistry = EventRegistry{ mGlfwContext };
+private:
+
+  ////////////////////////////////////////////////////////
+  // Miscellaneous state
+  ////////////////////////////////////////////////////////
+
+  Delegates mDelegates = Delegates{ mGlfwContext };
   Window mWindow = Window{ mGlfwContext };
-  PhysicsWorld mPhysicsWorld = PhysicsWorld{};
 
   ModuleMap mModules = ModuleMap{};
   ResourceMap mResources = ResourceMap{};
   ActorMap mActors = ActorMap{};
   RendererMap mRenderer = RendererMap{};
-  StringMap mStrings = StringMap{};
 
   HandleMapUnordered mHandles = HandleMapUnordered{};
   PermutationMapUnordered mPermutations = PermutationMapUnordered{};
+
+private:
+
+  ////////////////////////////////////////////////////////
+  // Physics state
+  ////////////////////////////////////////////////////////
+
+  btDefaultCollisionConfiguration mCollisionConfiguration = btDefaultCollisionConfiguration{};
+  btCollisionDispatcher mDispatcher = btCollisionDispatcher{ &mCollisionConfiguration };
+  btDbvtBroadphase mOverlappingPairCache = btDbvtBroadphase{};
+  btSequentialImpulseConstraintSolver mSolver = btSequentialImpulseConstraintSolver{};
+  btDiscreteDynamicsWorld mDynamicsWorld = btDiscreteDynamicsWorld{ &mDispatcher, &mOverlappingPairCache, &mSolver, &mCollisionConfiguration };
 };

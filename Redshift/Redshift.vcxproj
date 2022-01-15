@@ -154,7 +154,8 @@
     <ClInclude Include="Include\Components\Renderable.h" />
     <ClInclude Include="Include\Components\Rigidbody.h" />
     <ClInclude Include="Include\Components\Transform.h" />
-    <ClInclude Include="Include\EventRegistry.h" />
+    <ClInclude Include="Include\Delegates.h" />
+    <ClInclude Include="Include\Globals\Registry.h" />
     <ClInclude Include="Include\Handles\GenericBuffer.h" />
     <ClInclude Include="Include\Handle.h" />
     <ClInclude Include="Include\Core.h" />
@@ -166,7 +167,6 @@
     <ClInclude Include="Include\Handles\GenericTexture.h" />
     <ClInclude Include="Include\HotRef.h" />
     <ClInclude Include="Include\ModuleProxy.h" />
-    <ClInclude Include="Include\Physics\PhysicsWorld.h" />
     <ClInclude Include="Include\Renderer.h" />
     <ClInclude Include="Include\Renderer\DeferredRenderer.h" />
     <ClInclude Include="Include\Renderer\DeferredRenderTask.h" />
@@ -189,6 +189,10 @@
     <ClCompile Include="..\Vendor\Source\miniz.c" />
     <ClCompile Include="..\Vendor\Source\ofbx.cpp" />
     <ClCompile Include="Source\Actor.cpp" />
+    <ClCompile Include="Source\Components\Collider\BoxCollider.cpp" />
+    <ClCompile Include="Source\Components\Collider\SphereCollider.cpp" />
+    <ClCompile Include="Source\Components\Renderable.cpp" />
+    <ClCompile Include="Source\Components\Rigidbody.cpp" />
     <ClCompile Include="Source\Module.cpp" />
     <ClCompile Include="Source\Renderer.cpp" />
     <ClCompile Include="Source\Resource.cpp" />

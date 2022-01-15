@@ -24,8 +24,10 @@ public:
 
 public:
 
-  DeferredRenderer(std::string const& name)
-    : Renderer(name)
+  DeferredRenderer(
+    World& world,
+    std::string const& name)
+    : Renderer(world, name)
     , mUniformCameraBuffer{ World::LinkHandle<UniformBuffer<CameraUniform>>(mWorld, "CameraUniform", 1u) }
     , mUniformModelBuffer{ World::LinkHandle<UniformBuffer<ModelUniform>>(mWorld, "ModelUniform", 1u) }
     , mTextureDepthStencil{ World::LinkHandle<Texture2DU24U8DS>(mWorld, "DeferredDepthStencil", 1280u, 720u, ETextureWrap::ClampToEdge, ETextureFilter::Nearest) }
@@ -74,7 +76,7 @@ public:
     mUniformCameraBuffer.Get()->UnBind();
     // Render geometry into framebuffer
     mFrameBuffer.Get()->BindWrite();
-    glClearColor(0.1f, 0.0f, 0.0f, 1.0f);
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glViewport(0, 0, (I32)mViewportSize.x, (I32)mViewportSize.y);
     glEnable(GL_DEPTH_TEST);

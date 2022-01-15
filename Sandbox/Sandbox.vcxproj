@@ -22,9 +22,11 @@
     <ClCompile Include="Sandbox.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Include\Actors\DeathBox.h" />
     <ClInclude Include="Include\Actors\Enemy.h" />
     <ClInclude Include="Include\Actors\Gate.h" />
     <ClInclude Include="Include\Actors\Player.h" />
+    <ClInclude Include="Include\Actors\Sphere.h" />
     <ClInclude Include="Include\Components\Brain.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

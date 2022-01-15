@@ -3,17 +3,21 @@
 #include <Core.h>
 #include <Component.h>
 
+class Transform;
+
 class BoxCollider : public Component
 {
 public:
 
-  BoxCollider(World& world)
-    : Component(world)
-  {
+  BoxCollider(
+    World& world,
+    Transform* transform);
 
-  }
+public:
+
+  inline btCollisionShape* GetShape() const { return (btCollisionShape*)&mShape; }
 
 private:
 
-  btBoxShape mShape = btBoxShape{ btVector3{ 1.0f, 1.0f, 1.0f } };
+  btBoxShape mShape;
 };

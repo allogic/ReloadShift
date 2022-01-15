@@ -5,7 +5,7 @@
 
 class Actor;
 
-class EventRegistry
+class Delegates
 {
 public:
 
@@ -64,7 +64,7 @@ public:
   // Constructor
   ////////////////////////////////////////////////////////
 
-  EventRegistry(GLFWwindow* context)
+  Delegates(GLFWwindow* context)
     : mGlfwContext{ context }
   {
 
@@ -88,10 +88,8 @@ public:
   //       delegates properly (for whatever reason..)
   ////////////////////////////////////////////////////////
 
-  void Poll()
+  void Update()
   {
-    // Poll events
-    glfwPollEvents();
     // Update mouse button states
     for (U32 i = 0; i < GLFW_MOUSE_BUTTON_LAST; ++i)
     {
@@ -210,6 +208,42 @@ public:
   void BindAction(U32 key, EInputState::Type state, A* actor, void(A::* actionDelegate)())
   {
     mActionDelegates[ActionKey{ key, state }].emplace(ActionInfo{ (Actor*)actor, (ActionDelegate)actionDelegate });
+  }
+
+  template<typename A>
+  requires std::is_base_of_v<Actor, A>
+  void UnBindAll(A* actor)
+  {
+    // Search delegates for actor instance
+    for (auto& [axisName, axisInfos] : mAxisDelegates)
+    {
+      for (auto it = axisInfos.begin(); it != axisInfos.end();)
+      {
+        if (it->Instance == actor)
+        {
+          it = axisInfos.erase(it);
+        }
+        else
+        {
+          ++it;
+        }
+      }
+    }
+    // Search delegates for actor instance
+    for (auto& [actionKey, actionInfos] : mActionDelegates)
+    {
+      for (auto it = actionInfos.begin(); it != actionInfos.end();)
+      {
+        if (it->Instance == actor)
+        {
+          it = actionInfos.erase(it);
+        }
+        else
+        {
+          ++it;
+        }
+      }
+    }
   }
 
 private:

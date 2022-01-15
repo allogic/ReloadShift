@@ -12,7 +12,7 @@ class Renderer
 {
 public:
 
-  Renderer(std::string const& name);
+  Renderer(World& world, std::string const& name);
   virtual ~Renderer() = default;
 
 public:

@@ -105,9 +105,6 @@
     <ClInclude Include="Include\Components\Renderable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Physics\PhysicsWorld.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\Components\Rigidbody.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -117,13 +114,16 @@
     <ClInclude Include="Include\Components\Collider\SphereCollider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\EventRegistry.h">
+    <ClInclude Include="Include\Delegates.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Uniforms\UniformModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Globals\Registry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -156,6 +156,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\Renderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Components\Renderable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Components\Rigidbody.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Components\Collider\BoxCollider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Components\Collider\SphereCollider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

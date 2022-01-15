@@ -24,11 +24,23 @@ public:
     Module::Tick(deltaTime);
 
     static R32 spawnTime = 0.0f;
-    spawnTime += 1.0 * deltaTime;
+    spawnTime += 25.0f * deltaTime;
     if (spawnTime > 1.0f)
     {
       spawnTime = 0.0f;
-      mActors.emplace_back(World::CreateActor<Sphere>(mWorld, "Sphere"));
+      mSpheres.emplace_back(World::CreateActor<Sphere>(mWorld, "Sphere"));
+    }
+    for (auto it = mSpheres.begin(); it != mSpheres.end();)
+    {
+      if ((*it)->TryToDestroy())
+      {
+        World::DestroyActor(mWorld, *it);
+        it = mSpheres.erase(it);
+      }
+      else
+      {
+        ++it;
+      }
     }
 
     //static R32 roll = 0.0f;
@@ -105,6 +117,7 @@ public:
 private:
 
   std::vector<Actor*> mActors = {};
+  std::vector<Sphere*> mSpheres = {};
 };
 
 DECLARE_MODULE_IMPL(Sandbox)

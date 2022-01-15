@@ -2,18 +2,14 @@
 
 #include <Module.h>
 
-World& World::Instance()
-{
-  static World world;
-  return world;
-}
 
 World::World()
   : mGlfwContext{ glfwGetCurrentContext() }
   , mGladContext{ gladGetGLContext() }
   , mImGuiContext{ ImGui::GetCurrentContext() }
 {
-
+  // Setup gravity
+  mDynamicsWorld.setGravity(btVector3(0, -5, 0));
 }
 
 bool World::CreateModule(World& world, std::filesystem::path const& filePath)

@@ -32,5 +32,11 @@
     <ClInclude Include="Include\Actors\Gate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Actors\Sphere.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Actors\DeathBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

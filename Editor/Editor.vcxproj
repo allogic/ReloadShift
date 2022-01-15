@@ -163,7 +163,7 @@
     <ClInclude Include="Include\Filesystem\FileBrowser.h" />
     <ClInclude Include="Include\Filesystem\HotLoader.h" />
     <ClInclude Include="Include\Filesystem\Watchdog.h" />
-    <ClInclude Include="Include\UI.h" />
+    <ClInclude Include="Include\UI\UI.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

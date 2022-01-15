@@ -2,8 +2,8 @@
 
 #include <Globals/World.h>
 
-Renderer::Renderer(std::string const& name)
-  : mWorld{ World::Instance() }
+Renderer::Renderer(World& world, std::string const& name)
+  : mWorld{ world }
   , mName{ name }
 {
 

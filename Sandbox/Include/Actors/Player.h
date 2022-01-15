@@ -25,20 +25,20 @@ public:
 
 public:
 
-  virtual void SetupInput(EventRegistry& eventRegistry)
+  virtual void SetupInput(Delegates& delegates)
   {
-    eventRegistry.BindAxis("Horizontal", this, &Player::TurnHorizontal);
-    eventRegistry.BindAxis("Vertical", this, &Player::TurnVertical);
+    delegates.BindAxis("Horizontal", this, &Player::TurnHorizontal);
+    delegates.BindAxis("Vertical", this, &Player::TurnVertical);
 
-    eventRegistry.BindAction(GLFW_MOUSE_BUTTON_RIGHT, EInputState::Pressed, this, &Player::OnMouseButtonRightPressed);
-    eventRegistry.BindAction(GLFW_MOUSE_BUTTON_RIGHT, EInputState::Released, this, &Player::OnMouseButtonRightReleased);
+    delegates.BindAction(GLFW_MOUSE_BUTTON_RIGHT, EInputState::Pressed, this, &Player::OnMouseButtonRightPressed);
+    delegates.BindAction(GLFW_MOUSE_BUTTON_RIGHT, EInputState::Released, this, &Player::OnMouseButtonRightReleased);
 
-    eventRegistry.BindAction(GLFW_KEY_W, EInputState::Held, this, &Player::OnMoveForward);
-    eventRegistry.BindAction(GLFW_KEY_S, EInputState::Held, this, &Player::OnMoveBackward);
-    eventRegistry.BindAction(GLFW_KEY_A, EInputState::Held, this, &Player::OnMoveLeft);
-    eventRegistry.BindAction(GLFW_KEY_D, EInputState::Held, this, &Player::OnMoveRight);
-    eventRegistry.BindAction(GLFW_KEY_Q, EInputState::Held, this, &Player::OnMoveUp);
-    eventRegistry.BindAction(GLFW_KEY_E, EInputState::Held, this, &Player::OnMoveDown);
+    delegates.BindAction(GLFW_KEY_W, EInputState::Held, this, &Player::OnMoveForward);
+    delegates.BindAction(GLFW_KEY_S, EInputState::Held, this, &Player::OnMoveBackward);
+    delegates.BindAction(GLFW_KEY_A, EInputState::Held, this, &Player::OnMoveLeft);
+    delegates.BindAction(GLFW_KEY_D, EInputState::Held, this, &Player::OnMoveRight);
+    delegates.BindAction(GLFW_KEY_Q, EInputState::Held, this, &Player::OnMoveUp);
+    delegates.BindAction(GLFW_KEY_E, EInputState::Held, this, &Player::OnMoveDown);
   }
 
 private:

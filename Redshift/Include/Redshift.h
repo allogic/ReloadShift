@@ -12,13 +12,18 @@
 #include <ActorProxy.h>
 #include <Component.h>
 #include <Renderer.h>
-#include <EventRegistry.h>
+#include <Delegates.h>
 #include <Window.h>
 
-#include <Components/Camera.h>
-#include <Components/Transform.h>
-
+#include <Globals/Registry.h>
 #include <Globals/World.h>
+
+#include <Components/Collider/BoxCollider.h>
+#include <Components/Collider/SphereCollider.h>
+#include <Components/Camera.h>
+#include <Components/Renderable.h>
+#include <Components/Rigidbody.h>
+#include <Components/Transform.h>
 
 #include <Handles/GenericBuffer.h>
 #include <Handles/GenericFrameBuffer.h>
@@ -26,8 +31,6 @@
 #include <Handles/GenericProgram.h>
 #include <Handles/GenericShader.h>
 #include <Handles/GenericTexture.h>
-
-#include <Physics/PhysicsWorld.h>
 
 #include <Renderer/DeferredRenderer.h>
 #include <Renderer/DeferredRenderTask.h>

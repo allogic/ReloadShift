@@ -3,7 +3,7 @@
 #include <Core.h>
 #include <ActorProxy.h>
 
-class EventRegistry;
+class Delegates;
 class Component;
 class World;
 
@@ -46,7 +46,7 @@ public:
 
 public:
 
-  virtual void SetupInput(EventRegistry& eventRegistry) {}
+  virtual void SetupInput(Delegates& delegates) {}
 
 protected:
 
