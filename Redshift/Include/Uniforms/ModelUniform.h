@@ -2,9 +2,7 @@
 
 #include <Core.h>
 
-#pragma pack(push, 1)
-struct UniformModel
+struct alignas(16) UniformModel
 {
   R32M4 Model;
 };
-#pragma pack(pop)

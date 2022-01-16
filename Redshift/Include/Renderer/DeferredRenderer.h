@@ -155,7 +155,7 @@ private:
           UniformAmbientLight uniformAmbientLight
           {
             .Intensity = ambientLight->GetIntensity(),
-            .Color = ambientLight->GetColor(),
+            .Color = R32V4{ ambientLight->GetColor(), 0.0f },
             .Enabled = ambientLight->GetEnabled(),
           };
           mUniformBufferAmbientLight.Get()->Set(ambientLightIndex++, &uniformAmbientLight, 1);
@@ -171,8 +171,8 @@ private:
           UniformDirectionLight uniformDirectionLight
           {
             .Intensity = directionLight->GetIntensity(),
-            .Color = directionLight->GetColor(),
-            .Direction = transform->GetWorldRotation(),
+            .Color = R32V4{ directionLight->GetColor(), 0.0f },
+            .Direction = R32V4{ transform->GetWorldRotation(), 0.0f },
             .Enabled = directionLight->GetEnabled(),
           };
           mUniformBufferDirectionLight.Get()->Set(directionLightIndex++, &uniformDirectionLight, 1);
@@ -188,8 +188,8 @@ private:
           UniformPointLight uniformPointLight
           {
             .Intensity = pointLight->GetIntensity(),
-            .Color = pointLight->GetColor(),
-            .Position = transform->GetWorldPosition(),
+            .Color = R32V4{ pointLight->GetColor(), 0.0f },
+            .Position = R32V4{ transform->GetWorldPosition(), 0.0f },
             .Enabled = pointLight->GetEnabled(),
           };
           mUniformBufferPointLight.Get()->Set(pointLightIndex++, &uniformPointLight, 1);
@@ -206,9 +206,9 @@ private:
           {
             .Intensity = spotLight->GetIntensity(),
             .CutOff = spotLight->GetCutOff(),
-            .Color = spotLight->GetColor(),
-            .Position = transform->GetWorldPosition(),
-            .Direction = transform->GetWorldRotation(),
+            .Color = R32V4{ spotLight->GetColor(), 0.0f },
+            .Position = R32V4{ transform->GetWorldPosition(), 0.0f },
+            .Direction = R32V4{ transform->GetWorldRotation(), 0.0f },
             .Enabled = spotLight->GetEnabled(),
           };
           mUniformBufferSpotLight.Get()->Set(spotLightIndex++, &uniformSpotLight, 1);

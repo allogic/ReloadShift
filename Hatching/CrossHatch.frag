@@ -16,31 +16,54 @@
 struct AmbientLight
 {
   float Intensity;
-  vec3 Color;
+  float Dummy0;
+  float Dummy1;
+  float Dummy2;
+  vec4 Color;
   uint Enabled;
+  uint Dummy3;
+  uint Dummy4;
+  uint Dummy5;
 };
 struct DirectionLight
 {
   float Intensity;
-  vec3 Color;
-  vec3 Direction;
+  float Dummy0;
+  float Dummy1;
+  float Dummy2;
+  vec4 Color;
+  vec4 Direction;
   uint Enabled;
+  uint Dummy3;
+  uint Dummy4;
+  uint Dummy5;
 };
 struct PointLight
 {
   float Intensity;
-  vec3 Color;
-  vec3 Position;
+  float Dummy0;
+  float Dummy1;
+  float Dummy2;
+  vec4 Color;
+  vec4 Position;
   uint Enabled;
+  uint Dummy3;
+  uint Dummy4;
+  uint Dummy5;
 };
 struct SpotLight
 {
   float Intensity;
   float CutOff;
-  vec3 Color;
-  vec3 Position;
-  vec3 Direction;
+  float Dummy0;
+  float Dummy1;
+  vec4 Color;
+  vec4 Position;
+  vec4 Direction;
   uint Enabled;
+  uint Dummy2;
+  uint Dummy3;
+  uint Dummy4;
 };
 
 ////////////////////////////////////////////////////////
@@ -136,14 +159,14 @@ void main()
   {
     if (uPointLights[i].Enabled == 0) continue;
 
-    vec3 lightDelta = uPointLights[i].Position - worldPosition;
+    vec3 lightDelta = uPointLights[i].Position.xyz - worldPosition;
     vec3 lightDir = normalize(lightDelta);
 
     float lightDistance = length(lightDelta);
     float lightIntensity = max(dot(worldNormal, lightDir), 0.0f);
     float lightAttenuation = 1.0f / (1.0f + (0.7f * lightDistance) + (1.8f * lightDistance * lightDistance));
 
-    lit = uPointLights[i].Color; // * lightIntensity * lightAttenuation;
+    lit = uPointLights[i].Color.xyz * lightIntensity * lightAttenuation;
   }
 
   oLit = vec4(lit, 1.0f);

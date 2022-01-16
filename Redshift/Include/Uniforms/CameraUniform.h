@@ -2,10 +2,8 @@
 
 #include <Core.h>
 
-#pragma pack(push, 1)
-struct UniformCamera
+struct alignas(16) UniformCamera
 {
   R32M4 Projection;
   R32M4 View;
 };
-#pragma pack(pop)
