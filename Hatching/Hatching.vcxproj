@@ -19,11 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Lit.frag" />
-    <None Include="Lit.vert" />
-    <None Include="Test.comp" />
-    <None Include="Unlit.frag" />
-    <None Include="Unlit.vert" />
+    <None Include="CrossHatch.frag" />
+    <None Include="CrossHatch.vert" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -31,7 +28,7 @@
     <ProjectGuid>{4db429cf-de2a-4b09-8608-65e232d2cbde}</ProjectGuid>
     <RootNamespace>Raymarch</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>Montecarlo</ProjectName>
+    <ProjectName>Hatching</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

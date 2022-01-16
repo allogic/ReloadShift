@@ -303,6 +303,25 @@ public:
     }
   }
 
+  static void DestroyAllActors(World& world)
+  {
+    for (auto it = world.mActors.begin(); it != world.mActors.end();)
+    {
+      Actor* actor = it->first;
+      // DeRegister actor
+      it = world.mActors.erase(it);
+      // Destroy components
+      actor->GetProxy()->DestroyAllComponents();
+      // DeRegister proxy in permutation table
+      DeRegisterProxyForAllPermutations(world, actor);
+      // DeRegister event delegates
+      world.mDelegates.UnBindAll(actor);
+      // Delete actor and proxy
+      delete actor->GetProxy();
+      delete actor;
+    }
+  }
+
   template<typename ... Cs>
   requires (std::is_base_of_v<Component, typename TypeProxy<Cs>::Type> && ...)
   static void DispatchFor(World& world, std::function<void(typename TypeProxy<Cs>::Ptr ...)>&& predicate)
@@ -404,6 +423,7 @@ public:
     // Update physics world
     world.mDynamicsWorld.stepSimulation(timeStep);
     // Update actor transforms
+    // Important: Move this inside render loop and update every fixed 1.0f / 60
     DispatchFor<
       Transform,
       Rigidbody>(world, [](Transform* transform, Rigidbody* rigidbody)

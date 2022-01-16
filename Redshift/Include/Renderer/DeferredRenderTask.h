@@ -20,7 +20,8 @@ public:
     Texture2DR32RGBA* textureNormal,
     Texture2DR32RGBA* textureSpecular,
     Texture2DR32RGBA* textureMetallic,
-    Texture2DR32RGBA* textureRoughness)
+    Texture2DR32RGBA* textureRoughness,
+    Texture2DR32RGBA* textureAmbientOcclusion)
     : mTransform{ transform }
     , mMesh{ mesh }
     , mProgram{ program }
@@ -29,6 +30,7 @@ public:
     , mTextureSpecular{ textureSpecular }
     , mTextureMetallic{ textureMetallic }
     , mTextureRoughness{ textureRoughness }
+    , mTextureAmbientOcclusion{ textureAmbientOcclusion }
   {
 
   }
@@ -43,6 +45,7 @@ public:
   inline Texture2DR32RGBA* GetTextureSpecular() const { return mTextureSpecular; }
   inline Texture2DR32RGBA* GetTextureMetallic() const { return mTextureMetallic; }
   inline Texture2DR32RGBA* GetTextureRoughness() const { return mTextureRoughness; }
+  inline Texture2DR32RGBA* GetTextureAmbientOcclusion() const { return mTextureAmbientOcclusion; }
 
 public:
 
@@ -58,4 +61,5 @@ private:
   Texture2DR32RGBA* mTextureSpecular;
   Texture2DR32RGBA* mTextureMetallic;
   Texture2DR32RGBA* mTextureRoughness;
+  Texture2DR32RGBA* mTextureAmbientOcclusion;
 };

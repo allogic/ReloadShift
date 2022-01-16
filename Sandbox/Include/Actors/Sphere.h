@@ -17,7 +17,7 @@ public:
     std::string const& name)
     : Actor(world, proxy, name)
     , mTransform{ World::AttachComponent<Transform>(mWorld, this, R32V3{ 0.0f, 15.0f, 0.0f }, R32V3{ 0.0f }, R32V3{ 1.0f }) }
-    , mRenderable{ World::AttachComponent<Renderable>(mWorld, this, "Sphere", "Lit") }
+    , mRenderable{ World::AttachComponent<Renderable>(mWorld, this, "Sphere", "CrossHatch") }
     , mCollider{ World::AttachComponent<SphereCollider>(mWorld, this, mTransform) }
     , mRigidbody{ World::AttachComponent<Rigidbody>(mWorld, this, 100.0f, mTransform, mCollider) }
   {

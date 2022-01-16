@@ -3,7 +3,7 @@
 #include <Core.h>
 
 #pragma pack(push, 1)
-struct ModelUniform
+struct UniformModel
 {
   R32M4 Model;
 };

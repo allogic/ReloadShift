@@ -81,7 +81,7 @@
     <ClInclude Include="Include\Handles\GenericMesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Uniforms\UniformCamera.h">
+    <ClInclude Include="Include\Uniforms\CameraUniform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Component.h">
@@ -117,13 +117,34 @@
     <ClInclude Include="Include\Delegates.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Uniforms\UniformModel.h">
+    <ClInclude Include="Include\Uniforms\ModelUniform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Globals\Registry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CollisionComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Components\Lights\AmbientLight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Components\Lights\DirectionLight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Components\Lights\PointLight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Components\Lights\SpotLight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\LightComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Uniforms\LightUniform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

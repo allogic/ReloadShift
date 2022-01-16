@@ -24,7 +24,8 @@ public:
     std::string const& textureNormalName = "",
     std::string const& textureSpecularName = "",
     std::string const& textureMetallicName = "",
-    std::string const& textureRoughnessName = "");
+    std::string const& textureRoughnessName = "",
+    std::string const& textureAmbientOcclusionName = "");
 
 public:
 
@@ -39,4 +40,5 @@ public:
   HotRef<Texture2DR32RGBA> const& mTextureSpecular;
   HotRef<Texture2DR32RGBA> const& mTextureMetallic;
   HotRef<Texture2DR32RGBA> const& mTextureRoughness;
+  HotRef<Texture2DR32RGBA> const& mTextureAmbientOcclusion;
 };

@@ -4,8 +4,7 @@
 #include <Component.h>
 
 class Transform;
-class BoxCollider;
-class SphereCollider;
+class CollisionComponent;
 
 class Rigidbody : public Component
 {
@@ -15,12 +14,7 @@ public:
     World& world,
     R32 mass,
     Transform* transform,
-    BoxCollider* collider);
-  Rigidbody(
-    World& world,
-    R32 mass,
-    Transform* transform,
-    SphereCollider* collider);
+    CollisionComponent* collider);
   virtual ~Rigidbody();
 
 public:

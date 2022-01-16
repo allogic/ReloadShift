@@ -74,7 +74,7 @@ I32 main()
         HotLoader hotLoader = HotLoader{ window, "C:\\Users\\Michael\\Downloads\\Redshift\\Streaming\\" };
         FileBrowser fileBrowser = FileBrowser{ "" };
         // Create default renderer
-        World::CreateRenderer<DeferredRenderer>(world, "Deferred");
+        World::CreateRenderer<DeferredRenderer>(world, "Hatching");
         // Setup timer stuff
         R32 prevTime = 0.0f;
         R32 renderRate = 1.0f / 60.0f;
@@ -122,7 +122,7 @@ I32 main()
             World::UpdatePhysics(world, physicsRate);
             // Begin rendering imgui
             glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
             glViewport(0, 0, (I32)registry.Get<U32>("editor_width"), (I32)registry.Get<U32>("editor_height"));
             // Create new imgui frame
             ImGui_ImplOpenGL3_NewFrame();

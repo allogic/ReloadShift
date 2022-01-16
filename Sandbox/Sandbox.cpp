@@ -23,25 +23,25 @@ public:
   {
     Module::Tick(deltaTime);
 
-    static R32 spawnTime = 0.0f;
-    spawnTime += 25.0f * deltaTime;
-    if (spawnTime > 1.0f)
-    {
-      spawnTime = 0.0f;
-      mSpheres.emplace_back(World::CreateActor<Sphere>(mWorld, "Sphere"));
-    }
-    for (auto it = mSpheres.begin(); it != mSpheres.end();)
-    {
-      if ((*it)->TryToDestroy())
-      {
-        World::DestroyActor(mWorld, *it);
-        it = mSpheres.erase(it);
-      }
-      else
-      {
-        ++it;
-      }
-    }
+    //static R32 spawnTime = 0.0f;
+    //spawnTime += 25.0f * deltaTime;
+    //if (spawnTime > 1.0f)
+    //{
+    //  spawnTime = 0.0f;
+    //  mSpheres.emplace_back(World::CreateActor<Sphere>(mWorld, "Sphere"));
+    //}
+    //for (auto it = mSpheres.begin(); it != mSpheres.end();)
+    //{
+    //  if ((*it)->TryToDestroy())
+    //  {
+    //    World::DestroyActor(mWorld, *it);
+    //    it = mSpheres.erase(it);
+    //  }
+    //  else
+    //  {
+    //    ++it;
+    //  }
+    //}
 
     //static R32 roll = 0.0f;
     //roll += 10.0f * deltaTime;
@@ -105,11 +105,9 @@ public:
     }
     if (ImGui::Button("Destroy Actors"))
     {
-      for (auto& actor : mActors)
-      {
-        World::DestroyActor(mWorld, actor);
-      }
+      World::DestroyAllActors(mWorld);
       mActors.clear();
+      mSpheres.clear();
     }
     ImGui::End();
   }

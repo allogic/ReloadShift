@@ -6,22 +6,13 @@
 
 #include <Globals/World.h>
 
+#include <CollisionComponent.h>
+
 Rigidbody::Rigidbody(
   World& world,
   R32 mass,
   Transform* transform,
-  BoxCollider* collider)
-  : Component(world)
-  , mMotionState{ transform->GetTransform() }
-  , mRigidbodyInfo{ mass, &mMotionState, collider->GetShape(), btVector3{ 0.0f, 0.0f, 0.0f } }
-{
-  World::CreatePhysicsBody(mWorld, this);
-}
-Rigidbody::Rigidbody(
-  World& world,
-  R32 mass,
-  Transform* transform,
-  SphereCollider* collider)
+  CollisionComponent* collider)
   : Component(world)
   , mMotionState{ transform->GetTransform() }
   , mRigidbodyInfo{ mass, &mMotionState, collider->GetShape(), btVector3{ 0.0f, 0.0f, 0.0f } }

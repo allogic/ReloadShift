@@ -11,7 +11,8 @@ Renderable::Renderable(
   std::string const& textureNormalName,
   std::string const& textureSpecularName,
   std::string const& textureMetallicName,
-  std::string const& textureRoughnessName)
+  std::string const& textureRoughnessName,
+  std::string const& textureAmbientOcclusionName)
   : Component(world)
   , mMesh{ World::GetHandle<DefaultMesh>(mWorld, meshName) }
   , mProgram{ World::GetHandle<RenderProgram>(mWorld, programName) }
@@ -20,6 +21,7 @@ Renderable::Renderable(
   , mTextureSpecular{ World::GetHandle<Texture2DR32RGBA>(mWorld, textureSpecularName) }
   , mTextureMetallic{ World::GetHandle<Texture2DR32RGBA>(mWorld, textureMetallicName) }
   , mTextureRoughness{ World::GetHandle<Texture2DR32RGBA>(mWorld, textureRoughnessName) }
+  , mTextureAmbientOcclusion{ World::GetHandle<Texture2DR32RGBA>(mWorld, textureAmbientOcclusionName) }
 {
 
 }
@@ -38,7 +40,8 @@ void Renderable::SubmitRenderTask(Transform* transform, std::queue<DeferredRende
         mTextureNormal.Get(),
         mTextureSpecular.Get(),
         mTextureMetallic.Get(),
-        mTextureRoughness.Get()
+        mTextureRoughness.Get(),
+        mTextureAmbientOcclusion.Get(),
       });
   }
 }

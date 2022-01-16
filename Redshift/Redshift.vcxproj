@@ -147,10 +147,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Include\Actor.h" />
+    <ClInclude Include="Include\CollisionComponent.h" />
     <ClInclude Include="Include\Component.h" />
     <ClInclude Include="Include\Components\Camera.h" />
     <ClInclude Include="Include\Components\Collider\BoxCollider.h" />
     <ClInclude Include="Include\Components\Collider\SphereCollider.h" />
+    <ClInclude Include="Include\Components\Lights\AmbientLight.h" />
+    <ClInclude Include="Include\Components\Lights\DirectionLight.h" />
+    <ClInclude Include="Include\Components\Lights\PointLight.h" />
+    <ClInclude Include="Include\Components\Lights\SpotLight.h" />
     <ClInclude Include="Include\Components\Renderable.h" />
     <ClInclude Include="Include\Components\Rigidbody.h" />
     <ClInclude Include="Include\Components\Transform.h" />
@@ -166,6 +171,7 @@
     <ClInclude Include="Include\Handles\GenericShader.h" />
     <ClInclude Include="Include\Handles\GenericTexture.h" />
     <ClInclude Include="Include\HotRef.h" />
+    <ClInclude Include="Include\LightComponent.h" />
     <ClInclude Include="Include\ModuleProxy.h" />
     <ClInclude Include="Include\Renderer.h" />
     <ClInclude Include="Include\Renderer\DeferredRenderer.h" />
@@ -174,8 +180,9 @@
     <ClInclude Include="Include\Module.h" />
     <ClInclude Include="Include\Redshift.h" />
     <ClInclude Include="Include\Resource.h" />
-    <ClInclude Include="Include\Uniforms\UniformCamera.h" />
-    <ClInclude Include="Include\Uniforms\UniformModel.h" />
+    <ClInclude Include="Include\Uniforms\CameraUniform.h" />
+    <ClInclude Include="Include\Uniforms\LightUniform.h" />
+    <ClInclude Include="Include\Uniforms\ModelUniform.h" />
     <ClInclude Include="Include\Utility.h" />
     <ClInclude Include="Include\Vertex.h" />
     <ClInclude Include="Include\Globals\World.h" />

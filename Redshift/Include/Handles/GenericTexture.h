@@ -10,10 +10,10 @@ public:
 
   GenericTexture(
     std::string const& name,
-    U32 width,
-    U32 height,
-    ETextureWrap::Type wrap,
-    ETextureFilter::Type filter,
+    U32 width = 1280,
+    U32 height = 720,
+    ETextureWrap::Type wrap = ETextureWrap::ClampToEdge,
+    ETextureFilter::Type filter = ETextureFilter::Nearest,
     void* data = nullptr)
     : Handle(name)
     , mWidth{ width }

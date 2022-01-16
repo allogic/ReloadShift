@@ -13,6 +13,7 @@ public:
     : Actor(world, proxy, name)
     , mTransform{ World::AttachComponent<Transform>(mWorld, this, R32V3{ 0.0f }, R32V3{ 0.0f }, R32V3{ 1.0f }) }
     , mCamera{ World::AttachComponent<Camera>(mWorld, this, 45.0f, 0.1f, 10000.0f) }
+    , mPointLight{ World::AttachComponent<PointLight>(mWorld, this, 100.0f, R32V3{ 1.0f, 0.0f, 0.0f }, true) }
   {
 
   }
@@ -22,6 +23,7 @@ public:
   inline Transform* GetTransform() const { return mTransform; }
   inline Renderable* GetRenderable() const { return mRenderable; }
   inline Camera* GetCamera() const { return mCamera; }
+  inline PointLight* GetPointLight() const { return mPointLight; }
 
 public:
 
@@ -109,6 +111,7 @@ private:
   Transform* mTransform;
   Renderable* mRenderable;
   Camera* mCamera;
+  PointLight* mPointLight;
 
   bool mEnableRotation = false;
 };

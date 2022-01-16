@@ -1,23 +1,15 @@
 #pragma once
 
 #include <Core.h>
-#include <Component.h>
+#include <CollisionComponent.h>
 
 class Transform;
 
-class SphereCollider : public Component
+class SphereCollider : public CollisionComponent
 {
 public:
 
   SphereCollider(
     World& world,
     Transform* transform);
-
-public:
-
-  inline btCollisionShape* GetShape() const { return (btCollisionShape*)&mShape; }
-
-private:
-
-  btSphereShape mShape;
 };

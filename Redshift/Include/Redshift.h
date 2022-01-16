@@ -11,6 +11,8 @@
 #include <Actor.h>
 #include <ActorProxy.h>
 #include <Component.h>
+#include <CollisionComponent.h>
+#include <LightComponent.h>
 #include <Renderer.h>
 #include <Delegates.h>
 #include <Window.h>
@@ -20,6 +22,12 @@
 
 #include <Components/Collider/BoxCollider.h>
 #include <Components/Collider/SphereCollider.h>
+
+#include <Components/Lights/AmbientLight.h>
+#include <Components/Lights/DirectionLight.h>
+#include <Components/Lights/PointLight.h>
+#include <Components/Lights/SpotLight.h>
+
 #include <Components/Camera.h>
 #include <Components/Renderable.h>
 #include <Components/Rigidbody.h>
@@ -39,5 +47,6 @@
 #include <Resources/TextureResource.h>
 #include <Resources/MeshResource.h>
 
-#include <Uniforms/UniformCamera.h>
-#include <Uniforms/UniformModel.h>
+#include <Uniforms/CameraUniform.h>
+#include <Uniforms/LightUniform.h>
+#include <Uniforms/ModelUniform.h>
