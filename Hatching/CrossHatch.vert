@@ -46,7 +46,7 @@ void main()
   mat4 mvp = uProjection * uView * uModel;
 
   vertOut.Position = vec4(uModel * vec4(iPosition, 1.0f)).xyz;
-  vertOut.Normal = mat3(transpose(inverse(uModel))) * iNormal;
+  vertOut.Normal = iNormal;
   vertOut.UV = iUV;
   vertOut.Color = iColor;
   vertOut.Tangent = iTangent;

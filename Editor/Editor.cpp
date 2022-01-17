@@ -4,7 +4,7 @@
 #include <Filesystem/FileBrowser.h>
 #include <Filesystem/HotLoader.h>
 
-#include <UI/UI.h>
+#include <UI/Toolbar.h>
 
 I32 main()
 {
@@ -129,7 +129,7 @@ I32 main()
             ImGui_ImplGlfw_NewFrame();
             ImGui::NewFrame();
             // Draw editor imgui
-            UI::Draw();
+            ToolBar::Draw();
             // Update modules
             World::UpdateModules(world, deltaTime);
             // Render all imgui windows

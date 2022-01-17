@@ -19,6 +19,8 @@ public:
 
 public:
 
+  inline btRigidBody const* GetBody() const { return &mRigidbody; }
+
   inline btRigidBody* GetBody() { return &mRigidbody; }
 
 private:

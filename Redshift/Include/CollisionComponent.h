@@ -22,7 +22,9 @@ public:
 
 public:
 
-  inline btCollisionShape* GetShape() const { return mShape; }
+  inline btCollisionShape const* GetShape() const { return mShape; }
+
+  inline btCollisionShape* GetShape() { return mShape; }
 
 private:
 

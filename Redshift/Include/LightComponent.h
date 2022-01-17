@@ -26,6 +26,10 @@ public:
   inline R32V3 const& GetColor() const { return mColor; }
   inline bool GetEnabled() const { return mEnabled; }
 
+  inline R32& GetIntensity() { return mIntensity; }
+  inline R32V3& GetColor() { return mColor; }
+  inline bool& GetEnabled() { return mEnabled; }
+
 private:
 
   R32 mIntensity;

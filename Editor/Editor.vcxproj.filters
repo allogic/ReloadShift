@@ -38,7 +38,28 @@
     <ClInclude Include="Include\Filesystem\FileBrowser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\UI\UI.h">
+    <ClInclude Include="Include\UI\ToolBar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\UI\PropertyView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\UI\ActorView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\UI\ResourceView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\UI\HandleView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\UI\ViewportView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\UI\DelegateView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\UI\RegistryView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

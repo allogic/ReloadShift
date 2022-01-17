@@ -29,9 +29,20 @@ public:
 
 public:
 
-  void SubmitRenderTask(Transform* transform, std::queue<DeferredRenderTask>& renderQueue);
+  inline DefaultMesh const* GetMesh() const { return mMesh.Get(); }
+  inline RenderProgram const* GetProgram() const { return mProgram.Get(); }
+  inline Texture2DR32RGBA const* GetTextureAlbedo() const { return mTextureAlbedo.Get(); }
+  inline Texture2DR32RGBA const* GetTextureNormal() const { return mTextureNormal.Get(); }
+  inline Texture2DR32RGBA const* GetTextureSpecular() const { return mTextureSpecular.Get(); }
+  inline Texture2DR32RGBA const* GetTextureMetallic() const { return mTextureMetallic.Get(); }
+  inline Texture2DR32RGBA const* GetTextureRoughness() const { return mTextureRoughness.Get(); }
+  inline Texture2DR32RGBA const* GetTextureAmbientOcclusion() const { return mTextureAmbientOcclusion.Get(); }
 
 public:
+
+  void SubmitRenderTask(Transform* transform, std::queue<DeferredRenderTask>& renderQueue) const;
+
+private:
 
   HotRef<DefaultMesh> const& mMesh;
   HotRef<RenderProgram> const& mProgram;

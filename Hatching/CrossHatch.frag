@@ -163,10 +163,10 @@ void main()
     vec3 lightDir = normalize(lightDelta);
 
     float lightDistance = length(lightDelta);
-    float lightIntensity = max(dot(worldNormal, lightDir), 0.0f);
-    float lightAttenuation = 1.0f / (1.0f + (0.7f * lightDistance) + (1.8f * lightDistance * lightDistance));
+    float lightDiffuse = max(dot(worldNormal, lightDir), 0.0f);
+    float lightAttenuation = uPointLights[i].Intensity / (1.0f + (0.7f * lightDistance) + (1.8f * lightDistance * lightDistance));
 
-    lit = uPointLights[i].Color.xyz * lightIntensity * lightAttenuation;
+    lit = uPointLights[i].Color.xyz * lightDiffuse * lightAttenuation;
   }
 
   oLit = vec4(lit, 1.0f);

@@ -23,25 +23,33 @@ public:
   {
     Module::Tick(deltaTime);
 
-    //static R32 spawnTime = 0.0f;
-    //spawnTime += 25.0f * deltaTime;
-    //if (spawnTime > 1.0f)
-    //{
-    //  spawnTime = 0.0f;
-    //  mSpheres.emplace_back(World::CreateActor<Sphere>(mWorld, "Sphere"));
-    //}
-    //for (auto it = mSpheres.begin(); it != mSpheres.end();)
-    //{
-    //  if ((*it)->TryToDestroy())
-    //  {
-    //    World::DestroyActor(mWorld, *it);
-    //    it = mSpheres.erase(it);
-    //  }
-    //  else
-    //  {
-    //    ++it;
-    //  }
-    //}
+    //static bool b = true;
+    //ImGui::ShowDemoWindow(&b);
+
+    static R32 spawnTime = 0.0f;
+    static bool enableSpawn = false;
+
+    if (enableSpawn)
+    {
+      spawnTime += 25.0f * deltaTime;
+      if (spawnTime > 1.0f)
+      {
+        spawnTime = 0.0f;
+        mSpheres.emplace_back(World::CreateActor<Sphere>(mWorld, "Sphere"));
+      }
+      for (auto it = mSpheres.begin(); it != mSpheres.end();)
+      {
+        if ((*it)->TryToDestroy())
+        {
+          World::DestroyActor(mWorld, *it);
+          it = mSpheres.erase(it);
+        }
+        else
+        {
+          ++it;
+        }
+      }
+    }
 
     //static R32 roll = 0.0f;
     //roll += 10.0f * deltaTime;
@@ -109,6 +117,7 @@ public:
       mActors.clear();
       mSpheres.clear();
     }
+    ImGui::Checkbox("Enable Spawn", &enableSpawn);
     ImGui::End();
   }
 

@@ -27,13 +27,17 @@ public:
   inline R32V3 const& GetWorldRotation() const { return mRotation; }
   inline R32V3 const& GetWorldScale() const { return mScale; }
 
+  inline R32V3& GetWorldPosition() { return mPosition; }
+  inline R32V3& GetWorldRotation() { return mRotation; }
+  inline R32V3& GetWorldScale() { return mScale; }
+
   inline R32V3 const& GetLocalRight() const { return mLocalRight; }
   inline R32V3 const& GetLocalUp() const { return mLocalUp; }
   inline R32V3 const& GetLocalForward() const { return mLocalForward; }
 
-  inline R32M4 const& GetMatrix() const { return mMatrix; }
-
   inline btTransform const& GetTransform() const { return mTransform; }
+
+  inline R32M4 const& GetMatrix() const { return mMatrix; }
 
 public:
 
@@ -76,6 +80,7 @@ private:
   R32V3 mPosition;
   R32V3 mRotation;
   R32V3 mScale;
+
   btTransform mTransform;
 
   R32V3 mLocalRight = R32V3{ 1.0f, 0.0f, 0.0f };

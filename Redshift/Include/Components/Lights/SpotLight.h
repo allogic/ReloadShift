@@ -23,6 +23,8 @@ public:
 
   inline R32 GetCutOff() const { return mCutOff; }
 
+  inline R32& GetCutOff() { return mCutOff; }
+
 private:
 
   R32 mCutOff;

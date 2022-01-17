@@ -83,7 +83,7 @@ public:
     UpdateLightUniforms();
     // Render geometry into framebuffer
     mFrameBuffer.Get()->BindWrite();
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glViewport(0, 0, (I32)mViewportSize.x, (I32)mViewportSize.y);
     glEnable(GL_DEPTH_TEST);

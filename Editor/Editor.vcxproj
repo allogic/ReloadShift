@@ -120,7 +120,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <FunctionLevelLinking>
       </FunctionLevelLinking>
@@ -142,7 +142,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -163,7 +163,14 @@
     <ClInclude Include="Include\Filesystem\FileBrowser.h" />
     <ClInclude Include="Include\Filesystem\HotLoader.h" />
     <ClInclude Include="Include\Filesystem\Watchdog.h" />
-    <ClInclude Include="Include\UI\UI.h" />
+    <ClInclude Include="Include\UI\ActorView.h" />
+    <ClInclude Include="Include\UI\DelegateView.h" />
+    <ClInclude Include="Include\UI\HandleView.h" />
+    <ClInclude Include="Include\UI\PropertyView.h" />
+    <ClInclude Include="Include\UI\RegistryView.h" />
+    <ClInclude Include="Include\UI\ResourceView.h" />
+    <ClInclude Include="Include\UI\ToolBar.h" />
+    <ClInclude Include="Include\UI\ViewportView.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

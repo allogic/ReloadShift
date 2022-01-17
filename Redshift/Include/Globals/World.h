@@ -254,7 +254,7 @@ public:
   static C* AttachComponent(World& world, Actor* actor, Args &&... args)
   {
     // Check if component already exists
-    C* component = actor->GetComponent<C>(typeid(C).hash_code());
+    C* component = actor->GetComponent<C>();
     if (!component)
     {
       // Update actor
@@ -333,7 +333,7 @@ public:
     {
       predicate
       (
-        (proxy->GetActor()->GetComponent<typename TypeProxy<Cs>::Type>(typeid(Cs).hash_code()))
+        (proxy->GetActor()->GetComponent<typename TypeProxy<Cs>::Type>())
         ...
       );
     }
@@ -428,7 +428,7 @@ public:
       Transform,
       Rigidbody>(world, [](Transform* transform, Rigidbody* rigidbody)
         {
-          btMotionState* motionState = rigidbody->GetBody()->getMotionState();
+          btMotionState const* motionState = rigidbody->GetBody()->getMotionState();
           if (motionState)
           {
             btTransform worldTransform;

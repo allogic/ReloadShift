@@ -20,6 +20,7 @@ public:
 
 public:
 
+  inline bool GetSelected() const { return mSelected; }
   inline ActorProxy* GetProxy() const { return mProxy; }
   inline std::string const& GetName() const { return mName; }
   inline U64 GetCurrentHash() const { return mProxy->mCurrentHash; }
@@ -28,9 +29,13 @@ public:
 
 public:
 
+  inline void SetSelected(bool value) { mSelected = value; }
+
+public:
+
   template<typename C>
   requires std::is_base_of_v<Component, C>
-  inline C* GetComponent(U64 hash) const { return (C*)mProxy->mComponents[hash]; }
+  inline C* GetComponent() const { return (C*)mProxy->mComponents[typeid(C).hash_code()]; }
 
   template<typename C>
   requires std::is_base_of_v<Component, C>
@@ -57,4 +62,8 @@ private:
   ActorProxy* mProxy;
 
   std::string mName = "";
+
+private:
+
+  bool mSelected = false;
 };

@@ -26,7 +26,7 @@ Renderable::Renderable(
 
 }
 
-void Renderable::SubmitRenderTask(Transform* transform, std::queue<DeferredRenderTask>& renderQueue)
+void Renderable::SubmitRenderTask(Transform* transform, std::queue<DeferredRenderTask>& renderQueue) const
 {
   // Minimum requirements are mesh and program
   if (mMesh.Get() && mProgram.Get())
